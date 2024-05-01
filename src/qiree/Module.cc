@@ -99,10 +99,9 @@ void attr_get_to(llvm::Attribute const& attr, T& dest)
 
 //---------------------------------------------------------------------------//
 /*!
- * Construct with an LLVM IR file (bitcode or disassembled).
+ * Construct with an LLVM module.
  */
-Module::Module(std::string const& filename)
-    : module_{load_llvm_module(filename)}
+Module::Module(UPModule&& module) : module_{std::move(module)}
 {
     QIREE_EXPECT(module_);
 
@@ -111,13 +110,21 @@ Module::Module(std::string const& filename)
     QIREE_VALIDATE(entrypoint_,
                    << "no function with QIR 'entry_point' attribute "
                       "exists in '"
-                   << filename << "'");
+                   << module_->getSourceFileName() << "'");
 }
 
 //---------------------------------------------------------------------------//
 /*!
- * Construct with an LLVM IR file (bitcode or disassembled) and entry
- * point.
+ * Construct with an LLVM IR file (bitcode or disassembled).
+ */
+Module::Module(std::string const& filename)
+    : Module{load_llvm_module(filename)}
+{
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * Construct with an LLVM IR file (bitcode or disassembled) and entry point.
  */
 Module::Module(std::string const& filename, std::string const& entrypoint)
     : module_{load_llvm_module(filename)}

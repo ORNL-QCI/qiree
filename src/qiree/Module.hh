@@ -26,6 +26,12 @@ namespace qiree
 class Module
 {
   public:
+    //!@{
+    //! \name Type aliases
+    using UPModule = std::unique_ptr<llvm::Module>;
+    //!@}
+
+  public:
     // Default empty constructor
     Module();
     // Externally defined defaults
@@ -35,6 +41,9 @@ class Module
     // Prevent copying
     Module(Module const&) = delete;
     Module& operator=(Module const&) = delete;
+
+    // Construct from an externally created LLVM module
+    explicit Module(UPModule&& module);
 
     // Construct with an LLVM IR file (bitcode or disassembled)
     explicit Module(std::string const& filename);
