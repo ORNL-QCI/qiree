@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <CLI/CLI.hpp>
 
 #include "qiree_version.h"
 
@@ -39,16 +40,6 @@ void run(std::string const& filename,
 }
 
 //---------------------------------------------------------------------------//
-void print_usage(std::string_view exec_name)
-{
-    // clang-format off
-    std::cerr << "usage: " << exec_name << " input.ll accelerator num_shots\n"
-                 "       " << exec_name << " [--help|-h]\n"
-                 "       " << exec_name << " --version\n";
-    // clang-format on
-}
-
-//---------------------------------------------------------------------------//
 }  // namespace app
 }  // namespace qiree
 
@@ -58,44 +49,24 @@ void print_usage(std::string_view exec_name)
  */
 int main(int argc, char* argv[])
 {
-    using std::cerr;
-    using std::cout;
-    using std::endl;
+    int num_shots{1024};
+    std::string accel_name;
+    std::string filename;
 
-    // Process input arguments
-    int return_code = EXIT_SUCCESS;
+    CLI::App app;
+    auto* filename_opt
+        = app.add_option("--input,-i,input", filename, "QIR input file");
+    filename_opt->required();
+    auto* accel_opt
+        = app.add_option("-a,--accelerator", accel_name, "Accelerator name");
+    accel_opt->required();
+    auto* nshot_opt
+        = app.add_option("-s,--shots", num_shots, "Number of shots");
+    nshot_opt->capture_default_str();
 
-    if (argc == 2)
-    {
-        std::string_view flag{argv[1]};
-        if (flag == "--help"sv || flag == "-h"sv)
-        {
-            qiree::app::print_usage(argv[0]);
-        }
-        else if (flag == "--version"sv || flag == "-v"sv)
-        {
-            std::cout << qiree_version << std::endl;
-        }
-    }
-    else if (argc == 4)
-    {
-        std::string filename{argv[1]};
-        try
-        {
-            qiree::app::run(filename, argv[2], std::atoi(argv[3]));
-        }
-        catch (std::exception const& e)
-        {
-            std::cerr << "fatal: while running input at " << filename << ":\n"
-                      << e.what() << std::endl;
-            return_code = EXIT_FAILURE;
-        }
-    }
-    else
-    {
-        qiree::app::print_usage(argv[0]);
-        return_code = EXIT_FAILURE;
-    }
+    CLI11_PARSE(app, argc, argv);
 
-    return return_code;
+    qiree::app::run(filename, accel_name, num_shots);
+
+    return EXIT_SUCCESS;
 }
