@@ -46,7 +46,7 @@ class RuntimeInterface
     //! Record one result into the progrma output
     virtual void result_record_output(Result result, OptionalCString tag) = 0;
 
-    //! No one uses tuples??
+    //! Prepare to store N tuples
     virtual void tuple_record_output(size_type, OptionalCString tag) = 0;
 
   protected:

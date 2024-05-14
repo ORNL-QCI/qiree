@@ -92,7 +92,6 @@ if qiree_config['options']['sphinxbib']:
     extensions.append("sphinxcontrib.bibtex")
     bibtex_bibfiles = [
         "_static/references.bib",
-        "_static/qiree.bib"
     ]
 
 # Add any paths that contain templates here, relative to this directory.
