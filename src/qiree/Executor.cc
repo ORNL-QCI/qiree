@@ -272,11 +272,18 @@ void QIREE_QIS_FUNCTION(assertmeasurementprobability, ctl)(std::uintptr_t arg1,
 //---------------------------------------------------------------------------//
 // RUNTIME
 //---------------------------------------------------------------------------//
+void QIREE_RT_FUNCTION(initialize)(OptionalCString env)
+{
+    return r_interface_->initialize(env);
+}
 void QIREE_RT_FUNCTION(array_record_output)(size_type s, OptionalCString tag)
 {
     return r_interface_->array_record_output(s, tag);
 }
-
+void QIREE_RT_FUNCTION(tuple_record_output)(size_type s, OptionalCString tag)
+{
+    return r_interface_->tuple_record_output(s, tag);
+}
 void QIREE_RT_FUNCTION(result_record_output)(std::uintptr_t r,
                                              OptionalCString tag)
 {
@@ -391,7 +398,9 @@ Executor::Executor(Module&& module)
     QIREE_BIND_QIS_FUNCTION(assertmeasurementprobability, body);
     QIREE_BIND_QIS_FUNCTION(assertmeasurementprobability, ctl);
 
+    QIREE_BIND_RT_FUNCTION(initialize);
     QIREE_BIND_RT_FUNCTION(array_record_output);
+    QIREE_BIND_RT_FUNCTION(tuple_record_output);
     QIREE_BIND_RT_FUNCTION(result_record_output);
 #undef QIREE_BIND_RT_FUNCTION
 #undef QIREE_BIND_QIS_FUNCTION

@@ -119,17 +119,17 @@ class ResultTestImpl final : public RuntimeInterface
     // Construct with pointer to modifiable test result
     explicit ResultTestImpl(TestResult* result);
 
-    //! Initialize the execution environment, resetting qubits
+    // Initialize the execution environment, resetting qubits
     void initialize(OptionalCString env) final;
 
-    // Prepare to store N results.
-    void array_record_output(size_type, OptionalCString tag) final;
+    // Mark the following N results as being part of an array named tag
+    void array_record_output(size_type, OptionalCString tag);
+
+    // Mark the following N results as being part of a tuple named tag
+    void tuple_record_output(size_type, OptionalCString tag);
 
     // Store one result
     void result_record_output(Result, OptionalCString tag) final;
-
-    // No one uses tuples??
-    void tuple_record_output(size_type, OptionalCString tag) final;
 
   private:
     TestResult* tr_;

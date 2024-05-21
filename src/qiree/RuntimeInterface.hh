@@ -40,16 +40,15 @@ class RuntimeInterface
     //! Initialize the execution environment, resetting qubits
     virtual void initialize(OptionalCString env) = 0;
 
-    //! Prepare to store N results (?)
+    //! Mark the following N results as being part of an array named tag
     virtual void array_record_output(size_type, OptionalCString tag) = 0;
 
-    //! Record one result into the progrma output
-    virtual void result_record_output(Result result, OptionalCString tag) = 0;
-
-    //! Prepare to store N tuples
+    //! Mark the following N results as being part of a tuple named tag
     virtual void tuple_record_output(size_type, OptionalCString tag) = 0;
 
-  protected:
+    //! Record one result into the program output
+    virtual void result_record_output(Result result, OptionalCString tag) = 0;
+
     virtual ~RuntimeInterface() = default;
 };
 

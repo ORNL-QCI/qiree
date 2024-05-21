@@ -297,9 +297,9 @@ void ResultTestImpl::array_record_output(size_type s, OptionalCString tag)
 /*!
  * Mark the start of an array and its size.
  */
-void ResultTestImpl::result_record_output(Result result, OptionalCString tag)
+void ResultTestImpl::tuple_record_output(size_type s, OptionalCString tag)
 {
-    tr_->commands << "result_record_output(" << result;
+    tr_->commands << "tuple_record_output(" << s;
     if (tag)
     {
         tr_->commands << ", " << tag;
@@ -311,9 +311,9 @@ void ResultTestImpl::result_record_output(Result result, OptionalCString tag)
 /*!
  * Mark the start of an array and its size.
  */
-void ResultTestImpl::tuple_record_output(size_type s, OptionalCString tag)
+void ResultTestImpl::result_record_output(Result result, OptionalCString tag)
 {
-    tr_->commands << "tuple_record_output(" << s;
+    tr_->commands << "result_record_output(" << result;
     if (tag)
     {
         tr_->commands << ", " << tag;
