@@ -194,6 +194,10 @@ endif()
 # Where to install configured cmake files
 set(QIREE_INSTALL_CMAKECONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/QIREE")
 
+set(_cmake_files
+  "${CMAKE_CURRENT_LIST_DIR}/cmake/FindLLVM.cmake"
+  "${CMAKE_CURRENT_LIST_DIR}/cmake/FindXACC.cmake"
+)
 install(FILES ${_cmake_files}
   DESTINATION "${QIREE_INSTALL_CMAKECONFIGDIR}"
   COMPONENT development

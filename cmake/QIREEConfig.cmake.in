@@ -65,7 +65,7 @@ endif()
 #-----------------------------------------------------------------------------#
 
 if(NOT TARGET QIR-EE)
-  include("${QIREE_CMAKE_DIR}/QQIRTargets.cmake")
+  include("${QIREE_CMAKE_DIR}/QIREETargets.cmake")
 endif()
 
 #-----------------------------------------------------------------------------#
