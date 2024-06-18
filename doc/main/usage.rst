@@ -27,9 +27,13 @@ The ``qir-xacc`` application processes an LLVM QIR file and dispatches to XACC.
 
 Usage::
 
-   usage: qir-xacc {input}.ll accelerator num_shots
-          qir-xacc [--help|-h]
-          qir-xacc --version
+   Usage: ./../build/bin/qir-xacc [OPTIONS] input
 
+   Positionals:
+     input TEXT REQUIRED              QIR input file
 
-- :file:`{input}.ll` is the path to the LLVM IR file.
+   Options:
+     -h,--help                        Print this help message and exit
+     -i,--input TEXT REQUIRED         QIR input file
+     -a,--accelerator TEXT REQUIRED   Accelerator name
+     -s,--shots INT [1024]            Number of shots
