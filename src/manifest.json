@@ -1,6 +1,0 @@
-{
-  "bundle.symbolic_name" : "xacc_qir_compiler",
-  "bundle.activator" : true,
-  "bundle.name" : "XACC QIR Compiler" ,
-  "bundle.description" : "This bundle provides a way to interface QIR with XACC."
-}

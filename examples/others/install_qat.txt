@@ -1,0 +1,33 @@
+These are Sharmin's answers transferred from the README and slightly modified for easier text reading with an added pointer to the QAT demos. Elaine: I was successfully able to make QAT work after following these instructions!
+
+Question:
+
+What does QAT do?
+
+Answer:
+
+It does loop unrolling, inlining, dead-code elimination and other preprocessing of *.ll file. Check here to see some examples:
+
+https://www.qir-alliance.org/qat/QuickStart/running-qat/
+
+Question:
+
+How to install QAT?
+
+Answer: 
+
+Step 1. Install LLVM-14 and Clang-14 (Sharmin used Clang-18 and C++ Version 9.4.0). Follow the LLVM official website to install LLVM and Clang: https://llvm.org/
+
+Step 2. Follow https://www.qir-alliance.org/qat/QuickStart/building-with-cmake/ Section “Building QAT using CMake” instructions to install QAT. Key steps:
+- mkdir build 
+- cd build 
+- cmake .. 
+- make qat 
+
+Troubleshooting Tips:
+
+A. If you get some C++ error, you can try to update your C++ version.
+
+B. If you get some unrecognized command line options -Werror and -Weverything, delete these command line options from the json file qat/build/compile_commands.json, qat/CMakeList.txt and wherever the error occurs.
+
+After building successfully, you will find the generated executable QAT file in qat/build/qir/qat/Apps/ folder. All demonstrations of the examples in https://www.qir-alliance.org/qat/QuickStart/running-qat/ are located in the folder qat/qir/demos.

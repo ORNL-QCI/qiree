@@ -1,3 +1,14 @@
+# Ignore build folder and vscode settings (please keep them only in your local repo)
+build/
+build/CMakeFiles
+examples/build/
+.vscode/
+
+# Ignore specific files
+src/.CMakelists.txt.swp
+examples/output.txt
+examples/others/output.txt
+
 # Prerequisites
 *.d
 

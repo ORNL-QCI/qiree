@@ -1,0 +1,8 @@
+build/
+build/CMakeFiles
+CMakeLists.txt
+others/CMakeLists.txt
+output.txt
+others/output.txt
+test
+qir_to_xacc_bell
