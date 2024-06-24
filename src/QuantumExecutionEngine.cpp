@@ -1,5 +1,4 @@
 #include "GlobalMappingAssociator.hpp"
-#include "Singleton.hpp"
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/ExecutionEngine/MCJIT.h>
 #include <llvm/IR/Module.h>
@@ -21,60 +20,52 @@
 #include <fstream>
 #include <set>
 #include <functional>
+#include "ExecutionBackendHandle.cpp"
 
 using namespace llvm;
 // Here we open a file in write mode 
 std::ofstream out("output.txt");
-
-int extractLableIndex(int8_t label) {
+// Hash function for pair of objects, used in GlobalMappingAssociator class. When we have the qubit and the classical register, we need to hash them to create a key for the map
+int extractLabelIndex(int8_t label) {
     return label ? reinterpret_cast<int8_t>(label) : 0;
 }
 
+// Here, we store the output of the quantum program to the file output.txt
 void quantum__rt__result_record_output(Result* result, int8_t label) {
-    auto& buffer = Singleton::Instance().getBuffer();
+    //auto& buffer = Singleton::Instance().getBuffer();
     int index = extractResultIndex(result);
-    int labelIndex = extractLableIndex(label);
-    int outputQubit0 = buffer->getMarginalCounts({static_cast<int>(index)},xacc::AcceleratorBuffer::BitOrder::LSB)[std::string("0")];
-    int outputQubit1 = buffer->getMarginalCounts({static_cast<int>(index)},xacc::AcceleratorBuffer::BitOrder::LSB)[std::string("1")];
+    int labelIndex = extractLabelIndex(label);
+    int outputQubit0 = SingletonHandle::Instance().getOutputQubitIndex(index, "0");
+    int outputQubit1 = SingletonHandle::Instance().getOutputQubitIndex(index, "1");
     // store the outputQubit0 and outputQubit1 to the file output.txt
+    // Quantinum is creating a convention to store this output (weird but it is what it is)
     out << "qubit" << ' ' << static_cast<int>(index)<< ' ' << "Experiment" << ' ' << labelIndex << std::endl;
     out << "0" << ' ' << outputQubit0 << std::endl;
     out << "1" << ' ' << outputQubit1 << std::endl;
 }
 
+// The quantum array record function will execute the quantum program, it should be called at the end of the quantum program
 void quantum__rt__array_record_output(int64_t elements, int8_t label) {
     // Here we write the metadata to the file in an array way
-    int labelIndex = extractLableIndex(label);
+    int labelIndex = extractLabelIndex(label);
     out << "Experimental Output" << std::endl;
     out << "number of ouputs"<< ' ' << elements << ' ' << "Experiment" << ' ' << labelIndex << std::endl;
-    auto& buffer = Singleton::Instance().getBuffer();
-    auto& ansatz = Singleton::Instance().getAnsatz();
-    auto& accelerator = Singleton::Instance().getAccelerator();
-    accelerator->updateConfiguration({std::make_pair("shots", 1024)});
-    accelerator->execute(buffer, ansatz);
-    buffer->print();
+    SingletonHandle::Instance().execute();
 }
 
-// Read result and print it
 bool quantum__qis__read_result__body(Result* result) {
-    auto& buffer = Singleton::Instance().getBuffer();
-    auto& accelerator = Singleton::Instance().getAccelerator();
-    auto& ansatz = Singleton::Instance().getAnsatz();
-    auto& ifStmt = Singleton::Instance().getIfStmt();
-    auto& provider = Singleton::Instance().getProvider();
-    // find what is the qubit index associated to result index 
-    int qubitIndex = Singleton::Instance().getQubitIndex(extractResultIndex(result));
-    int index = extractResultIndex(result);
-    Singleton::Instance().setIfStmtExecuted(true);
-    auto ifStmt_aux = xacc::ir::asComposite(provider->createInstruction("ifstmt", {static_cast<unsigned long>(qubitIndex)}, {"q"}));
-    ansatz->addInstruction(ifStmt_aux);
-    ifStmt = ifStmt_aux;
+    // find what is the qubit index associated to result index
+    int qubitIndex = extractResultIndex(result);    
+    SingletonHandle::Instance().setIfStmtExecuted(true);
+    SingletonHandle::Instance().addIfStmt(qubitIndex);
     return true;
 }
 
 void IfStmt_call(int x){
-    Singleton::Instance().setIfStmtExecuted(false);
-    auto ifStmt = Singleton::Instance().getIfStmt();
+    SingletonHandle::Instance().setIfStmtExecuted(false);
+    // Dan: I commented this out because it doesn't seem
+    // we use it for anything
+    //auto ifStmt = SingletonHandle::Instance().getIfStmt();
 }
 
 // Extract the number of required qubits from LLVM module's attributes
@@ -103,12 +94,37 @@ int extractNumQubits(const llvm::Module& Mod) {
 }
 
 int main(int argc, char** argv) {
-    if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <accelerator_name> <path_to_llvm_file.ll>" << std::endl;
-        return 1;
+    int shots = 1024; // default value
+    std::string accelerator_name = "aer"; // default value
+    std::string llvm_file_path = argv[1]; // the first argument is always the llvm file path
+
+    if (argc > 2){
+        shots = std::atoi(argv[2]); // convert the first argument to an integer for the number of shots
+        // validate the input for the number of shots. If it is zero, std::atoi could not convert it to an integer
+        if (shots == 0){
+            std::cerr << "The number of shots is not valid. Please provide a valid number of shots." << std::endl;
+            return 1;
+        }
     }
-    std::string accelerator_name = argv[1];
-    std::string llvm_file_path = argv[2];
+    if (argc > 3){
+        accelerator_name = argv[3]; // get the accelerator name
+        // validate the input for the accelerator name. If it is empty, the user did not provide an accelerator name
+        if (accelerator_name.empty()){
+            std::cerr << "The accelerator name is not valid. Please provide a valid accelerator name." << std::endl;
+            return 1;
+        }
+        // check if the accelerator name is supported by XACC, i.e. if the name belongs to the list {"qpp", "aer", "qsim"}
+        std::set<std::string> supportedAccelerators = {"qpp", "aer", "qsim", "honeywell:H1-1E", "honeywell:H1-1SC", "ionq"};
+        if (supportedAccelerators.find(accelerator_name) == supportedAccelerators.end()){
+            std::cerr << "The accelerator name is not supported. Please provide a valid accelerator name." << std::endl;
+            // write what are the supported accelerators
+            std::cerr << "The supported accelerators are: " << std::endl;
+            for (auto it = supportedAccelerators.begin(); it != supportedAccelerators.end(); ++it){
+                std::cerr << *it << std::endl;
+            } 
+            return 1;
+        }
+    }
 
     // Initialize LLVM
     InitializeNativeTarget();
@@ -130,17 +146,13 @@ int main(int argc, char** argv) {
         // Print a message to inform the user that either the number of qubits is not set or it is set to zero.
         std::cerr << "Unable to find the number of qubits in attributes, or the number of qubits is explicitly set to zero, indicating classical code." << std::endl;
         }
+
     // Initialize xacc and Singleton
-    xacc::Initialize();
-    Singleton& instance = Singleton::Instance();
-    instance.getAccelerator() = xacc::getAccelerator(accelerator_name);
-    instance.getProvider() = xacc::getIRProvider("quantum");
-    instance.getBuffer() = xacc::qalloc(numQubits);
-    instance.getAnsatz() = instance.getProvider()->createComposite("quantum_circuit");
-    instance.getIfStmt() = instance.getProvider()->createComposite("ifstmt");
-    Singleton::Instance().setIfStmtExecuted(false);
-    auto& buffer = Singleton::Instance().getBuffer();
-    //buffer->setName("q");
+    SingletonHandle& singletonInstance = SingletonHandle::Instance();
+    SingletonHandle::Instance().setIfStmtExecuted(false);
+    SingletonHandle::Instance().initialize(accelerator_name, numQubits, shots);
+    
+
     // Create Execution Engine
     Module *ModPtr = Mod.get();
     std::string errStr;
@@ -158,6 +170,7 @@ int main(int argc, char** argv) {
         {"__quantum__rt__result_record_output", [&](llvm::Function* Func){ EE->addGlobalMapping(Func, (void *)&quantum__rt__result_record_output); }}
     };
 
+    
     for (auto& Func : *ModPtr) {
         for (auto& basicBlock : Func) {
             for (auto& inst : basicBlock) {
@@ -212,11 +225,7 @@ int main(int argc, char** argv) {
             }
         }
     }
-    //print the llvm module
-    //std::cout<<"printing the llvm module"<<std::endl;
-    //Mod->print(llvm::outs(), nullptr);
 
-    
     // Execute main function
     uint64_t funcAddr = EE->getFunctionAddress("main");
     typedef void (*FuncType)();

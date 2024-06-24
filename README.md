@@ -1,4 +1,4 @@
-# qir-xir
+# QIR-EE
 Private repo for adapting QIR for use in XACC.
 
 <strong>${\color{lightgreen}Abstract}$</strong>
@@ -7,21 +7,39 @@ The Quantum Intermediate Representation (QIR) provides an abstraction of program
 
 <strong>${\color{lightgreen}Testing}$ ${\color{lightgreen} Instructions}$</strong>
 <ol>
-  <li> Install <a href="https://llvm.org/docs/GettingStarted.html#install">LLVM </a> and  <a href="https://xacc.readthedocs.io/en/latest/index.html">XACC</a>. </li>
-  <li> Check that your <code>cmake</code> prefixes for XACC are correct.
+  <li> Dependencies (skip this step if you already did it):
     <ol>
-      <li> Typing <code>echo $CMAKE_PREFIX_PATH</code> should give you the path to your xacc installation.</li>
-      <li> If empty, then add it: <code>export CMAKE_PREFIX_PATH=[path to your xacc install]</code></li>
-      <li> Example: <code>[path to your xacc install]</code> might be like <code>$HOME/.xacc</code></li>
+    <li> Install <a href="https://llvm.org/docs/GettingStarted.html#install">LLVM </a> and  <a href="https://xacc.readthedocs.io/en/latest/index.html">XACC</a>. </li>
+    <li> Check that your <code>cmake</code> prefixes for XACC are correct.
+      <ol>
+        <li> Typing <code>echo $CMAKE_PREFIX_PATH</code> should give you the path to your xacc installation.</li>
+        <li> If empty, then add it: <code>export CMAKE_PREFIX_PATH=[path to your xacc install]</code></li>
+        <li> Example: <code>[path to your xacc install]</code> might be like <code>$HOME/.xacc</code></li>
+      </ol>
+    </li>
+    <li> Check your <code>$PYTHONPATH</code> for the correct xacc. If empty or points to something else, then add it. </li>
+      <ol>
+        <li> <code> export PYTHONPATH=$PYTHONPATH:$HOME/.xacc </code> </li>
+      </ol>
     </ol>
   </li>
-  <li> Clone this repo. Enter the repo. </li>
-  <li> <code>mkdir build; cd build</code></li>
-  <li> <code>cmake .. </code></li>
-  <li> <code>make</code> </li>
-  <li> <code>./QuantumExecutionEngine [sim choice] ../examples/[name of *.ll file] </code> where <code>[sim choice]</code> can be one of <code>aer, qpp, qsim</code> </li> 
-  <li> Current results come from a default of <code>1024</code> shots. </li>
-</ol>
+  <li> QIR-EE Setup:
+    <ol>
+    <li> Clone this repo. Enter the repo. </li>
+    <li> <code>mkdir build; cd build</code></li>
+    <li> <code>cmake .. </code></li>
+    <li> <code>make</code> </li>
+    <li> To execute QIR: <code>[</code>i.<code>]</code> <code>[</code>ii.<code>]</code> <code>[</code>iii.<code>]</code> <code>[</code>iv.<code>]</code> written without the brackets, where:
+      <ol>
+      <li> <code>./QuantumExecutionEngine</code> or an equivalent path to your executable </li>
+      <li> <code>../examples/[name of *.ll file]</code> </li> 
+      <li> <code>number of shots</code> (if left blank, then default is 1024) </li>
+      <li> <code>sim choice</code> can be one of <code>aer, qpp, qsim, honeywell:H1-1SC, honeywell:H1-1E, ionq</code> (if left blank, then default is <code>aer</code>) </li> 
+      </ol>
+    </li>
+    </ol>
+  </ol>
+  </li>
 
 <strong>${\color{lightgreen}What}$ ${\color{lightgreen}is}$ ${\color{lightgreen}Here}$ </strong>
 
@@ -82,7 +100,6 @@ The flexible architecture enables the combination of quantum and classical instr
 </ol>
 
 <strong>${\color{red}TODO}$ ${\color{lightgreen}For}$ ${\color{lightgreen}Public}$ ${\color{lightgreen}Release}$</strong>
-
 - [x] Handling of multiple functions, multiple blocks, multiple entry points.
 - [x] Handling of user created functions (related to above).
 - [x] Handling of basic arithmetic with user input.
@@ -92,72 +109,69 @@ The flexible architecture enables the combination of quantum and classical instr
 - [x] Handling MIXED instruction with user input (what if user input is quantum input?).
 - [x] Handle parameterized quantum circuits and operations.
 - [x] LLVM version handling!
-- [ ] 01. Add a variable for 'number of shots' input (but keep default at 1024). </li>
-- [ ] 02. Complete C++ implementations for quantum operations (ongoing - see full list below).
-- [ ] 03. Two more examples to illustrate functionality (multiple gates and phase estimation algorithm).
-- [ ] 04. Improve error handling: We should try to catch <a href="https://github.com/qir-alliance/qir-spec/blob/main/specification/v0.1/4_Quantum_Runtime.md"><code>quantum_rt_fail</code></a> messages to know when XACC fails.
-- [ ] 05. Enhanced output record keeping: what other diagnostics can we expose from the XACC buffer? Currently we are doing bare minimum: shots. Can we do more?
-- [ ] 06. Inline code documentation (ongoing).
-- [ ] 07. Validation: Construct unit tests where we already know what the output should be.
-- [ ] 08. Integration 1: Make into a cohesive whole with XACC. Fork XACC from  <a href="https://github.com/eclipse/xacc">Eclipse</a> --> add program to the directory tree (where exactly?) -> apply unit tests --> make a pull request (which will pick up all commits pushed to the main branch of the repo.
-- [ ] 09. Readthedocs: What is our tool good for and how can users use it? This will depend on how we do the integration step.
-- [ ] 10. Robustness: How does our code with different hardware backends? Goal: IBM and Quantinuum.
-- [ ] 11. Check/understand parallel implementations from Microsoft, Xanadu, Intel, Nvidia, Munich Team.
-- [ ] 12. Write the paper for the above implementation (ongoing).
-- [ ] [FUTURE] Integration 2: Working beyond just XACC (possibly with different hardware backends).
-- [ ] [FUTURE] Next level examples: variational algorithm, circuit optimizations.
-      
+- [x] Add a variable for 'number of shots' input (but keep default at 1024). </li>
+- [x] Complete basic C++ implementations for quantum gate.
+- [x] Two more examples to illustrate functionality (multiple gates and phase estimation algorithm).
+- [x] Working with vendor emulators/simulators. Done: Quantinuum/Honeywell, IonQ.
+- [ ] Add 'enhanced' phase estimation to include loops and function calls (similar to qiskit's version in their tutorial).
+- [ ] Validation: Construct unit tests where we already know what the output should be.
+- [ ] Connect to IBM's hardware.
+- [ ] ${\color{red}ALERT}$ <code>teleport.ll</code> only runs correctly on <code>aer</code>. We expect it won't work on other simulators or hardware unless hardware can handle mid-circuit measurements.
+- [ ] Documentation 1: For Developers + In-Line
+- [ ] Documentation 2: Readthedocs for Users (What is our tool good for and how can users use it? This will depend on the integration step.)
+- [ ] Public usage: Release a self-contained package QIR-EE (pronouned 'curee'?) which wraps the Quantum Execution Engine with LLVM. Make into a cohesive whole with XACC.
+- [ ] Write the paper for the above implementation (shared in ShareLaTeX).
+
+<strong>${\color{red}TODO}$ ${\color{lightgreen}Future}$ ${\color{lightgreen}Work}$</strong>
+- [ ] Possible integration with XACC as a utility? (But maybe not needed is package is standalone.)
+- [ ] Working beyond just XACC (possibly directly with different hardware backends).
+- [ ] Next level examples: variational algorithms, circuit optimizations.
+- [ ] Improve error handling: We should try to catch XACC failures. Also, what if the QIR contains <a href="https://github.com/qir-alliance/qir-spec/blob/main/specification/v0.1/4_Quantum_Runtime.md"><code>quantum_rt_fail</code></a>? When would this happen and how would we handle it?
+- [ ] Enhanced output record keeping: what other diagnostics can we expose from the XACC buffer? Currently we are doing bare minimum: shots. Can we do more?
+- [ ] Check/understand parallel implementations from Microsoft, Xanadu, Intel, Nvidia, Munich Team. Also: what is Quantinuum doing with runtime?
+
 <strong>${\color{red}TODO}$ ${\color{lightgreen}Checklist}$ ${\color{lightgreen}For}$ ${\color{lightgreen}Implementations}$</strong>
-- [x] <code>void @__quantum__qis__reset__body(%Qubit*)</code>
-- [x] <code>void @__quantum__qis__cnot__body(%Qubit*, %Qubit*)</code>
 - [x] <code>void @__quantum__qis__h__body(%Qubit*)</code>
 - [x] <code>void @__quantum__qis__x__body(%Qubit*)</code>
 - [x] <code>void @__quantum__qis__y__body(%Qubit*)</code>
 - [x] <code>void @__quantum__qis__z__body(%Qubit*)</code>
 - [x] <code>void @__quantum__qis__t__body(%Qubit*)</code>
+- [x] <code>void @__quantum__qis__t__adj(%Qubit*)</code>
+- [x] <code>void @__quantum__qis__s__body(%Qubit*)</code>
+- [x] <code>void @__quantum__qis__s__adj(%Qubit*)</code>
 - [x] <code>void @__quantum__qis__mz__body(%Qubit*, %Result*)</code>
+- [x] <code>void @__quantum__qis__reset__body(%Qubit*)</code>
 - [x] <code>void @__quantum__qis__rx__body(double, %Qubit*)</code>
 - [x] <code>void @__quantum__qis__ry__body(double, %Qubit*)</code>
 - [x] <code>void @__quantum__qis__rz__body(double, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__swap__body(%Qubit*, %Qubit*)</code>
+- [x] <code>void @__quantum__qis__cnot__body(%Qubit*, %Qubit*)</code>
+- [x] <code>void @__quantum__qis__swap__body(%Qubit*, %Qubit*)</code>
+- [x] <code>void @__quantum__qis__ccx__body(%Qubit*, %Qubit*)</code>
+- [x] <code>void @__quantum__qis__cx__body(%Qubit*, %Qubit*)</code>
+- [x] <code>void @__quantum__qis__cy__body(%Qubit*, %Qubit*)</code>
+- [x] <code>void @__quantum__qis__cz__body(%Qubit*, %Qubit*)</code>
+- [x] <code>void @__quantum__qis__rzz__body(double, %Qubit*, %Qubit*)</code>
+
+<strong>${\color{red}Other}$ ${\color{lightgreen}Not}$ ${\color{lightgreen}in}$ ${\color{lightgreen}XACC}$ ${\color{lightgreen}Common}$</strong>
+- [ ] <code>void @__quantum__qis__rxx__body(double, %Qubit*, %Qubit*)</code>
+- [ ] <code>void @__quantum__qis__ryy__body(double, %Qubit*, %Qubit*)</code>
+- [ ] <code>void @__quantum__qis__r__body(i2, double, %Qubit*)</code>
+- [ ] <code>void @__quantum__qis__r__adj(i2, double, %Qubit*)</code>
+
+<strong>${\color{red}Other}$ ${\color{lightgreen}Array}$ ${\color{lightgreen}Stuff}$</strong>
 - [ ] <code>void @__quantum__qis__h__ctl(%Array*, %Qubit*)</code>
 - [ ] <code>void @__quantum__qis__x__ctl(%Array*, %Qubit*)</code>
 - [ ] <code>void @__quantum__qis__y__ctl(%Array*, %Qubit*)</code>
 - [ ] <code>void @__quantum__qis__z__ctl(%Array*, %Qubit*)</code>
 - [ ] <code>void @__quantum__qis__t__ctl(%Array*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__t__adj(%Qubit*)</code>
 - [ ] <code>void @__quantum__qis__t__ctladj(%Array*, %Qubit*)</code>
 - [ ] <code>void @__quantum__qis__rx__ctl(%Array*, %Tuple*)</code>
-- [ ] <code>void @__quantum__qis__rxx__body(double, %Qubit*, %Qubit*)</code>
 - [ ] <code>void @__quantum__qis__ry__ctl(%Array*, %Tuple*)</code>
-- [ ] <code>void @__quantum__qis__ryy__body(double, %Qubit*, %Qubit*)</code>
 - [ ] <code>void @__quantum__qis__rz__ctl(%Array*, %Tuple*)</code>
-- [ ] <code>void @__quantum__qis__rzz__body(double, %Qubit*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__ccx__body(%Qubit*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__cx__body(%Qubit*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__cy__body(%Qubit*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__cz__body(%Qubit*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__r__adj(i2, double, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__r__body(i2, double, %Qubit*)</code>
 - [ ] <code>void @__quantum__qis__r__ctl(%Array*, %Tuple*)</code>
 - [ ] <code>void @__quantum__qis__r__ctladj(%Array*, %Tuple*)</code>
-- [ ] <code>void @__quantum__qis__s__adj(%Qubit*)</code>
-- [ ] <code>void @__quantum__qis__s__body(%Qubit*)</code>
 - [ ] <code>void @__quantum__qis__s__ctl(%Array*, %Qubit*)</code>
 - [ ] <code>void @__quantum__qis__s__ctladj(%Array*, %Qubit*)</code>
-
-
-<strong>${\color{red}Other}$ ${\color{lightgreen}Measure,}$ ${\color{lightgreen}Results,}$ ${\color{lightgreen}Arrays,}$ ${\color{lightgreen}Strings,}$ ${\color{lightgreen}Tuples}$</strong>
-- [ ] <code>bool @__quantum__qis__read_result__body(%Result*)</code>
-- [ ] <code>bool @__quantum__rt__result_equal(%Result*, %Result*)</code>
-- [ ] <code>%Result* @__quantum__rt__result_get_one()</code>
-- [ ] <code>%Result* @__quantum__rt__result_get_zero()</code>
-- [ ] <code>void @__quantum__rt__result_record_output(%Result*, i8*)</code>
-- [ ] <code>%String* @__quantum__rt__result_to_string(%Result*)</code>
-- [ ] <code>void @__quantum__rt__result_update_reference_count(%Result*, i32)</code>
-- [ ] <code>%Result* @__quantum__qis__m__body(%Qubit*)</code>
-- [ ] <code>%Result* @__quantum__qis__measure__body(%Array*, %Array*)</code>
-- [ ] <code>%Result* @__quantum__qis__mresetz__body(%Qubit*)</code>
 - [ ] <code>%Array* @__quantum__rt__array_concatenate(%Array*, %Array*)</code>
 - [ ] <code>%Array* @__quantum__rt__array_copy(%Array*, bool)</code>
 - [ ] <code>%Array* @__quantum__rt__array_create_1d(i32, i64)</code>
@@ -167,6 +181,18 @@ The flexible architecture enables the combination of quantum and classical instr
 - [ ] <code>void @__quantum__rt__array_record_output(i64, i8*)</code>
 - [ ] <code>void @__quantum__rt__array_update_alias_count(%Array*, i32)</code>
 - [ ] <code>void @__quantum__rt__array_update_reference_count(%Array*, i32)</code>
+
+<strong>${\color{red}Other}$ ${\color{lightgreen}Measure,}$ ${\color{lightgreen}Results,}$ ${\color{lightgreen}Strings,}$ ${\color{lightgreen}Tuples}$</strong>
+- [ ] <code>%Result* @__quantum__qis__m__body(%Qubit*)</code>
+- [ ] <code>%Result* @__quantum__qis__measure__body(%Array*, %Array*)</code>
+- [ ] <code>%Result* @__quantum__qis__mresetz__body(%Qubit*)</code>
+- [ ] <code>bool @__quantum__qis__read_result__body(%Result*)</code>
+- [ ] <code>bool @__quantum__rt__result_equal(%Result*, %Result*)</code>
+- [ ] <code>%Result* @__quantum__rt__result_get_one()</code>
+- [ ] <code>%Result* @__quantum__rt__result_get_zero()</code>
+- [ ] <code>void @__quantum__rt__result_record_output(%Result*, i8*)</code>
+- [ ] <code>void @__quantum__rt__result_update_reference_count(%Result*, i32)</code>
+- [ ] <code>%String* @__quantum__rt__result_to_string(%Result*)</code>
 - [ ] <code>%String* @__quantum__rt__string_concatenate(%String*, %String*)</code>
 - [ ] <code>%String* @__quantum__rt__string_create(i8*)</code>
 - [ ] <code>bool @__quantum__rt__string_equal(%String*, %String*)</code>

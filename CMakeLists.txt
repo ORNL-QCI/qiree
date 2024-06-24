@@ -28,6 +28,9 @@ llvm_map_components_to_libnames(llvm_libs
 # Add library for core files
 add_library(qir_xir_test
   src/GlobalMappingAssociator.cpp
+  src/ExecutionBackendHandle.cpp
+  src/ExecutionBackendFactory.cpp
+  src/XACCExecutionBackend.cpp
 )
 target_compile_features(qir_xir_test
   PUBLIC
@@ -47,6 +50,6 @@ target_include_directories(qir_xir_test
 
 # Create executable
 add_executable(QuantumExecutionEngine
-  src/QuantumExecutionEngine.cpp
+  src/QuantumExecutionEngine.cpp 
 )
 target_link_libraries(QuantumExecutionEngine qir_xir_test)
