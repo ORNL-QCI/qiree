@@ -12,23 +12,24 @@ def teleport(qis: BasicQisBuilder, qubits: List[Value], results: List[Value]) ->
     register = qubits[2]
 
     # Create some entanglement that we can use to send our message.
-    qis.h(register)
-    qis.cx(register, target)
+    qis.h(target)
+    qis.cx(target, register)
 
     # Encode the message into the entangled pair.
-    qis.cx(msg, register)
+    qis.cx(msg, target)
     qis.h(msg)
 
     # Measure the qubits to extract the classical data we need to decode the
     # message by applying the corrections on the target qubit accordingly.
     qis.mz(msg, results[0])
     qis.reset(msg)
-    qis.if_result(results[0], one=lambda: qis.z(target))
+    qis.if_result(results[0], one=lambda: qis.z(register))
+
+    qis.mz(target, results[1])
+    qis.reset(target)
+    qis.if_result(results[1], one=lambda: qis.x(register))
 
     qis.mz(register, results[2])
-    qis.reset(register)
-    qis.if_result(results[1], one=lambda: qis.x(target))
-    qis.mz(target, results[1])
 
 
 module = SimpleModule("teleport", num_qubits=3, num_results=3)

@@ -1,79 +1,52 @@
 cmake_minimum_required(VERSION 3.22)
 
-set(CMAKE_CXX_STANDARD 17)
+project(qir_xir_test LANGUAGES CXX)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Note: C language is necessary for XACC and LLVM "try_compile" statements
+enable_language(C)
 
-project(test)
-
-# Minimum CMake version required
-
-cmake_minimum_required(VERSION 3.22)
-
-# Allow the user to specify the target source file
-
-set(TARGET_SOURCE "llvm_link_test.cpp" CACHE STRING "Target source file")
-
-# Allow the user to specify the LLVM version
-
-set(LLVM_VERSION "16" CACHE STRING "LLVM version to use")
-
-# Project Name
-
-project(test)
-
-# Find LLVM and the components we require.
-
-find_package(LLVM ${LLVM_VERSION} REQUIRED)
-
-llvm_map_components_to_libnames(
-
-  LLVM_LIBRARIES
-
-  Core
-
-  ExecutionEngine
-
-  Interpreter
-
-  MC
-
-  MCJIT
-
-  Support
-
-  nativecodegen
-
-)
-
-# Locate XACC or set its directory
-
-if (NOT XACC_DIR)
-    set(XACC_DIR "$ENV{HOME}/.xacc")
-endif()
-
-message("XACC_DIR: ${XACC_DIR}")
-
+# XACC is required
 find_package(XACC REQUIRED)
 
-# Create a wrapper for the LLVM and XACC components we need
+# Find LLVM and the components we require.
+find_package(LLVM REQUIRED)
+if(NOT LLVM_VERSION EQUAL 16)
+  message(WARNING "This test expects LLVM version 16")
+endif()
 
-add_library(test::LLVM INTERFACE IMPORTED)
+llvm_map_components_to_libnames(llvm_libs
+  Core
+  ExecutionEngine
+  Interpreter
+  MC
+  MCJIT
+  Support
+  nativecodegen
+)
 
-target_include_directories(test::LLVM INTERFACE ${LLVM_INCLUDE_DIRS} ${XACC_DIR}/include/xacc)
-
-target_compile_definitions(test::LLVM INTERFACE ${LLVM_DEFINITIONS})
-
-target_link_libraries(test::LLVM INTERFACE ${LLVM_LIBRARIES} xacc)
-
-# Source files
-
-set(PROJECT_SOURCES ../src/GlobalMappingAssociator.cpp ../src/GlobalMappingAssociator.hpp)
+# Add library for core files
+add_library(qir_xir_test
+  src/GlobalMappingAssociator.cpp
+)
+target_compile_features(qir_xir_test
+  PUBLIC
+    cxx_std_17
+)
+target_link_libraries(qir_xir_test
+  PUBLIC
+    ${llvm_libs}
+    XACC::xacc
+)
+target_include_directories(qir_xir_test
+  PUBLIC
+    "${LLVM_INCLUDE_DIRS}"
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+)
 
 # Create executable
-
-add_executable(qir_execute ${TARGET_SOURCE} ${PROJECT_SOURCES})
-
-target_link_directories(qir_execute PRIVATE ${XACC_DIR}/lib)
-
-target_link_libraries(qir_execute PRIVATE test::LLVM xacc)
+add_executable(QuantumExecutionEngine
+  src/QuantumExecutionEngine.cpp
+)
+target_link_libraries(QuantumExecutionEngine qir_xir_test)

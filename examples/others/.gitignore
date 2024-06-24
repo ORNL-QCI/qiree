@@ -1,0 +1,7 @@
+llvm_link_testg
+qir_to_xacc_bellg
+qir_to_xacc_teleportg
+qir_to_xacc_test_maing
+staq_exampleg
+xacc_teleportg
+xacc_teleport_instg
