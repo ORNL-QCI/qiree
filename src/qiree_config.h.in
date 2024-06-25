@@ -1,0 +1,14 @@
+/*----------------------------------*-C-*------------------------------------*
+ * Copyright 2023 UT-Battelle, LLC, and other QIR-EE developers.
+ * See the top-level COPYRIGHT file for details.
+ * SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+ *---------------------------------------------------------------------------*/
+/*! \file qiree_config.h
+ * Configuration-specific options for QIR-EE.
+ *---------------------------------------------------------------------------*/
+#ifndef qiree_config_h
+#define qiree_config_h
+
+#cmakedefine01 QIREE_DEBUG
+
+#endif /* qiree_config_h */

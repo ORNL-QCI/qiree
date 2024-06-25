@@ -1,101 +1,58 @@
-#ifndef GLOBAL_MAPPING_ASSOCIATOR_HPP
-#define GLOBAL_MAPPING_ASSOCIATOR_HPP
+//----------------------------------*-C++-*----------------------------------//
+// Copyright 2024 UT-Battelle, LLC, and other QIR-EE developers.
+// See the top-level COPYRIGHT file for details.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//---------------------------------------------------------------------------//
+//! \file qiree/Executor.hh
+//---------------------------------------------------------------------------//
+#pragma once
 
-#include <unordered_map>
+#include <memory>
 #include <string>
-#include <functional>
-#include "ExecutionBackend.hpp"
 
-/**
- * @brief Represents a Qubit.
+#include "Macros.hh"
+#include "Types.hh"
+
+namespace llvm
+{
+class Module;
+class ExecutionEngine;
+class Function;
+}  // namespace llvm
+
+namespace qiree
+{
+//---------------------------------------------------------------------------//
+class Module;
+class QuantumInterface;
+class RuntimeInterface;
+
+//---------------------------------------------------------------------------//
+/*!
+ * Set up and run an LLVM Execution Engine that wraps QIR.
  */
-struct Qubit {
-  int index;
+class Executor
+{
+  public:
+    // Construct with a QIR input filename and function name
+    explicit Executor(Module&& module);
+
+    // Default destructor
+    ~Executor();
+
+    QIREE_DELETE_COPY_MOVE(Executor);
+
+    // Execute with the given interface functions
+    void operator()(QuantumInterface& qi, RuntimeInterface& ri) const;
+
+  private:
+    llvm::Function* entrypoint_{nullptr};
+    llvm::Module* module_{nullptr};
+
+    EntryPointAttrs entry_point_attrs_;
+    ModuleFlags module_flags_;
+    std::unique_ptr<llvm::ExecutionEngine> ee_;
 };
 
-/**
- * @brief Represents a Result (cbit).
- */
-struct Result {
-  int index;
-};
-
-/**
- * @brief Extracts the qubit index from a Qubit pointer.
- *
- * @param qubit Qubit pointer.
- * @return Extracted qubit index.
- */
-int extractQubitIndex(Qubit *qubit);
-
-/**
- * @brief Extracts the cbit index from a Result pointer.
- *
- * @param result Result pointer.
- * @return Extracted cbit index.
- */
-int extractResultIndex(Result *result);
-
-/**
- * @brief Hash function for pairs of objects.
- */
-struct _qis_pair_hash {
-  template <class T1, class T2>
-  std::size_t operator()(const std::pair<T1, T2> &p) const;
-};
-
-/**
- * @brief Class handling mapping of LLVM functions to backend native
- * instructions.
- */
-class GlobalMappingAssociator {
-public:
-  GlobalMappingAssociator();
-
-  /**
-   * @brief Maps LLVM function to backend instruction.
-   *
-   * @param name Name of the LLVM function.
-   * @param argCount Number of arguments.
-   * @param func Function pointer to backend instruction.
-   */
-  void addMapping(const std::string &name, std::int16_t argCount,
-                  void (*func)(Qubit *));
-
-  /**
-   * @brief Maps LLVM function to backend instruction.
-   *
-   * @param name Name of the LLVM function.
-   * @param argCount Number of arguments.
-   * @param func Function pointer to backend instruction.
-   */
-  void addMapping(const std::string &name, std::int16_t argCount,
-                  void (*func)(double));
-
-  /**
-   * @brief Retrieves the function pointer associated with a mapping.
-   *
-   * @param name Name of the LLVM function.
-   * @param argCount Number of arguments.
-   * @return Function pointer for backend instruction. nullptr instruction is
-   * not found.
-   */
-  void *getMapping(const std::string &name, std::int16_t argCount) const;
-
-private:
-  /**
-   * @brief Mapping for quantum operations with Qubit arguments.
-   */
-  std::unordered_map<std::pair<std::string, std::int16_t>, void (*)(Qubit *),
-                     _qis_pair_hash>
-      quantum_operation_map;
-
-  /**
-   * @brief Mapping for quantum rotations with double arguments.
-   */
-  std::unordered_map<std::pair<std::string, std::int16_t>, void (*)(double),
-                     _qis_pair_hash>
-      quantum_rotation_map;
-};
-
-#endif
+//---------------------------------------------------------------------------//
+}  // namespace qiree

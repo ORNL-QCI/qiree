@@ -1,11 +1,12 @@
-//Wrote this example that use staq plugin
+// Wrote this example that use staq plugin
 
 #include "xacc.hpp"
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv)
+{
     xacc::Initialize(argc, argv);
     auto compiler = xacc::getCompiler("staq");
-   
+
     auto q = xacc::qalloc(5);
     q->setName("q");
     xacc::storeBuffer(q);
@@ -29,12 +30,10 @@ int main(int argc, char **argv) {
                                     tdg q[3];
                                     })");
 
-
     auto ansatz = xacc::getCompiled("f");
     std::cout << ansatz->toString();
 
     std::cout << "code running successfully";
 
     return 0;
-
 }

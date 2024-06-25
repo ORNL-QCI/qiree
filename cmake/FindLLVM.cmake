@@ -31,5 +31,12 @@ include(FindPackageHandleStandardArgs)
 find_package(LLVM QUIET CONFIG)
 find_package_handle_standard_args(LLVM CONFIG_MODE)
 
+if(LLVM_FOUND)
+  add_library(LLVM::headers INTERFACE IMPORTED)
+  target_include_directories(LLVM::headers SYSTEM INTERFACE
+    "${LLVM_INCLUDE_DIRS}"
+  )
+endif()
+
 #-----------------------------------------------------------------------------#
 

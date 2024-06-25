@@ -1,0 +1,9 @@
+{
+ "version": "@QIREE_SHORT_VERSION@",
+ "release": "@QIREE_VERSION_STRING@",
+ "options": {
+  "breathe": @QIREE_USE_BREATHE@,
+  "furo": @QIREE_USE_FURO@,
+  "sphinxbib": @QIREE_USE_SPHINXBIBTEX@
+ }
+}

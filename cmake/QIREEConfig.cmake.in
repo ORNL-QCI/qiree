@@ -1,0 +1,71 @@
+#---------------------------------*-CMake-*----------------------------------#
+# Copyright 2023 UT-Battelle, LLC, and other QIR-EE developers.
+# See the top-level COPYRIGHT file for details.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#----------------------------------------------------------------------------#
+
+# Set up CMAKE paths
+get_filename_component(QIREE_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)
+list(APPEND CMAKE_MODULE_PATH
+  "${QIREE_CMAKE_DIR}"
+)
+
+#-----------------------------------------------------------------------------#
+# Version compatibility
+#
+# To avoid unnecessary strictness (with non-obvious error messages) we do not
+# use the `SameMajorVersion`/`SameMinorVersion` argument to
+# \c write_basic_package_version_file . Instead we check for any requested
+# package version here and warn deliberately if it doesn't match.
+#-----------------------------------------------------------------------------#
+# TODO for version 1.0.0: update logic to major version
+if(((@PROJECT_NAME@_FIND_VERSION_MAJOR EQUAL 0
+     AND @PROJECT_NAME@_FIND_VERSION_MINOR LESS @PROJECT_NAME@_VERSION_MINOR)
+    OR @PROJECT_NAME@_FIND_VERSION_MAJOR GREATER 0)
+   AND NOT @PROJECT_NAME@_FIND_VERSION_MAX VERSION_GREATER_EQUAL @PROJECT_NAME@_VERSION)
+   message(AUTHOR_WARNING "@PROJECT_NAME@ version ${@PROJECT_NAME@_VERSION} "
+     "may not be compatible with requested version "
+     "${@PROJECT_NAME@_FIND_VERSION}: please update your find_package "
+     "version range"
+   )
+endif()
+
+#-----------------------------------------------------------------------------#
+# Variables
+#-----------------------------------------------------------------------------#
+
+@QIREE_EXPORT_VARIABLES@
+
+#-----------------------------------------------------------------------------#
+# Dependencies
+#-----------------------------------------------------------------------------#
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(LLVM @LLVM_VERSION@ REQUIRED)
+
+if(QIREE_USE_XACC)
+  find_dependency(XACC @XACC_VERSION@ REQUIRED)
+endif()
+
+if(QIREE_BUILD_TESTS)
+  if(CMAKE_VERSION VERSION_LESS 3.20)
+    # First look for standard CMake installation
+    # (automatically done for CMake >= 3.20)
+    find_dependency(GTest @GTest_VERSION@ QUIET NO_MODULE)
+  endif()
+  if(NOT GTest_FOUND)
+    # If not found, try again
+    find_dependency(GTest)
+  endif()
+endif()
+
+#-----------------------------------------------------------------------------#
+# Targets
+#-----------------------------------------------------------------------------#
+
+if(NOT TARGET QIR-EE)
+  include("${QIREE_CMAKE_DIR}/QQIRTargets.cmake")
+endif()
+
+#-----------------------------------------------------------------------------#

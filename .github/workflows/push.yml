@@ -1,0 +1,23 @@
+name: push
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: push-${{github.ref}}-${{github.run_number}}-${{github.workflow}}
+  cancel-in-progress: true
+
+jobs:
+  build-fast:
+    uses: ./.github/workflows/build-fast.yml
+  all:
+    needs:
+      - build-fast
+    runs-on: ubuntu-latest
+    steps:
+    - name: Success
+      run: "true"
+
+# vim: set nowrap tw=100:

@@ -1,14 +1,32 @@
-# Quantum Intermediate Representation Execution Engine (QIR-EE)
+# QIR-EE
 
-## Table of Contents
+The QIR Execution Engine library provides interfaces for easily processing
+[Quantum Intermediate
+Representation](https://github.com/qir-alliance/qir-spec/) code using the LLVM
+execution engine.
 
-1. [Introduction](#introduction)
-2. [Getting Started](#getting-started)
-3. [Executing Quantum Circuits](#executing-quantum-circuits)
-4. [Understanding the Results](#understanding-the-results)
-5. [Adding Custom Operations](#adding-custom-operations)
-6. [FAQs and Troubleshooting](#faqs-and-troubleshooting)
-7. [Getting Help](#getting-help)
+## Introduction
+
+Welcome to the Quantum Intermediate Representation Execution Engine (QIR-EE), a state-of-the-art tool designed to streamline the process of running quantum circuits and algorithms. Whether you're a researcher, student, or enthusiast, QIR-EE (pronounced 'cure-ee') is designed to make your journey into quantum computing as seamless as possible. This implementation is associated to the paper [A Cross-Platform Execution Engine for the Quantum Intermediate Representation](https://doi.org/10.48550/arXiv.2404.14299) and is maintained by the QIR-EE Developers.
+
+At version 0.1, this work represents a proof-of-concept for the feasibility of a modular workflow at the lower end of the quantum software stack. We welcome feedback and ideas for collaborations.
+
+## Documentation
+
+Most of the QIR-EE documentation is readable through the codebase through a
+combination of [static RST documentation](doc/index.rst) and Doxygen-markup
+comments in the source code itself. The full [QIR-EE user
+documentation][user-docs] (including selected code documentation incorporated
+by Breathe) and the [QIR-EE code documentation][dev-docs] are (TODO: will
+be) mirrored on
+our GitHub pages site. You can generate these yourself (if the necessary
+prerequisites are installed) by
+setting the `QIREE_BUILD_DOCS=ON` configuration option and running `make
+doc` (user) or `make doxygen` (developer).
+
+[user-docs]: https://ornl-qci.github.io/qir-ee/user/index.html
+[dev-docs]: https://ornl-qci.github.io/qir-ee/dev/index.html
+
 
 ## Introduction
 
@@ -57,7 +75,7 @@ The resulting executable is `./[YOUR-DIR]/qir-xir/build/QuantumExecutionEngine`.
 1. `./QuantumExecutionEngine` may be replaced with an equivalent path to the executable.
 2. `--llvm-file-path` is used to indicate path of the LLVM (`*.ll`) file that specifices the quantum program (required).
 3. `--n-qubits` is used to indicate the number of qubits needed to construct the circuit (required and must come after the file path).
-4. `--shots` is the number of times you would like to execute the circuit (optional, with default at 1024). 
+4. `--shots` is the number of times you would like to execute the circuit (optional, with default at 1024).
 5. `--accelerator` is the name of the quantum accelerator (hardware or simulator) that you wish to use (optional, with default `aer`).
 
    With XACC we have tested: `aer`, `qpp`, `qsim`, `honeywell:H1-1SC`, `honeywell:H1-1E`, `honeywell:H1-1`, `ionq`.
@@ -82,4 +100,14 @@ Advanced users can extend the engine's capabilities by introducing new operation
 
 Under construction.
 
-## Getting Help
+## Directory structure
+
+| **Directory** | **Description**                                       |
+| ------------- | ---------------                                       |
+| **app**       | Source code for installed executable applications     |
+| **cmake**     | Implementation code for CMake build configuration     |
+| **doc**       | Code documentation and manual                         |
+| **scripts**   | Development and continuous integration helper scripts |
+| **src**       | Library source code                                   |
+| **test**      | Unit tests                                            |
+
