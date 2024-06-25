@@ -20,24 +20,25 @@ void XACCExecutionBackend::initialize(const std::string accelerator_name,
 
 void XACCExecutionBackend::finalize() { xacc::Finalize(); }
 
-void XACCExecutionBackend::addInstructionToAnsatz(
+void XACCExecutionBackend::addInstruction(
     const std::string &gate, std::vector<unsigned long> qubitIndices) {
 
-  if (ifStmtExecuted) {
+  if (_ifStmtExecuted) {
     ifStmt->addInstruction(provider->createInstruction(gate, qubitIndices));
   } else {
     ansatz->addInstruction(provider->createInstruction(gate, qubitIndices));
   }
 }
 
-void XACCExecutionBackend::addParametrizedInstructionToAnsatz(
-    const std::string &gate, std::vector<unsigned long> qubitIndices,
-    double params) {
+void XACCExecutionBackend::addInstruction(
+    const std::string &gate, const std::vector<unsigned long> qubitIndices,
+    const double params) {
   ansatz->addInstruction(
       provider->createInstruction(gate, qubitIndices, {params}));
 }
 
-int XACCExecutionBackend::getOutputQubitIndex(int qubitIndex, std::string bit) {
+int XACCExecutionBackend::getQubitOutput(const int qubitIndex,
+                                         const std::string bit) {
   return buffer->getMarginalCounts({qubitIndex},
                                    xacc::AcceleratorBuffer::BitOrder::LSB)[bit];
 }
@@ -54,7 +55,7 @@ void XACCExecutionBackend::execute() {
   buffer->print();
 }
 
-void XACCExecutionBackend::addIfStmt(int qubitIndex) {
+void XACCExecutionBackend::addIfStmt(const int qubitIndex) {
   auto ifStmt_aux = xacc::ir::asComposite(provider->createInstruction(
       "ifstmt", {static_cast<unsigned long>(qubitIndex)}, {"q"}));
   ansatz->addInstruction(ifStmt_aux);

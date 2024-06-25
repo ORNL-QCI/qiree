@@ -1,210 +1,85 @@
-# QIR-EE
-Private repo for adapting QIR for use in XACC.
+# Quantum Intermediate Representation Execution Engine (QIR-EE)
 
-<strong>${\color{lightgreen}Abstract}$</strong>
+## Table of Contents
 
-The Quantum Intermediate Representation (QIR) provides an abstraction of programs that include a mixture of conventional and quantum instructions. This project develops a tool that translates a QIR program into a hardware-specific implementation using the XACC programming framework. This tool provides a unique capability to translating abstract QIR programs into executable programs on specific hardware. By mapping specific LLVM function calls to their corresponding C++ implementations, the code bridges the LLVM Execution Engine's classical execution environment with XACC's quantum computing capabilities. The integration allows for the smooth transition and combination of classical and quantum instructions, providing a unified platform for hybrid quantum-classical computing. The results from the quantum computations are captured in a globally accessible buffer, facilitating their use in classical post-processing or control logic.
+1. [Introduction](#introduction)
+2. [Getting Started](#getting-started)
+3. [Executing Quantum Circuits](#executing-quantum-circuits)
+4. [Understanding the Results](#understanding-the-results)
+5. [Adding Custom Operations](#adding-custom-operations)
+6. [FAQs and Troubleshooting](#faqs-and-troubleshooting)
+7. [Getting Help](#getting-help)
 
-<strong>${\color{lightgreen}Testing}$ ${\color{lightgreen} Instructions}$</strong>
-<ol>
-  <li> Dependencies (skip this step if you already did it):
-    <ol>
-    <li> Install <a href="https://llvm.org/docs/GettingStarted.html#install">LLVM </a> and  <a href="https://xacc.readthedocs.io/en/latest/index.html">XACC</a>. </li>
-    <li> Check that your <code>cmake</code> prefixes for XACC are correct.
-      <ol>
-        <li> Typing <code>echo $CMAKE_PREFIX_PATH</code> should give you the path to your xacc installation.</li>
-        <li> If empty, then add it: <code>export CMAKE_PREFIX_PATH=[path to your xacc install]</code></li>
-        <li> Example: <code>[path to your xacc install]</code> might be like <code>$HOME/.xacc</code></li>
-      </ol>
-    </li>
-    <li> Check your <code>$PYTHONPATH</code> for the correct xacc. If empty or points to something else, then add it. </li>
-      <ol>
-        <li> <code> export PYTHONPATH=$PYTHONPATH:$HOME/.xacc </code> </li>
-      </ol>
-    </ol>
-  </li>
-  <li> QIR-EE Setup:
-    <ol>
-    <li> Clone this repo. Enter the repo. </li>
-    <li> <code>mkdir build; cd build</code></li>
-    <li> <code>cmake .. </code></li>
-    <li> <code>make</code> </li>
-    <li> To execute QIR: <code>[</code>i.<code>]</code> <code>[</code>ii.<code>]</code> <code>[</code>iii.<code>]</code> <code>[</code>iv.<code>]</code> written without the brackets, where:
-      <ol>
-      <li> <code>./QuantumExecutionEngine</code> or an equivalent path to your executable </li>
-      <li> <code>../examples/[name of *.ll file]</code> </li> 
-      <li> <code>number of shots</code> (if left blank, then default is 1024) </li>
-      <li> <code>sim choice</code> can be one of <code>aer, qpp, qsim, honeywell:H1-1SC, honeywell:H1-1E, ionq</code> (if left blank, then default is <code>aer</code>) </li> 
-      </ol>
-    </li>
-    </ol>
-  </ol>
-  </li>
+## Introduction
 
-<strong>${\color{lightgreen}What}$ ${\color{lightgreen}is}$ ${\color{lightgreen}Here}$ </strong>
+Welcome to the Quantum Intermediate Representation Execution Engine (QIR-EE), a state-of-the-art tool designed to streamline the process of running quantum circuits and algorithms. Whether you're a researcher, student, or enthusiast, QIR-EE (pronounced 'cure-ee') is designed to make your journey into quantum computing as seamless as possible. This implementation is associated to the paper [A Cross-Platform Execution Engine for the Quantum Intermediate Representation](https://doi.org/10.48550/arXiv.2404.14299) and is maintained by the QIR-EE Developers.
 
-The <code>src/QuantumExecutionEngine.cpp</code> integrates the XACC quantum computing framework with LLVM's Execution Engine to provide a seamless environment for executing both classical and quantum code. The Execution Engine runs the quantum code by calling mapped C++ functions, which in turn use XACC's quantum accelerators to execute the quantum circuit. These functions serve as the bridge between the LLVM Execution Engine and XACC's quantum execution environment. 
+At version 0.1, this work represents a proof-of-concept for the feasibility of a modular workflow at the lower end of the quantum software stack. We welcome feedback and ideas for collaborations.
 
-<strong>${\color{lightgreen}Data}$ ${\color{lightgreen}Transfer}$ ${\color{lightgreen}from}$ ${\color{lightgreen}the}$ ${\color{lightgreen}Execution}$ ${\color{lightgreen}Engine}$ </strong>
+## Getting Started
 
-The XACC execution results are stored in a buffer, accessible through a Singleton pattern to ensure consistency and global access. C++ functions like `quantum__qis__read_result__body` and `quantum__rt__result_record_output` fetch data from this buffer. These functions are then dynamically linked to their LLVM counterparts (specified in the QIR) using LLVM's Execution Engine. This way, the quantum execution results can be used by subsequent classical computations in the LLVM code.
+There are two dependencies for QIR-EE to work properly. Please make sure to download and install the most current versions of:
+1. [LLVM](https://releases.llvm.org/) (minimum version 16.0.0)
+2. [XACC](https://xacc.readthedocs.io/en/latest/install.html) or an equivalent runtime system/hardware accelerator
 
-<strong>${\color{lightgreen}Handling}$ ${\color{lightgreen}Mixture}$ ${\color{lightgreen}of}$ ${\color{lightgreen}Quantum}$ ${\color{lightgreen}and}$ ${\color{lightgreen}Classical}$ ${\color{lightgreen}Instructions}$ </strong>
+### System Requirements
 
-The flexible architecture enables the combination of quantum and classical instructions. Quantum instructions are executed on the quantum accelerator via XACC, and the results are stored back into a common buffer. Classical operations can then read this buffer for further computation or conditional logic. Classical operations in the LLVM code can operate on the results of quantum computations through the mapped C++ functions. This makes it possible to design algorithms that interplay between classical and quantum computations, using the buffer as the common data link.
+- Access to a compatible quantum computing simulator or real quantum hardware.
+- Configuration files set up in your home folder that contain credential to access vendor backends. (Under construction: Formats for .ionq_config and .honeywell_config.)
+- A QIR file with the quantum program that you want to run (see examples folder).
 
-<strong>${\color{lightgreen}Dependencies}$ </strong>
-<ol>
-  <li> <a href="https://xacc.readthedocs.io/en/latest/index.html">XACC</a>: The eXtreme-scale Accelerator programming framework is used for quantum computation. </li>
-  <li> <a href="https://llvm.org/docs/GettingStarted.html#install">LLVM</a>: The LLVM compiler infrastructure is required for the LLVM Execution Engine and for parsing LLVM IR files. </li>
-</ol>
+### Installation
 
-<strong>${\color{lightgreen}Current}$ ${\color{lightgreen} Structure}$</strong>
-<ol>
-  <li> Link LLVM via <code>CMakeLists.txt</code> </li>
-  <li>Quantum Execution Engine (parses and executes quantum instructions only) </li>
-  <ol>
-    <li> Declare accelerator.
-      <ol>
-        <li> <code>auto accelerator = xacc::getAccelerator(accelerator_name);</code>
-      </ol>
-    </li>
-    <li> Parse <code>*.ll</code> for quantum instructions. </li>
-      <ol>
-        <li> Main block parsing. Example: <code>bell.ll</code> </li>
-        <li> Persist through entire level one scope. Examples: <code>teleport.ll, loop.ll </code> </li>
-        <li> Mutiple calls to an outside function. Example: <code>multiple.ll</code> </li>
-        <li> Parameterized functions. Example: <code>rotation.ll</code> </li>
-        <li> Implementations of functions for basic arithmetic with some user input. Example: <code>input.ll</code></li>
-        <li> Users can add instructions using the <code>addMapping</code> function. </li>
-      </ol>
-    <li> Construct quantum ciruit or kernel in XACCIR. </li>
-     <ol>
-     <li> Persist through entire level one scope.</li>
-      <li> Extend to level two scope. This might include calls to external functions and user input.</li>
-     </ol>
-    <li> Use pointers to save readout. </li>
-    <li> Execute quantum circuit on accelerator by checking global flag from readout. </li>
-    <ol>
-      <li> <code>EE->addGlobalMapping(quantumFunc, (void*)&executeQuantumWithXACC)</code> </li>
-    </ol>
-  </ol>
-  <li>JIT Compilation and Execution </li>
-  <ol>
-    <li> LLVM EE created for JIT compilation. </li>
-    <li> Quantum functions within LLVM module are mapped (or bound) to the QEE function. </li>
-    <li> Main function of LLVM module is executed using LLVM EE. </li>
-    <li> Quantum readout from hardware stored in buffer. </li>
-  </ol>
-  <li>Cleanup ouptut for user. Clear cache (if needed). </li>
-</ol>
+QIR-EE Setup in Command Line
 
-<strong>${\color{red}TODO}$ ${\color{lightgreen}For}$ ${\color{lightgreen}Public}$ ${\color{lightgreen}Release}$</strong>
-- [x] Handling of multiple functions, multiple blocks, multiple entry points.
-- [x] Handling of user created functions (related to above).
-- [x] Handling of basic arithmetic with user input.
-- [x] Check difference between <code>requiredQubits</code> and <code>num_required_qubits</code> in attributes.
-- [x] If only classical code is present in <code>*.ll</code> file, insert <code>"num_required_qubits"="0"</code> inside list <code>attributes #0</code>.
-- [x] Fix 'target' qubit output of <code>if_else.ll</code>.
-- [x] Handling MIXED instruction with user input (what if user input is quantum input?).
-- [x] Handle parameterized quantum circuits and operations.
-- [x] LLVM version handling!
-- [x] Add a variable for 'number of shots' input (but keep default at 1024). </li>
-- [x] Complete basic C++ implementations for quantum gate.
-- [x] Two more examples to illustrate functionality (multiple gates and phase estimation algorithm).
-- [x] Working with vendor emulators/simulators. Done: Quantinuum/Honeywell, IonQ.
-- [ ] Add 'enhanced' phase estimation to include loops and function calls (similar to qiskit's version in their tutorial).
-- [ ] Validation: Construct unit tests where we already know what the output should be.
-- [ ] Connect to IBM's hardware.
-- [ ] ${\color{red}ALERT}$ <code>teleport.ll</code> only runs correctly on <code>aer</code>. We expect it won't work on other simulators or hardware unless hardware can handle mid-circuit measurements.
-- [ ] Documentation 1: For Developers + In-Line
-- [ ] Documentation 2: Readthedocs for Users (What is our tool good for and how can users use it? This will depend on the integration step.)
-- [ ] Public usage: Release a self-contained package QIR-EE (pronouned 'curee'?) which wraps the Quantum Execution Engine with LLVM. Make into a cohesive whole with XACC.
-- [ ] Write the paper for the above implementation (shared in ShareLaTeX).
+1. Clone this repo. Enter the repo.
+2. `mkdir build; cd build`
+3. `cmake ..`
+4. `make`
 
-<strong>${\color{red}TODO}$ ${\color{lightgreen}Future}$ ${\color{lightgreen}Work}$</strong>
-- [ ] Possible integration with XACC as a utility? (But maybe not needed is package is standalone.)
-- [ ] Working beyond just XACC (possibly directly with different hardware backends).
-- [ ] Next level examples: variational algorithms, circuit optimizations.
-- [ ] Improve error handling: We should try to catch XACC failures. Also, what if the QIR contains <a href="https://github.com/qir-alliance/qir-spec/blob/main/specification/v0.1/4_Quantum_Runtime.md"><code>quantum_rt_fail</code></a>? When would this happen and how would we handle it?
-- [ ] Enhanced output record keeping: what other diagnostics can we expose from the XACC buffer? Currently we are doing bare minimum: shots. Can we do more?
-- [ ] Check/understand parallel implementations from Microsoft, Xanadu, Intel, Nvidia, Munich Team. Also: what is Quantinuum doing with runtime?
+The resulting executable is `./[YOUR-DIR]/qir-xir/build/QuantumExecutionEngine`.
 
-<strong>${\color{red}TODO}$ ${\color{lightgreen}Checklist}$ ${\color{lightgreen}For}$ ${\color{lightgreen}Implementations}$</strong>
-- [x] <code>void @__quantum__qis__h__body(%Qubit*)</code>
-- [x] <code>void @__quantum__qis__x__body(%Qubit*)</code>
-- [x] <code>void @__quantum__qis__y__body(%Qubit*)</code>
-- [x] <code>void @__quantum__qis__z__body(%Qubit*)</code>
-- [x] <code>void @__quantum__qis__t__body(%Qubit*)</code>
-- [x] <code>void @__quantum__qis__t__adj(%Qubit*)</code>
-- [x] <code>void @__quantum__qis__s__body(%Qubit*)</code>
-- [x] <code>void @__quantum__qis__s__adj(%Qubit*)</code>
-- [x] <code>void @__quantum__qis__mz__body(%Qubit*, %Result*)</code>
-- [x] <code>void @__quantum__qis__reset__body(%Qubit*)</code>
-- [x] <code>void @__quantum__qis__rx__body(double, %Qubit*)</code>
-- [x] <code>void @__quantum__qis__ry__body(double, %Qubit*)</code>
-- [x] <code>void @__quantum__qis__rz__body(double, %Qubit*)</code>
-- [x] <code>void @__quantum__qis__cnot__body(%Qubit*, %Qubit*)</code>
-- [x] <code>void @__quantum__qis__swap__body(%Qubit*, %Qubit*)</code>
-- [x] <code>void @__quantum__qis__ccx__body(%Qubit*, %Qubit*)</code>
-- [x] <code>void @__quantum__qis__cx__body(%Qubit*, %Qubit*)</code>
-- [x] <code>void @__quantum__qis__cy__body(%Qubit*, %Qubit*)</code>
-- [x] <code>void @__quantum__qis__cz__body(%Qubit*, %Qubit*)</code>
-- [x] <code>void @__quantum__qis__rzz__body(double, %Qubit*, %Qubit*)</code>
+## Executing Quantum Circuits
+(via QIR-EE and XACC)
 
-<strong>${\color{red}Other}$ ${\color{lightgreen}Not}$ ${\color{lightgreen}in}$ ${\color{lightgreen}XACC}$ ${\color{lightgreen}Common}$</strong>
-- [ ] <code>void @__quantum__qis__rxx__body(double, %Qubit*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__ryy__body(double, %Qubit*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__r__body(i2, double, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__r__adj(i2, double, %Qubit*)</code>
+1. Check that your cmake prefixes for XACC are correct.
+2. Typing `echo $CMAKE_PREFIX_PATH` should give you the path to your XACC installation.
+3. If empty, then add it: `export CMAKE_PREFIX_PATH=$HOME/.xacc` or an equivalent path to your XACC installation.
+4. Check your `$PYTHONPATH` for pointing to your XACC installation.
+5. If empty, then add it: `export PYTHONPATH=$PYTHONPATH:$HOME/.xacc` or an equivalent path to your XACC installation.
 
-<strong>${\color{red}Other}$ ${\color{lightgreen}Array}$ ${\color{lightgreen}Stuff}$</strong>
-- [ ] <code>void @__quantum__qis__h__ctl(%Array*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__x__ctl(%Array*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__y__ctl(%Array*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__z__ctl(%Array*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__t__ctl(%Array*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__t__ctladj(%Array*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__rx__ctl(%Array*, %Tuple*)</code>
-- [ ] <code>void @__quantum__qis__ry__ctl(%Array*, %Tuple*)</code>
-- [ ] <code>void @__quantum__qis__rz__ctl(%Array*, %Tuple*)</code>
-- [ ] <code>void @__quantum__qis__r__ctl(%Array*, %Tuple*)</code>
-- [ ] <code>void @__quantum__qis__r__ctladj(%Array*, %Tuple*)</code>
-- [ ] <code>void @__quantum__qis__s__ctl(%Array*, %Qubit*)</code>
-- [ ] <code>void @__quantum__qis__s__ctladj(%Array*, %Qubit*)</code>
-- [ ] <code>%Array* @__quantum__rt__array_concatenate(%Array*, %Array*)</code>
-- [ ] <code>%Array* @__quantum__rt__array_copy(%Array*, bool)</code>
-- [ ] <code>%Array* @__quantum__rt__array_create_1d(i32, i64)</code>
-- [ ] <code>i8* @__quantum__rt__array_get_element_ptr_1d(%Array*, i64)</code>
-- [ ] <code>i64 @__quantum__rt__array_get_size_1d(%Array*)</code>
-- [ ] <code>%Array* @__quantum__rt__array_slice_1d(%Array*, %Range, i1)</code>
-- [ ] <code>void @__quantum__rt__array_record_output(i64, i8*)</code>
-- [ ] <code>void @__quantum__rt__array_update_alias_count(%Array*, i32)</code>
-- [ ] <code>void @__quantum__rt__array_update_reference_count(%Array*, i32)</code>
+### Syntax for executing QIR via XACC:
 
-<strong>${\color{red}Other}$ ${\color{lightgreen}Measure,}$ ${\color{lightgreen}Results,}$ ${\color{lightgreen}Strings,}$ ${\color{lightgreen}Tuples}$</strong>
-- [ ] <code>%Result* @__quantum__qis__m__body(%Qubit*)</code>
-- [ ] <code>%Result* @__quantum__qis__measure__body(%Array*, %Array*)</code>
-- [ ] <code>%Result* @__quantum__qis__mresetz__body(%Qubit*)</code>
-- [ ] <code>bool @__quantum__qis__read_result__body(%Result*)</code>
-- [ ] <code>bool @__quantum__rt__result_equal(%Result*, %Result*)</code>
-- [ ] <code>%Result* @__quantum__rt__result_get_one()</code>
-- [ ] <code>%Result* @__quantum__rt__result_get_zero()</code>
-- [ ] <code>void @__quantum__rt__result_record_output(%Result*, i8*)</code>
-- [ ] <code>void @__quantum__rt__result_update_reference_count(%Result*, i32)</code>
-- [ ] <code>%String* @__quantum__rt__result_to_string(%Result*)</code>
-- [ ] <code>%String* @__quantum__rt__string_concatenate(%String*, %String*)</code>
-- [ ] <code>%String* @__quantum__rt__string_create(i8*)</code>
-- [ ] <code>bool @__quantum__rt__string_equal(%String*, %String*)</code>
-- [ ] <code>i8* @__quantum__rt__string_get_data(%String*)</code>
-- [ ] <code>i32 @__quantum__rt__string_get_length(%String*)</code>
-- [ ] <code>void @__quantum__rt__string_update_reference_count(%String*, i32)</code>
-- [ ] <code>%Tuple* @__quantum__rt__tuple_copy(%Tuple*, i1)</code>
-- [ ] <code>%Tuple* @__quantum__rt__tuple_create(i64)</code>
-- [ ] <code>void @__quantum__rt__tuple_record_output(i64, i8*)</code>
-- [ ] <code>void @__quantum__rt__tuple_update_alias_count(%Tuple*, i32)</code>
-- [ ] <code>void @__quantum__rt__tuple_update_reference_count(%Tuple*, i32)</code>
+```
+./QuantumExecutionEngine --flag-name flag-value
+```
 
-<strong>${\color{lightgreen}Funding}$ </strong>
+1. `./QuantumExecutionEngine` may be replaced with an equivalent path to the executable.
+2. `--llvm-file-path` is used to indicate path of the LLVM (`*.ll`) file that specifices the quantum program (required).
+3. `--n-qubits` is used to indicate the number of qubits needed to construct the circuit (required and must come after the file path).
+4. `--shots` is the number of times you would like to execute the circuit (optional, with default at 1024). 
+5. `--accelerator` is the name of the quantum accelerator (hardware or simulator) that you wish to use (optional, with default `aer`).
 
-This work was performed at Oak Ridge National Laboratory, operated by UT-Battelle, LLC under contract DE-AC05-00OR22725 for the US Department of Energy (DOE). Support for the work came from the DOE Advanced Scientific Computing Research (ASCR) Accelerated Research in Quantum Computing (ARQC) Program under field work proposal ERKJ332.
+   With XACC we have tested: `aer`, `qpp`, `qsim`, `honeywell:H1-1SC`, `honeywell:H1-1E`, `honeywell:H1-1`, `ionq`.
+
+### Example:
+
+```
+./QuantumExecutionEngine --llvm-file-path $HOME/qir-xir/examples/bell.ll --n-qubits 2 --shots 2048 --accelerator qsim
+```
+
+This command will execute the quantum Bell circuit described in `bell.ll` 2048 times using the "qsim" accelerator.
+
+## Understanding the Results
+
+After execution, you will receive a summary of the quantum circuit's results. This may include the xacc buffer output. Example outputs from experiments can be found here: [qiree-data](https://github.com/wongey/qiree-data).
+
+## Adding Custom Operations
+
+Advanced users can extend the engine's capabilities by introducing new operations or functionalities. This is done through the `addMapping` function available in the `GlobalMappingAssociator` class. However, this requires a deep understanding of the QEE's internal workings and quantum operations.
+
+## FAQs and Troubleshooting
+
+Under construction.
+
+## Getting Help

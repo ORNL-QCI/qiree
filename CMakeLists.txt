@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(qir_xir_test LANGUAGES CXX)
+project(qiree LANGUAGES CXX)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 # Note: C language is necessary for XACC and LLVM "try_compile" statements
@@ -26,22 +26,22 @@ llvm_map_components_to_libnames(llvm_libs
 )
 
 # Add library for core files
-add_library(qir_xir_test
+add_library(qiree
   src/GlobalMappingAssociator.cpp
   src/ExecutionBackendHandle.cpp
   src/ExecutionBackendFactory.cpp
   src/XACCExecutionBackend.cpp
 )
-target_compile_features(qir_xir_test
+target_compile_features(qiree
   PUBLIC
     cxx_std_17
 )
-target_link_libraries(qir_xir_test
+target_link_libraries(qiree
   PUBLIC
     ${llvm_libs}
     XACC::xacc
 )
-target_include_directories(qir_xir_test
+target_include_directories(qiree
   PUBLIC
     "${LLVM_INCLUDE_DIRS}"
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>"
@@ -52,4 +52,4 @@ target_include_directories(qir_xir_test
 add_executable(QuantumExecutionEngine
   src/QuantumExecutionEngine.cpp 
 )
-target_link_libraries(QuantumExecutionEngine qir_xir_test)
+target_link_libraries(QuantumExecutionEngine qiree)

@@ -18,15 +18,14 @@ public:
   static XACCExecutionBackend &Instance();
   void initialize(const std::string, const int, const int) override;
   void finalize() override;
-  void addInstructionToAnsatz(const std::string &,
-                              const std::vector<unsigned long>) override;
-  void addParametrizedInstructionToAnsatz(const std::string &,
-                                          std::vector<unsigned long>,
-                                          double) override;
+  void addInstruction(const std::string &,
+                      const std::vector<unsigned long>) override;
+  void addInstruction(const std::string &, const std::vector<unsigned long>,
+                      const double) override;
   void addMeasure(const int, const int) override;
-  int getOutputQubitIndex(int, std::string) override;
+  int getQubitOutput(const int, const std::string) override;
   void execute() override;
-  void addIfStmt(int) override;
+  void addIfStmt(const int) override;
 };
 
 #endif

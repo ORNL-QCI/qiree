@@ -2,7 +2,7 @@
 #include "ExecutionBackendFactory.hpp"
 
 SingletonHandle::SingletonHandle(ExecutionBackend &plugin)
-    : backendPlugin(plugin) {}
+    : _backendPlugin(plugin) {}
 
 SingletonHandle &SingletonHandle::Instance() {
   static SingletonHandle instance(
@@ -12,32 +12,33 @@ SingletonHandle &SingletonHandle::Instance() {
 
 void SingletonHandle::initialize(const std::string accelerator_name,
                                  const int numQubits, const int shots) {
-  backendPlugin.initialize(accelerator_name, numQubits, shots);
+  _backendPlugin.initialize(accelerator_name, numQubits, shots);
 }
 
-void SingletonHandle::finalize() { backendPlugin.finalize(); }
+void SingletonHandle::finalize() { _backendPlugin.finalize(); }
 
-void SingletonHandle::addInstructionToAnsatz(
+void SingletonHandle::addInstruction(
     const std::string &gate, const std::vector<unsigned long> qubitIndices) {
-  backendPlugin.addInstructionToAnsatz(gate, qubitIndices);
+  _backendPlugin.addInstruction(gate, qubitIndices);
 }
 
-void SingletonHandle::addParametrizedInstructionToAnsatz(
-    const std::string &gate, std::vector<unsigned long> qubitIndices,
-    double params) {
-  backendPlugin.addParametrizedInstructionToAnsatz(gate, qubitIndices, params);
+void SingletonHandle::addInstruction(
+    const std::string &gate,
+    const std::vector<unsigned long> qubitIndices,
+    const double params) {
+  _backendPlugin.addInstruction(gate, qubitIndices, params);
 }
 
-int SingletonHandle::getOutputQubitIndex(int qubitIndex, std::string bit) {
-  return backendPlugin.getOutputQubitIndex(qubitIndex, bit);
+int SingletonHandle::getQubitOutput(const int qubitIndex, const std::string bit) {
+  return _backendPlugin.getQubitOutput(qubitIndex, bit);
 }
 
 void SingletonHandle::addMeasure(const int qubit, const int result) {
-  backendPlugin.addMeasure(qubit, result);
+  _backendPlugin.addMeasure(qubit, result);
 }
 
-void SingletonHandle::execute() { backendPlugin.execute(); }
+void SingletonHandle::execute() { _backendPlugin.execute(); }
 
-void SingletonHandle::addIfStmt(int qubitIndex) {
-  backendPlugin.addIfStmt(qubitIndex);
+void SingletonHandle::addIfStmt(const int qubitIndex) {
+  _backendPlugin.addIfStmt(qubitIndex);
 }

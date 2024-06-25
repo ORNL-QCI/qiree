@@ -1,3 +1,4 @@
+output/
 llvm_link_testg
 qir_to_xacc_bellg
 qir_to_xacc_teleportg
