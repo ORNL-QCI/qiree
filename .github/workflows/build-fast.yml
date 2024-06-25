@@ -66,6 +66,7 @@ jobs:
               || format(';-{0};', github.ref_name)}}" \
             -DQIREE_BUILD_TESTS:BOOL=ON \
             -DQIREE_DEBUG:BOOL=ON \
+            -DQIREE_USE_XACC:BOOL=OFF \
             -DCMAKE_BUILD_TYPE="Release" \
             -DCMAKE_INSTALL_PREFIX="${{github.workspace}}/install" \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
