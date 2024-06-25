@@ -299,6 +299,39 @@ void XaccQuantum::z(Qubit q)
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * Get runtime qubit corresponding to a runtime result.
+ */
+Qubit XaccQuantum::result_to_qubit(Result r)
+{
+    QIREE_EXPECT(r.value < this->num_results());
+    return result_to_qubit_[r.value];
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * Obtain measured qubit values, accounting for endianness.
+ *
+ * Wrapper for \c xacc::AcceleratorBuffer::getMarginalCounts()
+ */
+std::map<std::string, int>
+XaccQuantum::get_marginal_counts(std::vector<Qubit> const& qubits)
+{
+    using BitOrder = xacc::AcceleratorBuffer::BitOrder;
+
+    std::vector<int> indices;
+    indices.reserve(qubits.size());
+    for (Qubit const& qubit : qubits)
+    {
+        QIREE_EXPECT(qubit.value < this->num_qubits());
+        indices.push_back(static_cast<int>(qubit.value));
+    }
+
+    return buffer_->getMarginalCounts(
+        indices, endian_ == Endianness::little ? BitOrder::LSB : BitOrder::MSB);
+}
+
+//---------------------------------------------------------------------------//
 // PRIVATE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
