@@ -45,6 +45,9 @@ class Module
     // Construct from an externally created LLVM module
     explicit Module(UPModule&& module);
 
+    // Construct from an externally created LLVM module and an entry point
+    explicit Module(UPModule&& module, std::string const& entrypoint);
+
     // Construct with an LLVM IR file (bitcode or disassembled)
     explicit Module(std::string const& filename);
 
