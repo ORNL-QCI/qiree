@@ -16,7 +16,9 @@
 #include "qiree/Executor.hh"
 #include "qiree/Module.hh"
 #include "qiree/QuantumNotImpl.hh"
+#include "qirxacc/XaccDefaultRuntime.hh"
 #include "qirxacc/XaccQuantum.hh"
+#include "qirxacc/XaccTupleRuntime.hh"
 
 using namespace std::string_view_literals;
 
@@ -27,16 +29,29 @@ namespace app
 //---------------------------------------------------------------------------//
 void run(std::string const& filename,
          std::string const& accel_name,
-         int num_shots)
+         int num_shots,
+         bool print_accelbuf,
+         bool group_tuples)
 {
     // Load the input
     Executor execute{Module{filename}};
 
     // Set up XACC
     XaccQuantum xacc(std::cout, accel_name, num_shots);
+    std::unique_ptr<RuntimeInterface> rt;
+    if (group_tuples)
+    {
+        rt = std::make_unique<XaccTupleRuntime>(
+            std::cout, xacc, print_accelbuf);
+    }
+    else
+    {
+        rt = std::make_unique<XaccDefaultRuntime>(
+            std::cout, xacc, print_accelbuf);
+    }
 
     // Run
-    execute(xacc, xacc);
+    execute(xacc, *rt);
 }
 
 //---------------------------------------------------------------------------//
@@ -52,6 +67,8 @@ int main(int argc, char* argv[])
     int num_shots{1024};
     std::string accel_name;
     std::string filename;
+    bool print_accelbuf{true};
+    bool group_tuples{false};
 
     CLI::App app;
     auto* filename_opt
@@ -63,10 +80,18 @@ int main(int argc, char* argv[])
     auto* nshot_opt
         = app.add_option("-s,--shots", num_shots, "Number of shots");
     nshot_opt->capture_default_str();
+    app.add_flag("--print-accelbuf,!--no-print-accelbuf",
+                 print_accelbuf,
+                 "Print XACC AcceleratorBuffer");
+    app.add_flag("--group-tuples,!--no-group-tuples",
+                 group_tuples,
+                 "Print per-tuple measurement statistics rather than "
+                 "per-qubit");
 
     CLI11_PARSE(app, argc, argv);
 
-    qiree::app::run(filename, accel_name, num_shots);
+    qiree::app::run(
+        filename, accel_name, num_shots, print_accelbuf, group_tuples);
 
     return EXIT_SUCCESS;
 }
