@@ -76,6 +76,7 @@ class XaccQuantum final : virtual public QuantumNotImpl,
     //! \name Runtime interface
     // Initialize the execution environment, resetting qubits
     void initialize(OptionalCString env) override;
+
     // Execute the circuit and read outputs
     void array_record_output(size_type, OptionalCString tag) final;
 
@@ -115,8 +116,7 @@ class XaccQuantum final : virtual public QuantumNotImpl,
     // Get runtime qubit corresponding to a runtime result
     Qubit result_to_qubit(Result);
 
-    // Wrapper for xacc::AcceleratorBuffer::getMarginalCounts() that handles
-    // endianness
+    // Return marginal statistics for a subset of qubits
     std::map<std::string, int>
     get_marginal_counts(std::vector<Qubit> const& qubits);
     //!@}

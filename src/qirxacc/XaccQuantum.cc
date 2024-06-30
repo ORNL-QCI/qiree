@@ -310,9 +310,10 @@ Qubit XaccQuantum::result_to_qubit(Result r)
 
 //---------------------------------------------------------------------------//
 /*!
- * Obtain measured qubit values, accounting for endianness.
- *
- * Wrapper for \c xacc::AcceleratorBuffer::getMarginalCounts()
+ * Return marginal measurement statistics for the subset of qubits passed. A
+ * measurement bit at index i of a measurement bitstring corresponds to the
+ * qubit at index i of the input vector. The length of each measurement
+ * bitstring is exactly the length of the input vector of qubits.
  */
 std::map<std::string, int>
 XaccQuantum::get_marginal_counts(std::vector<Qubit> const& qubits)
