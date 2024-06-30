@@ -115,6 +115,22 @@ Module::Module(UPModule&& module) : module_{std::move(module)}
 
 //---------------------------------------------------------------------------//
 /*!
+ * Construct with an LLVM module and an entry point.
+ */
+Module::Module(UPModule&& module, std::string const& entrypoint)
+    : module_{std::move(module)}
+{
+    QIREE_EXPECT(module_);
+
+    // Search for explicitly named entry point
+    entrypoint_ = module_->getFunction(entrypoint);
+    QIREE_VALIDATE(entrypoint_,
+                   << "no entrypoint function '" << entrypoint << "' exists");
+}
+
+
+//---------------------------------------------------------------------------//
+/*!
  * Construct with an LLVM IR file (bitcode or disassembled).
  */
 Module::Module(std::string const& filename)
