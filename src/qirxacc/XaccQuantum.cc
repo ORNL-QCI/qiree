@@ -299,6 +299,40 @@ void XaccQuantum::z(Qubit q)
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * Get runtime qubit corresponding to a runtime result.
+ */
+Qubit XaccQuantum::result_to_qubit(Result r)
+{
+    QIREE_EXPECT(r.value < this->num_results());
+    return result_to_qubit_[r.value];
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * Return marginal measurement statistics for the subset of qubits passed. A
+ * measurement bit at index i of a measurement bitstring corresponds to the
+ * qubit at index i of the input vector. The length of each measurement
+ * bitstring is exactly the length of the input vector of qubits.
+ */
+std::map<std::string, int>
+XaccQuantum::get_marginal_counts(std::vector<Qubit> const& qubits)
+{
+    using BitOrder = xacc::AcceleratorBuffer::BitOrder;
+
+    std::vector<int> indices;
+    indices.reserve(qubits.size());
+    for (Qubit const& qubit : qubits)
+    {
+        QIREE_EXPECT(qubit.value < this->num_qubits());
+        indices.push_back(static_cast<int>(qubit.value));
+    }
+
+    return buffer_->getMarginalCounts(
+        indices, endian_ == Endianness::little ? BitOrder::LSB : BitOrder::MSB);
+}
+
+//---------------------------------------------------------------------------//
 // PRIVATE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!

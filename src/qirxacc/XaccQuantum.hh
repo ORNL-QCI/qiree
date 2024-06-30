@@ -111,6 +111,16 @@ class XaccQuantum final : virtual public QuantumNotImpl,
     void z(Qubit) final;
     //!@}
 
+    //!@{
+    //! \name Utilities for runtime
+    // Get runtime qubit corresponding to a runtime result
+    Qubit result_to_qubit(Result);
+
+    // Return marginal statistics for a subset of qubits
+    std::map<std::string, int>
+    get_marginal_counts(std::vector<Qubit> const& qubits);
+    //!@}
+
   private:
     //// TYPES ////
     enum class Endianness
