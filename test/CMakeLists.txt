@@ -50,7 +50,7 @@ qiree_add_test(qiree Module)
 # QIRXACC TESTS
 #---------------------------------------------------------------------------##
 
-if(QIREE_USE_XACC)
+if(QIREE_USE_XACC AND QIREE_BUILD_XACC_TESTS)
   qiree_add_test(qirxacc XaccQuantum)
 endif()
 
