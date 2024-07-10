@@ -15,6 +15,7 @@
 #include "qiree/Macros.hh"
 #include "qiree/QuantumNotImpl.hh"
 #include "qiree/RuntimeInterface.hh"
+#include <map>
 #include "qiree/Types.hh"
 
 namespace xacc
