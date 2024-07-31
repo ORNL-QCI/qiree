@@ -6,6 +6,8 @@
 
 qiree_add_library(qirxacc
   XaccQuantum.cc
+  XaccDefaultRuntime.cc
+  XaccTupleRuntime.cc
 )
 target_link_libraries(qirxacc
   PUBLIC QIREE::qiree

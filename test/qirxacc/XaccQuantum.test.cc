@@ -11,6 +11,7 @@
 
 #include "qiree/Types.hh"
 #include "qiree_test.hh"
+#include "qirxacc/XaccDefaultRuntime.hh"
 
 namespace qiree
 {
@@ -65,6 +66,7 @@ TEST_F(XaccQuantumTest, sim_rotation)
 
     // Create a simulator that will write to the string stream
     XaccQuantum xacc_sim{os};
+    XaccDefaultRuntime xacc_rt{os, xacc_sim};
 
     // Call functions in the same sequence that rotation.ll would
     xacc_sim.set_up([] {
@@ -77,8 +79,8 @@ TEST_F(XaccQuantumTest, sim_rotation)
     xacc_sim.rx(pi / 6, Q{0});
     xacc_sim.h(Q{0});
     xacc_sim.mz(Q{0}, R{0});
-    xacc_sim.array_record_output(1, "yeehaw");
-    xacc_sim.result_record_output(R{0}, "tag");
+    xacc_rt.array_record_output(1, "yeehaw");
+    xacc_rt.result_record_output(R{0}, "tag");
     xacc_sim.tear_down();
 
     auto result = clean_output(os.str());

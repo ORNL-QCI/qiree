@@ -8,6 +8,7 @@
 #pragma once
 
 #include <initializer_list>
+#include <map>
 #include <memory>
 #include <ostream>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "qiree/Macros.hh"
 #include "qiree/QuantumNotImpl.hh"
 #include "qiree/RuntimeInterface.hh"
-#include <map>
 #include "qiree/Types.hh"
 
 namespace xacc
@@ -28,12 +28,12 @@ class CompositeInstruction;
 
 namespace qiree
 {
+
 //---------------------------------------------------------------------------//
 /*!
  * Translate instructions from QIR to XACC and execute them on read.
  */
-class XaccQuantum final : virtual public QuantumNotImpl,
-                          virtual public RuntimeInterface
+class XaccQuantum final : virtual public QuantumNotImpl
 {
   public:
     // Call XACC initialize explicitly with args
@@ -74,21 +74,6 @@ class XaccQuantum final : virtual public QuantumNotImpl,
     //!@}
 
     //!@{
-    //! \name Runtime interface
-    // Initialize the execution environment, resetting qubits
-    void initialize(OptionalCString env) override;
-
-    // Execute the circuit and read outputs
-    void array_record_output(size_type, OptionalCString tag) final;
-
-    // Save one result
-    void result_record_output(Result result, OptionalCString tag) final;
-
-    // No one uses tuples??
-    void tuple_record_output(size_type, OptionalCString) final;
-    //!@}
-
-    //!@{
     //! \name Circuit construction
     void ccx(Qubit, Qubit) final;
     void ccnot(Qubit, Qubit, Qubit);  // TODO: not in examples or qir runner
@@ -120,6 +105,13 @@ class XaccQuantum final : virtual public QuantumNotImpl,
     // Return marginal statistics for a subset of qubits
     std::map<std::string, int>
     get_marginal_counts(std::vector<Qubit> const& qubits);
+
+    // Run the circuit on the accelerator if we have not already. Returns true
+    // if the circuit was executed.
+    bool execute_if_needed();
+
+    // Print the \c xacc::AcceleratorBuffer
+    void print_accelbuf();
     //!@}
 
   private:
@@ -132,6 +124,7 @@ class XaccQuantum final : virtual public QuantumNotImpl,
 
     //// DATA ////
 
+    bool executed_{false};
     size_type num_qubits_{};
     std::vector<Qubit> result_to_qubit_;
     Endianness endian_;
