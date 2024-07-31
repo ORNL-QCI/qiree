@@ -15,6 +15,9 @@
         "CMAKE_FIND_FRAMEWORK": {"type": "STRING", "value": "LAST"},
         "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-O2 -g -DNDEBUG -fno-inline -fno-omit-frame-pointer",
         "CMAKE_CXX_FLAGS": "-Wall -Wextra -Werror -Wno-error=deprecated -pedantic -fdiagnostics-color=always"
+      },
+      "environment": {
+        "CMAKE_PREFIX_PATH": "/opt/homebrew/Cellar/llvm/18.1.6:/opt/spack/var/spack/environments/xacc/.spack-env/view:$env{HOME}/Code/xacc/install"
       }
     },
     {
@@ -22,7 +25,18 @@
       "displayName": "Goldfinger default options",
       "inherits": [".base", "default"],
       "binaryDir": "${sourceDir}/build",
-      "cacheVariables": {}
+      "cacheVariables": {
+        "QIREE_USE_XACC": {"type": "BOOL",   "value": "OFF"}
+      }
+    },
+    {
+      "name": "xacc",
+      "displayName": "Build with xacc",
+      "inherits": ["base"],
+      "binaryDir": "${sourceDir}/build-xacc",
+      "cacheVariables": {
+        "QIREE_USE_XACC": {"type": "BOOL",   "value": "ON"}
+      }
     }
   ],
   "buildPresets": [
