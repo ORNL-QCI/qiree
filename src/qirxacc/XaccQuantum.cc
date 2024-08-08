@@ -249,8 +249,9 @@ Qubit XaccQuantum::result_to_qubit(Result r)
 
 //---------------------------------------------------------------------------//
 /*!
- * Return marginal measurement statistics for the subset of qubits passed. A
- * measurement bit at index i of a measurement bitstring corresponds to the
+ * Return marginal measurement statistics for the subset of qubits passed.
+ *
+ * A measurement bit at index i of a measurement bitstring corresponds to the
  * qubit at index i of the input vector. The length of each measurement
  * bitstring is exactly the length of the input vector of qubits.
  */
@@ -273,7 +274,7 @@ XaccQuantum::get_marginal_counts(std::vector<Qubit> const& qubits)
 
 //---------------------------------------------------------------------------//
 /*!
- * Run the circuit on the accelerator if we have not already
+ * Run the circuit on the accelerator if we have not already.
  */
 bool XaccQuantum::execute_if_needed()
 {
@@ -296,7 +297,7 @@ bool XaccQuantum::execute_if_needed()
 
 //---------------------------------------------------------------------------//
 /*!
- * Print the results in the \c xacc::AcceleratorBuffer to the output
+ * Print the results in the \c xacc::AcceleratorBuffer to the output.
  */
 void XaccQuantum::print_accelbuf()
 {
