@@ -74,12 +74,7 @@ class XaccTupleRuntime final : virtual public RuntimeInterface
     void print_header(size_type num_distinct);
     void finish_tuple();
 
-    char const* const grouping_name() const
-    {
-        return type_ == GroupingType::tuple   ? "tuple"
-               : type_ == GroupingType::array ? "array"
-                                              : "grouping";
-    }
+    static char const* to_cstring(GroupingType);
 };
 
 //---------------------------------------------------------------------------//

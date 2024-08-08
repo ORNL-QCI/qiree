@@ -48,7 +48,7 @@ void XaccTupleRuntime::initialize(OptionalCString env)
 void XaccTupleRuntime::array_record_output(size_type s, OptionalCString tag)
 {
     execute_if_needed();
-    start_tracking(GroupingType::array, tag, s);
+    this->start_tracking(GroupingType::array, tag, s);
 }
 
 //---------------------------------------------------------------------------//
@@ -59,14 +59,14 @@ void XaccTupleRuntime::array_record_output(size_type s, OptionalCString tag)
 void XaccTupleRuntime::tuple_record_output(size_type s, OptionalCString tag)
 {
     execute_if_needed();
-    start_tracking(GroupingType::tuple, tag, s);
+    this->start_tracking(GroupingType::tuple, tag, s);
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * Execute circuit and report a single measurement result.
  */
-void XaccTupleRuntime::result_record_output(Result r, OptionalCString tag)
+void XaccTupleRuntime::result_record_output(Result r, OptionalCString)
 {
     execute_if_needed();
     Qubit q = xacc_.result_to_qubit(r);
@@ -91,7 +91,7 @@ void XaccTupleRuntime::start_tracking(GroupingType type,
 {
     QIREE_EXPECT(!valid_);
     valid_ = true;
-    type_ = type_;
+    type_ = type;
     tag_ = tag;
     num_results_ = num_results;
     qubits_.clear();
@@ -117,22 +117,28 @@ void XaccTupleRuntime::push_result(Qubit q)
 
 void XaccTupleRuntime::print_header(size_type num_distinct)
 {
-    auto name = this->grouping_name();
-    output_ << name << " " << tag_ << " length " << qubits_.size()
+    output_ << to_cstring(type_) << " " << tag_ << " length " << qubits_.size()
             << " distinct results " << num_distinct << std::endl;
 }
 
 void XaccTupleRuntime::finish_tuple()
 {
     auto counts = xacc_.get_marginal_counts(qubits_);
-    print_header(counts.size());
-    auto name = this->grouping_name();
+    this->print_header(counts.size());
+    auto name = to_cstring(type_);
     for (auto& [bits, count] : counts)
     {
         output_ << name << " " << tag_ << " result " << bits << " count "
                 << count << std::endl;
     }
     valid_ = false;
+}
+
+char const* XaccTupleRuntime::to_cstring(GroupingType type)
+{
+    return type == GroupingType::tuple   ? "tuple"
+           : type == GroupingType::array ? "array"
+                                         : "";
 }
 
 //---------------------------------------------------------------------------//
