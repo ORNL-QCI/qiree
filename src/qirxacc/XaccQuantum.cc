@@ -65,7 +65,7 @@ XaccQuantum::XaccQuantum(std::ostream& os,
 /*!
  * Construct with simulator.
  */
-XaccQuantum::XaccQuantum(std::ostream& os) : XaccQuantum{os, "qsim", 1} {}
+XaccQuantum::XaccQuantum(std::ostream& os) : XaccQuantum{os, "aer", 1} {}
 
 //---------------------------------------------------------------------------//
 /*!
