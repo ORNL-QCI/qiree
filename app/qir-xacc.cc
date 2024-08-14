@@ -80,6 +80,7 @@ int main(int argc, char* argv[])
     auto* nshot_opt
         = app.add_option("-s,--shots", num_shots, "Number of shots");
     nshot_opt->capture_default_str();
+    /*
     app.add_flag("--print-accelbuf,!--no-print-accelbuf",
                  print_accelbuf,
                  "Print XACC AcceleratorBuffer");
@@ -87,6 +88,7 @@ int main(int argc, char* argv[])
                  group_tuples,
                  "Print per-tuple measurement statistics rather than "
                  "per-qubit");
+    */
 
     CLI11_PARSE(app, argc, argv);
 
