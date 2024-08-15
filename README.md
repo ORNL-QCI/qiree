@@ -41,8 +41,10 @@ doc` (user) or `make doxygen` (developer).
 There are two dependencies for QIR-EE to work properly. Please make sure to
 download and install the most current versions of:
 1. [LLVM](https://releases.llvm.org/) (we have tested versions 14 through 18)
-2. [XACC](https://xacc.readthedocs.io/en/latest/install.html) (currently
-   required for execution in this version of qir-ee)
+2. [XACC](https://github.com/ORNL-QCI/xacc) (repo that is actively 
+   maintained -- not the eclipse one; currently required for execution in 
+   this version of qir-ee; we recommend setting option `-DQIREE_MINIMAL_BUILD=ON`
+   during cmake for a faster build)
 
 ### System Requirements
 
@@ -87,19 +89,21 @@ qee llvm-file-path --flag-name flag-value
    specifies the quantum program (required).
 3. `-a` or `--accelerator` is the name of the quantum accelerator (hardware or
    simulator) that you wish to use (required).
+4. `-s` or `--shots` is the number of shots (optional with default at 1024).
 
    With XACC we have tested: `aer`, `qpp`, `qsim`, `honeywell:H1-1SC`, `honeywell:H1-1E`, `honeywell:H1-1`, `ionq`.
+   Note that the minimal build only includes `aer` and `qpp` for local simulators.
 
 Please refer to the documentation here (add link) for all flag options.
 
 ### Example:
 
 ```
-qee $HOME/qir-xir/examples/bell.ll --accelerator qsim
+qee $HOME/qir-xir/examples/bell.ll --accelerator qpp
 ```
 
 This command will execute the quantum Bell circuit described in `bell.ll` the
-(default) 1024 times using the "qsim" accelerator.
+(default) 1024 times using the "qpp" accelerator.
 
 ## Understanding the Results
 
