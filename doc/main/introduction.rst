@@ -17,9 +17,12 @@ associated to the paper "A Cross-Platform Execution Engine for the Quantum
 Intermediate Representation" [#qiree_paper]_ and is maintained by the QIR-EE
 Developers.
 
-At version 0.1, this work represents a proof-of-concept for the feasibility of
+At version |release|, this work represents a proof-of-concept for the feasibility of
 a modular workflow at the lower end of the quantum software stack. We welcome
 feedback and ideas for collaborations.
+
+To get started, we recommend following the installation instructions
+:ref:`here<installation>` and being mindful of dependency requirements.
 
 .. [#qiree_vers] This documentation is generated from QIR-EE |release|.
 .. [#qiree_paper] A preprint of this paper can be found at :cite:t:`wong2024`.
