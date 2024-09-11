@@ -91,7 +91,9 @@ qee llvm-file-path --flag-name flag-value
    simulator) that you wish to use (required).
 4. `-s` or `--shots` is the number of shots (optional with default at 1024).
 
-   With XACC we have tested: `aer`, `qpp`, `qsim`, `honeywell:H1-1SC`, `honeywell:H1-1E`, `honeywell:H1-1`, `ionq`.
+   With XACC we have tested: `aer`, `qpp`, `qsim`, `quantinuum:H1-1SC`, `quantinuum:H1-1E`, 
+   `quantinuum:H1-1`, `ionq`, `ionq:sim.harmony`, `ionq:sim.aria-1`, `ionq:qpu.harmony`.
+
    Note that the minimal build only includes `aer` and `qpp` for local simulators.
 
 Please refer to the documentation here (add link) for all flag options.
@@ -99,7 +101,7 @@ Please refer to the documentation here (add link) for all flag options.
 ### Example:
 
 ```
-qee $HOME/qir-xir/examples/bell.ll --accelerator qpp
+qee $HOME/qiree/examples/bell.ll --accelerator qpp
 ```
 
 This command will execute the quantum Bell circuit described in `bell.ll` the
