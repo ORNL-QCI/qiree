@@ -63,9 +63,9 @@ QIR-EE Setup in Command Line
 3. `cmake ..`
 4. `make`
 
-The resulting executable can be saved with an alias: 
+The resulting path to executable files can be exported 
 
-`alias qee="${YOUR-QIREE-INSTALL-DIR}/qiree/build/bin; ./qir-xacc"`
+`export PATH=${YOUR-QIREE-INSTALL-DIR}/bin:$PATH`
 
 which would allow you to access the QIR-EE from anywhere in command line.
 
@@ -86,9 +86,9 @@ which would allow you to access the QIR-EE from anywhere in command line.
 For basic usage:
 
 ```
-qee llvm-file-path --flag-name flag-value
+qir-xacc llvm-file-path --flag-name flag-value
 ```
-1. `qee` may be replaced with an equivalent path to the executable.
+1. `qir-xacc` may be replaced with an equivalent executable.
 2. `llvm-file-path` is used to indicate path of the LLVM (`*.ll`) file that
    specifies the quantum program (required).
 3. `-a` or `--accelerator` is the name of the quantum accelerator (hardware or
@@ -105,7 +105,7 @@ Please refer to the documentation here (add link) for all flag options.
 ### Example:
 
 ```
-qee $HOME/qiree/examples/bell.ll --accelerator qpp
+qir-xacc $HOME/qiree/examples/bell.ll --accelerator qpp
 ```
 
 This command will execute the quantum Bell circuit described in `bell.ll` the

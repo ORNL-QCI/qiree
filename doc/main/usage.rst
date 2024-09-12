@@ -35,15 +35,15 @@ Usage::
 Syntax for Execution
 ====================
 
-Alias Construction::
+Export Path to Executable::
 
-    alias qee="cd ${YOUR-QIREE-INSTALL-DIR}/qiree/build/bin; ./qir-xacc"
+    export PATH=${YOUR-QIREE-INSTALL-DIR}/bin:$PATH
 
-This alias will allow you to access the QIR-EE executable from anywhere in command line.
+This will allow you to access installed QIR-EE executables from anywhere in command line.
 
-Basic Usage::
+Basic Usage with ``qir-xacc`` Executable::
 
-    qee llvm-file-path --flag-name flag-value
+    qir-xacc llvm-file-path --flag-name flag-value
 
 With XACC we have tested: ``aer``, ``qpp``, ``qsim``, ``quantinuum:H1-1SC``, ``quantinuum:H1-1E``, ``quantinuum:H1-1``, ``ionq``, ``ionq:sim.harmony``, ``ionq:sim.aria-1``, ``ionq:qpu.harmony``.
 
@@ -57,7 +57,7 @@ Example
 
 .. code-block:: console
 
-    qee $HOME/qiree/examples/bell.ll --accelerator qpp
+    qir-xacc $HOME/qiree/examples/bell.ll --accelerator qpp
 
 This command will execute the quantum Bell circuit described in bell.ll the (default) 
 1024 times using the ``qpp`` accelerator.
