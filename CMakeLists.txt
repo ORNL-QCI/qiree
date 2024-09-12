@@ -34,7 +34,7 @@ endmacro()
 
 # Components
 option(QIREE_BUILD_DOCS "Build QIR-EE documentation" OFF)
-option(QIREE_BUILD_TESTS "Build QIR-EE unit tests" ON)
+option(QIREE_BUILD_TESTS "Build QIR-EE unit tests" OFF)
 option(QIREE_BUILD_EXAMPLES "Build QIR-EE examples" OFF)
 option(QIREE_USE_XACC "Build XACC interface" ON)
 qiree_set_default(BUILD_TESTING ${QIREE_BUILD_TESTS})
