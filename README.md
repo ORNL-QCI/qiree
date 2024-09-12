@@ -63,7 +63,11 @@ QIR-EE Setup in Command Line
 3. `cmake ..`
 4. `make`
 
-The resulting executable can be saved with an alias: `alias qee="./[YOUR-DIR]/qiree/build/bin/qir-xacc"`
+The resulting executable can be saved with an alias: 
+
+`alias qee="${YOUR-QIREE-INSTALL-DIR}/qiree/build/bin; ./qir-xacc"`
+
+which would allow you to access the QIR-EE from anywhere in command line.
 
 ## Executing Quantum Circuits
 (via QIR-EE and XACC)

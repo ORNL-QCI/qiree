@@ -37,7 +37,9 @@ Syntax for Execution
 
 Alias Construction::
 
-    alias qee="./[YOUR-DIR]/qir-xir/build/bin/qir-xacc"
+    alias qee="cd ${YOUR-QIREE-INSTALL-DIR}/qiree/build/bin; ./qir-xacc"
+
+This alias will allow you to access the QIR-EE executable from anywhere in command line.
 
 Basic Usage::
 
