@@ -71,6 +71,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.todo',
     'sphinx.ext.githubpages',
+    'sphinx.ext.autosectionlabel'
 ]
 
 if qiree_config['options']['breathe']:

@@ -63,7 +63,11 @@ QIR-EE Setup in Command Line
 3. `cmake ..`
 4. `make`
 
-The resulting executable can be saved with an alias: `alias qee="./[YOUR-DIR]/qir-xir/build/bin/qir-xacc"`
+The resulting path to executable files can be exported 
+
+`export PATH=${YOUR-QIREE-INSTALL-DIR}/bin:$PATH`
+
+which would allow you to access the QIR-EE from anywhere in command line.
 
 ## Executing Quantum Circuits
 (via QIR-EE and XACC)
@@ -82,16 +86,18 @@ The resulting executable can be saved with an alias: `alias qee="./[YOUR-DIR]/qi
 For basic usage:
 
 ```
-qee llvm-file-path --flag-name flag-value
+qir-xacc llvm-file-path --flag-name flag-value
 ```
-1. `qee` may be replaced with an equivalent path to the executable.
+1. `qir-xacc` may be replaced with an equivalent executable.
 2. `llvm-file-path` is used to indicate path of the LLVM (`*.ll`) file that
    specifies the quantum program (required).
 3. `-a` or `--accelerator` is the name of the quantum accelerator (hardware or
    simulator) that you wish to use (required).
 4. `-s` or `--shots` is the number of shots (optional with default at 1024).
 
-   With XACC we have tested: `aer`, `qpp`, `qsim`, `honeywell:H1-1SC`, `honeywell:H1-1E`, `honeywell:H1-1`, `ionq`.
+   With XACC we have tested: `aer`, `qpp`, `qsim`, `quantinuum:H1-1SC`, `quantinuum:H1-1E`, 
+   `quantinuum:H1-1`, `ionq`, `ionq:sim.harmony`, `ionq:sim.aria-1`, `ionq:qpu.harmony`.
+
    Note that the minimal build only includes `aer` and `qpp` for local simulators.
 
 Please refer to the documentation here (add link) for all flag options.
@@ -99,7 +105,7 @@ Please refer to the documentation here (add link) for all flag options.
 ### Example:
 
 ```
-qee $HOME/qir-xir/examples/bell.ll --accelerator qpp
+qir-xacc $HOME/qiree/examples/bell.ll --accelerator qpp
 ```
 
 This command will execute the quantum Bell circuit described in `bell.ll` the

@@ -2,7 +2,7 @@
 .. See the doc/COPYRIGHT file for details.
 .. SPDX-License-Identifier: CC-BY-4.0
 
-.. _infrastructure:
+.. _installation:
 
 ************
 Installation
@@ -43,7 +43,7 @@ fewer available components.
    GoogleTest_, Development, "Test harness"
 
 .. _CMake: https://cmake.org
-.. _XACC: h
+.. _XACC: https://github.com/ORNL-QCI/xacc
 .. _Doxygen: https://www.doxygen.nl
 .. _Git: https://git-scm.com
 .. _GoogleTest: https://github.com/google/googletest
@@ -57,13 +57,46 @@ Ideally you will build QIR-EE with all dependencies to gain the full
 functionality of the code, but there are circumstances in which you may not
 have (or want) all the dependencies or features available.
 
-Toolchain installation
-======================
+Bulding QIR-EE (Basic Functionality with XACC)
+==============================================
 
-TODO: spack instructions once XACC plays nice with externals
+Once you have your build system and a minimal version XACC_ installed with
 
-Building QIR-EE
-==================
+.. code-block:: console
+
+   $ cmake .. -DQIREE_MINIMAL_BUILD=ON
+   $ make -j$(nproc --all) install
+
+then a basic build of QIR-EE involves cloning the latest development version of QIR-EE:
+
+.. code-block:: console
+
+   $ git clone https://github.com/qiree-project/qiree.git
+
+or downloading and extracting it from the GitHub-generated `zip file`_. Then:
+
+.. code-block:: console
+
+   $ cd qiree
+   $ mkdir build && cd build
+   $ cmake ..
+   $ make 
+
+Confirm that your cmake prefixes for XACC are correct. If not, then add them:
+
+.. code-block:: console
+
+   $ export CMAKE_PREFIX_PATH=$HOME/.xacc
+   $ export PYTHONPATH=$PYTHONPATH:$HOME/.xacc
+
+(or equivalent paths to your XACC installation).
+
+Building QIR-EE (with Spack)
+============================
+
+Create a `spack-environment`_ activate it, and then ``spack install``.
+
+.. _spack-environment: https://spack.readthedocs.io/en/latest/environments.html
 
 Once the QIR-EE Spack environment has been installed, set your shell's environment
 variables (``PATH``, ``CMAKE_PREFIX_PATH``, ...) by activating it.
@@ -76,7 +109,7 @@ To clone the latest development version of QIR-EE:
 
 or download it from the GitHub-generated `zip file`_.
 
-, you can configure, build, and test using the provided helper script:
+You can configure, build, and test using the provided helper script:
 
 .. code-block:: console
 
