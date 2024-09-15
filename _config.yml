@@ -1,0 +1,13 @@
+title: QIR-EE
+description: >-
+  Quantum Intermediate Representation Execution Engine
+remote_theme: pages-themes/minimal@v0.2.0
+show_downloads: false # URLs are wrong, we want release anyway
+# logo: _includes/full-logo.png
+plugins:
+- jekyll-remote-theme
+include:
+- _includes
+- _layouts
+- _sources
+- _static
