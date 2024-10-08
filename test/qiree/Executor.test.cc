@@ -88,6 +88,27 @@ tear_down
 }
 
 //---------------------------------------------------------------------------//
+TEST_F(ExecutorTest, bell_ccx)
+{
+    auto result = this->run("bell_ccx.ll");
+    EXPECT_EQ(R"(
+set_up(q=3, r=3)
+h(Q{0})
+TODO: x.body
+ccx(Q{0}, Q{1}, Q{2})
+mz(Q{0},R{0})
+mz(Q{1},R{1})
+mz(Q{2},R{2})
+array_record_output(3)
+result_record_output(R{0})
+result_record_output(R{1})
+result_record_output(R{2})
+tear_down
+)",
+              result.commands.str());
+}
+
+//---------------------------------------------------------------------------//
 TEST_F(ExecutorTest, rotation)
 {
     auto result = this->run("rotation.ll");

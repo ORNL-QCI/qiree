@@ -77,9 +77,11 @@ bool QIREE_QIS_FUNCTION(read_result, body)(std::uintptr_t arg1)
 //---------------------------------------------------------------------------//
 // GATES
 //---------------------------------------------------------------------------//
-void QIREE_QIS_FUNCTION(ccx, body)(std::uintptr_t arg1, std::uintptr_t arg2)
+void QIREE_QIS_FUNCTION(ccx, body)(std::uintptr_t arg1,
+                                   std::uintptr_t arg2,
+                                   std::uintptr_t arg3)
 {
-    return q_interface_->ccx(Qubit{arg1}, Qubit{arg2});
+    return q_interface_->ccx(Qubit{arg1}, Qubit{arg2}, Qubit{arg3});
 }
 void QIREE_QIS_FUNCTION(cnot, body)(std::uintptr_t arg1, std::uintptr_t arg2)
 {
