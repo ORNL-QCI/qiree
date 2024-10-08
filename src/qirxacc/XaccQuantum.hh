@@ -75,7 +75,7 @@ class XaccQuantum final : virtual public QuantumNotImpl
 
     //!@{
     //! \name Circuit construction
-    void ccx(Qubit, Qubit) final;
+    void ccx(Qubit, Qubit, Qubit) final;
     void ccnot(Qubit, Qubit, Qubit);  // TODO: not in examples or qir runner
     void cnot(Qubit, Qubit) final;
     void cx(Qubit, Qubit) final;
@@ -145,6 +145,29 @@ class XaccQuantum final : virtual public QuantumNotImpl
     template<class... Ts>
     void
     add_instruction(std::string s, std::initializer_list<Qubit> qs, Ts... args);
+
+    // Add an instruction with multiple qubits to a particular XACC
+    // CompositeInstruction
+    template<class... Ts>
+    void add_instruction_to(std::shared_ptr<xacc::CompositeInstruction> circuit,
+                            std::string s,
+                            std::initializer_list<Qubit> qs,
+                            Ts... args);
+
+    // Add an instruction with the control indices provided
+    template<class... Ts>
+    void add_ctrl_indices_instruction(std::string s,
+                                      std::vector<int> ctrl_indices,
+                                      Qubit q,
+                                      Ts... args);
+
+    // Add an instruction with the control indices provided as a list of QIR
+    // pointers (for convenience)
+    template<class... Ts>
+    void add_ctrl_list_instruction(std::string s,
+                                   std::initializer_list<Qubit> ctrl_list,
+                                   Qubit q,
+                                   Ts... args);
 };
 
 //---------------------------------------------------------------------------//

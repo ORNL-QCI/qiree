@@ -60,7 +60,7 @@ class QuantumTestImpl final : public QuantumInterface
     Result measure(Array, Array) override;
     Result mresetz(Qubit) override;
 
-    void ccx(Qubit, Qubit) override;
+    void ccx(Qubit, Qubit, Qubit) override;
     void cx(Qubit, Qubit) override;
     void cy(Qubit, Qubit) override;
     void cz(Qubit, Qubit) override;
