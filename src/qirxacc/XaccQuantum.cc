@@ -52,7 +52,9 @@ XaccQuantum::XaccQuantum(std::ostream& os,
     xacc::setIsPyApi();
 
     // Create accelerator
-    set_accelerator_and_shots(accel_name, shots);
+    accelerator_ = xacc::getAccelerator(accel_name);
+    QIREE_VALIDATE(accelerator_, << "failed to create accelerator");
+    accelerator_->updateConfiguration({{"shots", static_cast<int>(shots)}});
     // TODO: bit order is accelerator-dependent?
     endian_ = Endianness::little;
 
