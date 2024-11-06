@@ -23,10 +23,23 @@ void BufferManager::updateBuffer(const std::string& qubit, const std::string& st
     buffer[{qubit, state}] = value + current_frequency;
 }
 
+void BufferManager::updateBuffer(const std::string& key, const int& value) {
+    // Insert or update the key-value pair in the buffer
+    simple_buffer[key] = value;
+}
+
 std::optional<int> BufferManager::getBufferValue(const std::string& qubit, const std::string& state) const {
     std::pair<std::string, std::string> searchKey = {qubit, state};
     auto it = buffer.find(searchKey);
     if (it != buffer.end()) {
+        return it->second;  // Key found
+    }
+    return std::nullopt;  // Key not found
+}
+
+std::optional<int> BufferManager::getBufferValue(const std::string& key) const {
+    auto it = simple_buffer.find(key);
+    if (it != simple_buffer.end()) {
         return it->second;  // Key found
     }
     return std::nullopt;  // Key not found

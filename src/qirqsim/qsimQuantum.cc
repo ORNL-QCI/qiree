@@ -68,6 +68,7 @@ qsimQuantum::State qsimQuantum::init_state_space() { //check if StateSpace is th
 /*
 Prepare to build a quantum circuit for an entry point
 */
+
 void qsimQuantum::set_up(EntryPointAttrs const& attrs) {
     QIREE_VALIDATE(attrs.required_num_qubits > 0,
                    << "input is not a quantum program");
@@ -78,13 +79,20 @@ void qsimQuantum::set_up(EntryPointAttrs const& attrs) {
     state_ = std::make_shared<State>(init_state_space()); // Set the state space? Maybe.
     q_circuit.num_qubits = num_qubits_; // Allocate the number of qubits in the circuit
     execution_time = 0; // Initialize execution time
-
+    static unsigned int rep = 0;
+    rep++;
+    this->repCount(rep);
 }
 
 //---------------------------------------------------------------------------//
 /*
 Complete an execution
 */
+
+void qsimQuantum::repCount(int rep) {
+    repetition = rep;
+}
+
 void qsimQuantum::tear_down() {
     q_circuit = {};
     q_circuit.num_qubits = num_qubits_;
@@ -95,6 +103,7 @@ void qsimQuantum::tear_down() {
 /*
 Reset the qubit
 */
+
 void qsimQuantum::reset(Qubit q) {
     q.value=0;
 }
@@ -103,6 +112,7 @@ void qsimQuantum::reset(Qubit q) {
 /* 
 Read the value of a result. This utilizes the new BufferManager.
 */
+
 QState qsimQuantum::read_result(Result r)
 {
     std::string q_index_string = std::to_string(r.value);
@@ -113,8 +123,10 @@ QState qsimQuantum::read_result(Result r)
         std::string stringResult = std::to_string(bitResult);
         if (stringResult == "1"){
             manager.updateBuffer("q"+q_index_string, "1", 1);
+            manager.updateBuffer("q"+q_index_string, 1);
         } else{
             manager.updateBuffer("q"+q_index_string, "0", 1);
+            manager.updateBuffer("q"+q_index_string, 0);
         }
     } else {
         qsim::IO::errorf("Unexpected measurement results encountered.");
@@ -127,6 +139,7 @@ QState qsimQuantum::read_result(Result r)
 Map a qubit to a result index 
 (TODO: find how to link the classical register to the quantum register in qsim)
 */
+
 void qsimQuantum::mz(Qubit q, Result r) { //we don't classical register yet. 
     QIREE_EXPECT(q.value < this->num_qubits()); // TODO: q must be in the set of qubits, e.g., what happens if q=5 and qubits are {2,3,4,5}, q is less than num_qubits but not it is in the set of qubits. 
     // Add measurement instruction
@@ -139,6 +152,7 @@ void qsimQuantum::mz(Qubit q, Result r) { //we don't classical register yet.
 /*
 Quantum Instruction Mapping
 */
+
 // 1. Entangling gates
 void qsimQuantum::cx(Qubit q1, Qubit q2) {
     q_circuit.gates.push_back(

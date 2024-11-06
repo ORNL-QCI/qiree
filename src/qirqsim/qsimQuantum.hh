@@ -135,8 +135,11 @@ namespace qiree
     qsim::Circuit<qsim::GateQSim<float>> get_circuit() const { return q_circuit; } 
     // Get the state space
     State const& get_state() const { return *state_; }
-    // update the buffer
+    // Update the buffer
     BufferManager manager;
+    // Number of repetitions
+    int repetition;
+    void repCount(int rep);
     
     private:
         //// TYPES ////

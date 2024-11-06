@@ -57,15 +57,13 @@ void qsimDefaultRuntime::tuple_record_output(size_type s, OptionalCString tag)
 void qsimDefaultRuntime::result_record_output(Result r, OptionalCString tag)
 {
     // Access values through the getter
-    // TODO: This prints results 'every time' result_record_output is called. Maybe enough to only print the 'final time'
+    // This prints results every time result_record_output is called
+    // Can comment out if only want to see final results
 
-    if (auto value = sim_.manager.getBufferValue("q"+std::to_string(r.value), "0"); value.has_value()) {
-        std::cout << "q" << std::to_string(r.value) << " |0> freq: " << value.value() << "\n";
+    if (auto value = sim_.manager.getBufferValue("q"+std::to_string(r.value)); value.has_value()) {
+        std::cout << "q" << std::to_string(r.value) << " : " << value.value() << "\n";
     }
 
-    if (auto value = sim_.manager.getBufferValue("q"+std::to_string(r.value), "1"); value.has_value()) {
-        std::cout << "q" << std::to_string(r.value) << " |1> freq: " << value.value() << "\n";
-    }
 }
 
 }  // namespace qiree

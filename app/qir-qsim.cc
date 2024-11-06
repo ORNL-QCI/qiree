@@ -54,6 +54,20 @@ void run(std::string const& filename,
     for (int i = 0; i < num_shots; i++){    
         execute(sim, *rt);
     }
+
+    std::cout << std::endl;
+    std::cout << "Measurement output:" << std::endl;
+    std::cout << "-------------------" << std::endl;
+    std::cout << "Number of shots: " << num_shots << std::endl;
+    std::cout << "Number of qubits: " << sim.num_qubits() << std::endl;
+    
+    for(int q_index = 0; q_index < sim.num_qubits(); q_index++){
+        int value_0 = 0;
+        int value_1 = 0;
+        if (auto value = sim.manager.getBufferValue("q"+std::to_string(q_index), "0"); value.has_value()){ value_0 = value.value();}
+        if (auto value = sim.manager.getBufferValue("q"+std::to_string(q_index), "1"); value.has_value()){ value_1 = value.value();}
+        std::cout << "q" << q_index << " {0: " << value_0 << "," << " 1: " << value_1 << "}\n";
+    }
 }
 
 //---------------------------------------------------------------------------//
