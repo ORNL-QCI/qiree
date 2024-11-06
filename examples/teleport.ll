@@ -6,6 +6,7 @@ source_filename = "teleport"
 
 define void @main() #0 {
 entry:
+  call void @__quantum__qis__x__body(%Qubit* null)
   call void @__quantum__qis__h__body(%Qubit* inttoptr (i64 1 to %Qubit*))
   call void @__quantum__qis__cnot__body(%Qubit* inttoptr (i64 1 to %Qubit*), %Qubit* inttoptr (i64 2 to %Qubit*))
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
@@ -37,6 +38,7 @@ else2:                                            ; preds = %continue
 
 continue3:                                        ; preds = %else2, %then1
   call void @__quantum__qis__mz__body(%Qubit* inttoptr (i64 2 to %Qubit*), %Result* inttoptr (i64 2 to %Result*))
+  %2 = call i2 @__quantum__qis__read_result__body(%Result* inttoptr (i64 2 to %Result*))
   call void @__quantum__rt__array_record_output(i64 3, i8* null)
   call void @__quantum__rt__result_record_output(%Result* null, i8* null)
   call void @__quantum__rt__result_record_output(%Result* inttoptr (i64 1 to %Result*), i8* null)

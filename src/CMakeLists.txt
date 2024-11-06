@@ -12,8 +12,13 @@ qiree_configure_file("qiree_config.h.in" "qiree_config.h" @ONLY)
 #----------------------------------------------------------------------------#
 
 add_subdirectory(qiree)
+
 if(QIREE_USE_XACC)
   add_subdirectory(qirxacc)
+endif()
+
+if(QIREE_USE_QSIM)
+  add_subdirectory(qirqsim)
 endif()
 
 #---------------------------------------------------------------------------##
