@@ -9,17 +9,19 @@
 #ifndef BUFFER_MANAGER_H
 #define BUFFER_MANAGER_H
 
-#include <unordered_map>
-#include <string>
-#include <optional>
 #include <functional>
+#include <optional>
+#include <string>
+#include <unordered_map>
 #include <utility>
 
 // Define a hash function for std::pair
 
-struct pair_hash {
-    template <class T1, class T2>
-    std::size_t operator()(const std::pair<T1, T2>& pair) const {
+struct pair_hash
+{
+    template<class T1, class T2>
+    std::size_t operator()(std::pair<T1, T2> const& pair) const
+    {
         auto hash1 = std::hash<T1>{}(pair.first);
         auto hash2 = std::hash<T2>{}(pair.second);
         // Combine the two hash values
@@ -27,22 +29,24 @@ struct pair_hash {
     }
 };
 
-class BufferManager {
-public:
-    
+class BufferManager
+{
+  public:
     // Method to update the buffer with a key-value pair
-    void updateBuffer(const std::string& qubit, const std::string& state, const int& value);
-    void updateBuffer(const std::string& key, const int& value);
-    
+    void updateBuffer(std::string const& qubit,
+                      std::string const& state,
+                      int const& value);
+    void updateBuffer(std::string const& key, int const& value);
+
     // Retrieve buffer value for storage or evaluation
-    std::optional<int> getBufferValue(const std::string& qubit, const std::string& state) const;
-    std::optional<int> getBufferValue(const std::string& key) const;
-    
-private:
-    
+    std::optional<int>
+    getBufferValue(std::string const& qubit, std::string const& state) const;
+    std::optional<int> getBufferValue(std::string const& key) const;
+
+  private:
     // Dictionary to store key-value pairs
     std::unordered_map<std::pair<std::string, std::string>, int, pair_hash> buffer;
     std::unordered_map<std::string, int> simple_buffer;
 };
 
-#endif // BUFFER_MANAGER_H
+#endif  // BUFFER_MANAGER_H

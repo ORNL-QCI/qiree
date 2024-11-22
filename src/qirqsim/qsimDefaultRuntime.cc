@@ -6,9 +6,11 @@
 //! \file qirqsim/qsimDefaultRuntime.cc
 //---------------------------------------------------------------------------//
 #include "qsimDefaultRuntime.hh"
+
 #include <iostream>
+
 #include "qiree/Assert.hh"
- 
+
 namespace qiree
 {
 //---------------------------------------------------------------------------//
@@ -32,9 +34,9 @@ void qsimDefaultRuntime::initialize(OptionalCString env)
 
 void qsimDefaultRuntime::array_record_output(size_type s, OptionalCString tag)
 {
-    //this->execute_if_needed();
-    //output_ << "array " << (tag ? tag : "<null>") << " length " << s
-    //        << std::endl;
+    // this->execute_if_needed();
+    // output_ << "array " << (tag ? tag : "<null>") << " length " << s
+    //         << std::endl;
 }
 
 //---------------------------------------------------------------------------//
@@ -45,9 +47,9 @@ void qsimDefaultRuntime::array_record_output(size_type s, OptionalCString tag)
 
 void qsimDefaultRuntime::tuple_record_output(size_type s, OptionalCString tag)
 {
-    //this->execute_if_needed();
-    //output_ << "tuple " << (tag ? tag : "<null>") << " length " << s
-    //        << std::endl;
+    // this->execute_if_needed();
+    // output_ << "tuple " << (tag ? tag : "<null>") << " length " << s
+    //         << std::endl;
 }
 
 //---------------------------------------------------------------------------//
@@ -60,10 +62,12 @@ void qsimDefaultRuntime::result_record_output(Result r, OptionalCString tag)
     // This prints results every time result_record_output is called
     // Can comment out if only want to see final results
 
-    if (auto value = sim_.manager.getBufferValue("q"+std::to_string(r.value)); value.has_value()) {
-        std::cout << "q" << std::to_string(r.value) << " : " << value.value() << "\n";
+    if (auto value = sim_.manager.getBufferValue("q" + std::to_string(r.value));
+        value.has_value())
+    {
+        std::cout << "q" << std::to_string(r.value) << " : " << value.value()
+                  << "\n";
     }
-
 }
 
 }  // namespace qiree

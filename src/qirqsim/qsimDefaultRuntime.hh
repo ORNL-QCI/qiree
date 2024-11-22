@@ -13,7 +13,7 @@ namespace qiree
 {
 
 /*!
- * Print per-qubit measurement statistics. 
+ * Print per-qubit measurement statistics.
  *
  * Example for three qubits:
  * \code
@@ -24,7 +24,7 @@ namespace qiree
  * q0 {0: 542, 1: 482}
  * q1 {0: 521, 1: 503}
  * q2 {0: 0, 1: 1024}
- * 
+ *
  * \endcode
  */
 
@@ -34,9 +34,7 @@ class qsimDefaultRuntime final : virtual public RuntimeInterface
     /*!
      * Construct \c qsimDefaultRuntime.
      */
-    qsimDefaultRuntime(std::ostream& output,
-                       qsimQuantum& sim
-                       )
+    qsimDefaultRuntime(std::ostream& output, qsimQuantum& sim)
         : output_(output), sim_(sim)
     {
     }

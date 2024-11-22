@@ -76,7 +76,7 @@ void qsimTupleRuntime::start_tracking(GroupingType type,
 {
     QIREE_EXPECT(!valid_);
     valid_ = true;
-    type_ = type; 
+    type_ = type;
     tag_ = tag;
     num_results_ = num_results;
     qubits_.clear();
@@ -109,8 +109,12 @@ void qsimTupleRuntime::print_header(size_type num_distinct)
 
 void qsimTupleRuntime::finish_tuple()
 {
-    //auto counts = sim_.get_marginal_counts(qubits_);
-    std::map<std::string, int> counts = {{"0", 0}, {"1", 0}}; // Placeholder for actual counts, TODO: replace with actual counts
+    // auto counts = sim_.get_marginal_counts(qubits_);
+    std::map<std::string, int> counts = {{"0", 0}, {"1", 0}};  // Placeholder
+                                                               // for actual
+                                                               // counts, TODO:
+                                                               // replace with
+                                                               // actual counts
     print_header(counts.size());
     auto name = get_name();
     for (auto& [bits, count] : counts)

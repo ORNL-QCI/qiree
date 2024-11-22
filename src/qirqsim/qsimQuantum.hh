@@ -34,24 +34,24 @@
 #include "qiree/RuntimeInterface.hh"
 #include "qiree/Types.hh"
 
-struct Factory { // Factory class for creating simulators in qsim 
+struct Factory
+{  // Factory class for creating simulators in qsim
     Factory(unsigned num_threads) : num_threads(num_threads) {}
     using Simulator = qsim::Simulator<qsim::For>;
     using StateSpace = Simulator::StateSpace;
-    StateSpace CreateStateSpace() const { return StateSpace(num_threads); } 
+    StateSpace CreateStateSpace() const { return StateSpace(num_threads); }
     Simulator CreateSimulator() const { return Simulator(num_threads); }
     unsigned num_threads;
 };
 
 namespace qiree
 {
-    class qsimQuantum final : virtual public QuantumNotImpl
-    {
-
-    public: 
-
+class qsimQuantum final : virtual public QuantumNotImpl
+{
+  public:
     // Define constructors and destructors
-    qsimQuantum(std::ostream& os, size_type shots); // Construct with number of shots
+    qsimQuantum(std::ostream& os, size_type shots);  // Construct with number
+                                                     // of shots
 
     // Define types
     using Simulator = qsim::Simulator<qsim::For>;
@@ -63,15 +63,17 @@ namespace qiree
 
     State init_state_space();
 
-    QIREE_DELETE_COPY_MOVE(qsimQuantum); // Delete copy and move constructors
+    QIREE_DELETE_COPY_MOVE(qsimQuantum);  // Delete copy and move constructors
 
     //!@{
     //! \name Accessors
     size_type num_results() const { return result_to_qubit_.size(); }
     size_type num_qubits() const { return num_qubits_; }
-    
-    unsigned getQubitIndex(Qubit q) {
-    return static_cast<unsigned>(q.value); // Return the value of the qubit
+
+    unsigned getQubitIndex(Qubit q)
+    {
+        return static_cast<unsigned>(q.value);  // Return the value of the
+                                                // qubit
     }
     //!@}
 
@@ -96,8 +98,8 @@ namespace qiree
     Qubit result_to_qubit(Result);
 
     // Wrapper for qsim
-    //std::map<std::string, int>
-    //get_marginal_counts(std::vector<Qubit> const& qubits);
+    // std::map<std::string, int>
+    // get_marginal_counts(std::vector<Qubit> const& qubits);
 
     // Run the circuit on the accelerator if we have not already. Returns true
     // if the circuit was executed.
@@ -131,7 +133,10 @@ namespace qiree
     //!@}
 
     // Get the quantum circuit
-    qsim::Circuit<qsim::GateQSim<float>> get_circuit() const { return q_circuit; } 
+    qsim::Circuit<qsim::GateQSim<float>> get_circuit() const
+    {
+        return q_circuit;
+    }
     // Get the state space
     State const& get_state() const { return *state_; }
     // Update the buffer
@@ -139,39 +144,37 @@ namespace qiree
     // Number of repetitions
     int repetition;
     void repCount(int rep);
-    
-    private:
-        //// TYPES ////
-        enum class Endianness
-        {
-            little,
-            big
-        };
-        unsigned numThreads; // Number of threads to use
-        unsigned max_fused_size; // Maximum size of fused gates
-        qsim::Circuit<qsim::GateQSim<float>> q_circuit; // Quantum circuit object
-        
-        Runner::Parameter qsimParam; // Parameters for qsim
-        size_t execution_time; // when the quantum operation will be executed
 
-        bool executed;
-        size_type num_qubits_{};
-        std::vector<Qubit> result_to_qubit_;
-        Endianness endian_;
-
-        std::ostream& output_;
-        std::shared_ptr<Simulator> simulator_;
-        std::shared_ptr<StateSpace> statespace_;
-        std::shared_ptr<State> state_;
-
+  private:
+    //// TYPES ////
+    enum class Endianness
+    {
+        little,
+        big
     };
+    unsigned numThreads;  // Number of threads to use
+    unsigned max_fused_size;  // Maximum size of fused gates
+    qsim::Circuit<qsim::GateQSim<float>> q_circuit;  // Quantum circuit object
 
-    class buffer {
-    public:
-        buffer(size_t size) : size(size) {}
-        size_t size;
-    }; 
+    Runner::Parameter qsimParam;  // Parameters for qsim
+    size_t execution_time;  // when the quantum operation will be executed
+
+    bool executed;
+    size_type num_qubits_{};
+    std::vector<Qubit> result_to_qubit_;
+    Endianness endian_;
+
+    std::ostream& output_;
+    std::shared_ptr<Simulator> simulator_;
+    std::shared_ptr<StateSpace> statespace_;
+    std::shared_ptr<State> state_;
+};
+
+class buffer
+{
+  public:
+    buffer(size_t size) : size(size) {}
+    size_t size;
+};
 
 }  // namespace qiree
-
-    

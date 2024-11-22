@@ -7,39 +7,50 @@
 //---------------------------------------------------------------------------//
 
 #include "BufferManager.hh"
-#include <unordered_map>
-#include <string>
-#include <optional>
 
-void BufferManager::updateBuffer(const std::string& qubit, const std::string& state, const int& value) {
+#include <optional>
+#include <string>
+#include <unordered_map>
+
+void BufferManager::updateBuffer(std::string const& qubit,
+                                 std::string const& state,
+                                 int const& value)
+{
     // Insert or update the key-value pair in the buffer
     std::pair<std::string, std::string> searchKey = {qubit, state};
     int current_frequency = 0;
     auto it = buffer.find(searchKey);
-    if (it != buffer.end()){
-        current_frequency = it -> second;
+    if (it != buffer.end())
+    {
+        current_frequency = it->second;
     }
     // Accumulate counts with every shot
     buffer[{qubit, state}] = value + current_frequency;
 }
 
-void BufferManager::updateBuffer(const std::string& key, const int& value) {
+void BufferManager::updateBuffer(std::string const& key, int const& value)
+{
     // Insert or update the key-value pair in the buffer
     simple_buffer[key] = value;
 }
 
-std::optional<int> BufferManager::getBufferValue(const std::string& qubit, const std::string& state) const {
+std::optional<int> BufferManager::getBufferValue(std::string const& qubit,
+                                                 std::string const& state) const
+{
     std::pair<std::string, std::string> searchKey = {qubit, state};
     auto it = buffer.find(searchKey);
-    if (it != buffer.end()) {
+    if (it != buffer.end())
+    {
         return it->second;  // Key found
     }
     return std::nullopt;  // Key not found
 }
 
-std::optional<int> BufferManager::getBufferValue(const std::string& key) const {
+std::optional<int> BufferManager::getBufferValue(std::string const& key) const
+{
     auto it = simple_buffer.find(key);
-    if (it != simple_buffer.end()) {
+    if (it != simple_buffer.end())
+    {
         return it->second;  // Key found
     }
     return std::nullopt;  // Key not found
