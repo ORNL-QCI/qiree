@@ -19,20 +19,20 @@
 #include "qiree/Assert.hh"
 
 // Qsim
-#include "../../tpls/qsim/simulator_basic.h"
-#include "../../tpls/qsim/statespace_basic.h"
-#include "../../tpls/qsim/gates_qsim.h"
-#include "../../tpls/qsim/circuit.h"
-#include "../../tpls/qsim/run_qsim.h"
-#include "../../tpls/qsim/io.h"
-#include "../../tpls/qsim/fuser.h"
-#include "../../tpls/qsim/circuit_qsim_parser.h" 
-#include "../../tpls/qsim/fuser_mqubit.h"
-#include "../../tpls/qsim/io_file.h"
-#include "../../tpls/qsim/simmux.h"
-#include "../../tpls/qsim/util_cpu.h"
-#include "../../tpls/qsim/formux.h"
-#include "../../tpls/qsim/gate.h"
+#include <qsim/lib/circuit.h>
+#include <qsim/lib/circuit_qsim_parser.h>
+#include <qsim/lib/formux.h>
+#include <qsim/lib/fuser.h>
+#include <qsim/lib/fuser_mqubit.h>
+#include <qsim/lib/gate.h>
+#include <qsim/lib/gates_qsim.h>
+#include <qsim/lib/io.h>
+#include <qsim/lib/io_file.h>
+#include <qsim/lib/run_qsim.h>
+#include <qsim/lib/simmux.h>
+#include <qsim/lib/simulator_basic.h>
+#include <qsim/lib/statespace_basic.h>
+#include <qsim/lib/util_cpu.h>
 //
 
 namespace qiree{

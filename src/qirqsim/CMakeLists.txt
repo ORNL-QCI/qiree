@@ -15,6 +15,7 @@ qiree_add_library(qirqsim
 #Link the qsim library to qiree and any other relevant libraries
 target_link_libraries(qirqsim
   PUBLIC QIREE::qiree  # Link to qiree
+  PRIVATE QIREE::qsim
 )
 
 #----------------------------------------------------------------------------#
