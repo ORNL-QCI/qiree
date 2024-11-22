@@ -43,15 +43,10 @@ qiree_set_default(BUILD_TESTING ${QIREE_BUILD_TESTS})
 # Assertion handling
 option(QIREE_DEBUG "Enable runtime assertions" ON)
 
-# Enforce mutual exclusivity
-if(QIREE_USE_XACC)
-  set(QIREE_USE_QSIM OFF CACHE BOOL "Build qsim interface" FORCE)
-  message(STATUS "QIREE_USE_XACC is ON, setting QIREE_USE_QSIM to OFF.")
-elseif(QIREE_USE_QSIM)
-  set(QIREE_USE_XACC OFF CACHE BOOL "Build XACC interface" FORCE)
-  message(STATUS "QIREE_USE_QSIM is ON, setting QIREE_USE_XACC to OFF.")
-endif()
+qiree_set_default(BUILD_TESTING ${QIREE_BUILD_TESTS})
 
+# Assertion handling
+option(QIREE_DEBUG "Enable runtime assertions" ON)
 
 #----------------------------------------------------------------------------#
 # CMAKE INTRINSIC OPTIONS
@@ -183,31 +178,6 @@ add_subdirectory(src)
 if(QIREE_BUILD_TESTS)
   include(CTest)
   add_subdirectory(test)
-endif()
-
-#----------------------------------------------------------------------------#
-# OPENMP
-#----------------------------------------------------------------------------#
-
-# Manually set OpenMP flags for macOS with libomp
-if(APPLE)
-  set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp -I/opt/homebrew/include")
-  set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I/opt/homebrew/include")
-  set(OpenMP_C_LIB_NAMES "omp")
-  set(OpenMP_CXX_LIB_NAMES "omp")
-  set(OpenMP_omp_LIBRARY "/opt/homebrew/lib/libomp.dylib")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-  link_directories("/opt/homebrew/lib")
-endif()
-
-# Now try to find OpenMP
-find_package(OpenMP REQUIRED)
-
-if(OpenMP_FOUND)
-  message(STATUS "OpenMP found")
-else()
-  message(FATAL_ERROR "OpenMP support is required but was not found.")
 endif()
 
 #----------------------------------------------------------------------------#
