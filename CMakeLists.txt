@@ -125,15 +125,16 @@ if(QIREE_USE_QSIM)
     qsim_content
     QUIET
     GIT_REPOSITORY https://github.com/quantumlib/qsim.git
-    GIT_TAG e5817518b16858e0732269b56525f72bcdb30764 # v0.21.0
+    GIT_TAG 55b4d0e7ea8f085a1709c2c06ff1e28b3aa93357 # 'main' on 22 Nov 2024
     SOURCE_SUBDIR "lib" # Don't load top-level cmake file
     SOURCE_DIR "external/qsim"
   )
   FetchContent_MakeAvailable(qsim_content)
-  add_library(qiree_qsim INTERFACE)
+  qiree_add_library(qiree_qsim INTERFACE)
   add_library(QIREE::qsim ALIAS qiree_qsim)
   target_include_directories(qiree_qsim SYSTEM INTERFACE
-    "${CMAKE_CURRENT_BINARY_DIR}/external"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/external>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/external>"
   )
 endif()
 
