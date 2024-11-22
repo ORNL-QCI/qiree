@@ -117,8 +117,9 @@ set(QIREE_RUNTIME_OUTPUT_DIRECTORY
 enable_language(C) # Needed for LLVM
 find_package(LLVM REQUIRED)
 if((LLVM_VERSION VERSION_LESS 14)
-  OR (LLVM_VERSION VERSION_GREATER_EQUAL 19))
-  message(WARNING "QIR-EE is only tested with LLVM 14-18: found version ${LLVM_VERSION}")
+  OR (LLVM_VERSION VERSION_GREATER_EQUAL 20))
+  message(WARNING "QIR-EE is only tested with LLVM 14-19: found version ${LLVM_VERSION}")
+endif()
 endif()
 
 if(QIREE_USE_XACC)
