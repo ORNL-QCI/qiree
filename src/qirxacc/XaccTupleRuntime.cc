@@ -48,7 +48,7 @@ void XaccTupleRuntime::initialize(OptionalCString env)
 void XaccTupleRuntime::array_record_output(size_type s, OptionalCString tag)
 {
     execute_if_needed();
-    this->start_tracking(GroupingType::array, tag, s);
+    this->start_tracking(GroupingType::array, tag ? tag : "<null>", s);
 }
 
 //---------------------------------------------------------------------------//
@@ -59,7 +59,7 @@ void XaccTupleRuntime::array_record_output(size_type s, OptionalCString tag)
 void XaccTupleRuntime::tuple_record_output(size_type s, OptionalCString tag)
 {
     execute_if_needed();
-    this->start_tracking(GroupingType::tuple, tag, s);
+    this->start_tracking(GroupingType::tuple, tag ? tag : "<null>", s);
 }
 
 //---------------------------------------------------------------------------//
