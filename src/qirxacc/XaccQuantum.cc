@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <utility>
 #include <xacc/xacc.hpp>
+#include <xacc/xacc_service.hpp>
 
 #include "qiree/Assert.hh"
 
@@ -152,13 +153,15 @@ QState XaccQuantum::read_result(Result r)
 //---------------------------------------------------------------------------//
 // QUANTUM INSTRUCTION MAPPING
 //---------------------------------------------------------------------------//
-void XaccQuantum::ccx(Qubit q1, Qubit q2)
+void XaccQuantum::ccx(Qubit q1, Qubit q2, Qubit q3)
 {
-    this->add_instruction("CCX", {q1, q2});
+    // XACC IR does not have a Toffoli gate
+    this->add_ctrl_list_instruction("X", {q1, q2}, q3);
 }
 void XaccQuantum::ccnot(Qubit q1, Qubit q2, Qubit q3)
 {
-    this->add_instruction("CCNOT", {q1, q2, q3});
+    // XACC IR does not have a Toffoli gate
+    this->add_ctrl_list_instruction("X", {q1, q2}, q3);
 }
 void XaccQuantum::cnot(Qubit q1, Qubit q2)
 {
@@ -325,6 +328,22 @@ void XaccQuantum::add_instruction(std::string s,
                                   std::initializer_list<Qubit> qs,
                                   Ts... args)
 {
+    this->add_instruction_to(
+        cur_circuit_, std::move(s), qs, std::forward<Ts>(args)...);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * Add an instruction with multiple qubits to a particular XACC
+ * CompositeInstruction.
+ */
+template<class... Ts>
+void XaccQuantum::add_instruction_to(
+    std::shared_ptr<xacc::CompositeInstruction> circuit,
+    std::string s,
+    std::initializer_list<Qubit> qs,
+    Ts... args)
+{
     // Transform opaque qubit types into raw integer indices
     std::vector<std::size_t> q_indices(qs.size());
     std::transform(qs.begin(), qs.end(), q_indices.begin(), [this](Qubit q) {
@@ -338,7 +357,53 @@ void XaccQuantum::add_instruction(std::string s,
         std::move(s), q_indices, VecInstr{std::forward<Ts>(args)...});
 
     // Add to current quantum circuit
-    cur_circuit_->addInstruction(std::move(instr));
+    circuit->addInstruction(std::move(instr));
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * Add an instruction with the control indices provided.
+ */
+template<class... Ts>
+void XaccQuantum::add_ctrl_indices_instruction(std::string s,
+                                               std::vector<int> ctrl_indices,
+                                               Qubit q,
+                                               Ts... args)
+{
+    std::shared_ptr<xacc::CompositeInstruction> tmp
+        = provider_->createComposite("tmp");
+    this->add_instruction_to(tmp, std::move(s), {q}, std::forward<Ts>(args)...);
+
+    std::shared_ptr<xacc::CompositeInstruction> cu
+        = std::static_pointer_cast<xacc::CompositeInstruction>(
+            xacc::getService<xacc::Instruction>("C-U"));
+    cu->expand({{"U", tmp}, {"control-idx", ctrl_indices}});
+
+    for (int i = 0; i < cu->nInstructions(); i++)
+    {
+        cur_circuit_->addInstruction(cu->getInstruction(i));
+    }
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * Add an instruction with the control indices provided as a list of QIR
+ * pointers (for convenience).
+ */
+template<class... Ts>
+void XaccQuantum::add_ctrl_list_instruction(
+    std::string s, std::initializer_list<Qubit> ctrl_list, Qubit q, Ts... args)
+{
+    std::vector<int> ctrl_indices(ctrl_list.size());
+    std::transform(ctrl_list.begin(),
+                   ctrl_list.end(),
+                   ctrl_indices.begin(),
+                   [this](Qubit q) {
+                       QIREE_EXPECT(q.value < this->num_qubits());
+                       return static_cast<int>(q.value);
+                   });
+    add_ctrl_indices_instruction(
+        std::move(s), ctrl_indices, q, std::forward<Ts>(args)...);
 }
 
 //---------------------------------------------------------------------------//

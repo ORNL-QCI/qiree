@@ -67,7 +67,7 @@ class QuantumInterface
     //@{
     //! \name Gates
 
-    virtual void ccx(Qubit, Qubit) = 0;  //!< body
+    virtual void ccx(Qubit, Qubit, Qubit) = 0;  //!< body
     virtual void cnot(Qubit, Qubit) = 0;  //!< body
     virtual void cx(Qubit, Qubit) = 0;  //!< body
     virtual void cy(Qubit, Qubit) = 0;  //!< body

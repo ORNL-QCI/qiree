@@ -86,6 +86,11 @@ void QuantumTestImpl::cnot(Qubit q1, Qubit q2)
     tr_->commands << "cnot(" << q1 << ", " << q2 << ")\n";
 }
 
+void QuantumTestImpl::ccx(Qubit q1, Qubit q2, Qubit q3)
+{
+    tr_->commands << "ccx(" << q1 << ", " << q2 << ", " << q3 << ")\n";
+}
+
 //---------------------------------------------------------------------------//
 Result QuantumTestImpl::m(Qubit)
 {
@@ -101,10 +106,6 @@ Result QuantumTestImpl::mresetz(Qubit)
 {
     tr_->commands << "TODO: mresetz.body\n";
     return {};
-}
-void QuantumTestImpl::ccx(Qubit, Qubit)
-{
-    tr_->commands << "TODO: ccx.body\n";
 }
 void QuantumTestImpl::cx(Qubit, Qubit)
 {
