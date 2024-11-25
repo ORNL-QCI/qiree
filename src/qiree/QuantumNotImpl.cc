@@ -32,7 +32,7 @@ QState QuantumNotImpl::read_result(Result)
 {
     QIREE_NOT_IMPLEMENTED("quantum instruction 'read_result.body'");
 }
-void QuantumNotImpl::ccx(Qubit, Qubit)
+void QuantumNotImpl::ccx(Qubit, Qubit, Qubit)
 {
     QIREE_NOT_IMPLEMENTED("quantum instruction 'ccx.body'");
 }
