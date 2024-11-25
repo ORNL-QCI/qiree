@@ -59,6 +59,13 @@ class XaccQuantum final : virtual public QuantumNotImpl
     //!@}
 
     //!@{
+    //! \name Mutators
+    // Update the XACC accelerator and shot count
+    void set_accelerator_and_shots(
+        std::string const& accel_name, size_type shots);
+    //!@}
+
+    //!@{
     //! \name Quantum interface
     // Prepare to build a quantum circuit for an entry point
     void set_up(EntryPointAttrs const&) override;
