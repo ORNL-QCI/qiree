@@ -3,9 +3,9 @@
 // See the top-level COPYRIGHT file for details.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //---------------------------------------------------------------------------//
-//! \file qirqsim/qsimDefaultRuntime.cc
+//! \file qirqsim/QsimDefaultRuntime.cc
 //---------------------------------------------------------------------------//
-#include "qsimDefaultRuntime.hh"
+#include "QsimDefaultRuntime.hh"
 
 #include <iostream>
 
@@ -18,7 +18,7 @@ namespace qiree
  * Initialize the execution environment, resetting qubits.
  */
 
-void qsimDefaultRuntime::initialize(OptionalCString env)
+void QsimDefaultRuntime::initialize(OptionalCString env)
 {
     if (env)
     {
@@ -32,7 +32,7 @@ void qsimDefaultRuntime::initialize(OptionalCString env)
  * named tag
  */
 
-void qsimDefaultRuntime::array_record_output(size_type s, OptionalCString tag)
+void QsimDefaultRuntime::array_record_output(size_type s, OptionalCString tag)
 {
     // this->execute_if_needed();
     // output_ << "array " << (tag ? tag : "<null>") << " length " << s
@@ -45,7 +45,7 @@ void qsimDefaultRuntime::array_record_output(size_type s, OptionalCString tag)
  * named tag
  */
 
-void qsimDefaultRuntime::tuple_record_output(size_type s, OptionalCString tag)
+void QsimDefaultRuntime::tuple_record_output(size_type s, OptionalCString tag)
 {
     // this->execute_if_needed();
     // output_ << "tuple " << (tag ? tag : "<null>") << " length " << s
@@ -56,7 +56,7 @@ void qsimDefaultRuntime::tuple_record_output(size_type s, OptionalCString tag)
 /*!
  * Execute circuit and report a single measurement result
  */
-void qsimDefaultRuntime::result_record_output(Result r, OptionalCString tag)
+void QsimDefaultRuntime::result_record_output(Result r, OptionalCString tag)
 {
     // Access values through the getter
     // This prints results every time result_record_output is called

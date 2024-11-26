@@ -20,9 +20,9 @@
 #include "qiree/Module.hh"
 #include "qiree/QuantumNotImpl.hh"
 
-#include "qirqsim/qsimDefaultRuntime.hh"
-#include "qirqsim/qsimQuantum.hh"
-#include "qirqsim/qsimTupleRuntime.hh"
+#include "qirqsim/QsimDefaultRuntime.hh"
+#include "qirqsim/QsimQuantum.hh"
+#include "qirqsim/QsimTupleRuntime.hh"
 
 using namespace std::string_view_literals;
 
@@ -38,15 +38,15 @@ void run(std::string const& filename,
     Executor execute{Module{filename}};
     
     // Set up qsim
-    qsimQuantum sim(std::cout, num_shots);
+    QsimQuantum sim(std::cout, num_shots);
     
     // Collect the statistics 
     std::unique_ptr<RuntimeInterface> rt;
     //if (group_tuples){
-    //    rt = std::make_unique<qsimTupleRuntime>(
+    //    rt = std::make_unique<QsimTupleRuntime>(
     //        std::cout, sim);
     //} else {
-        rt = std::make_unique<qsimDefaultRuntime>(
+        rt = std::make_unique<QsimDefaultRuntime>(
             std::cout, sim);
     //}
 

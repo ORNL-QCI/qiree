@@ -3,9 +3,9 @@
 // See the top-level COPYRIGHT file for details.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //---------------------------------------------------------------------------//
-//! \file qirqsim/qsimTupleRuntime.cc
+//! \file qirqsim/QsimTupleRuntime.cc
 //---------------------------------------------------------------------------//
-#include "qsimTupleRuntime.hh"
+#include "QsimTupleRuntime.hh"
 
 #include "qiree/Assert.hh"
 
@@ -15,7 +15,7 @@ namespace qiree
 /*!
  * Initialize the execution environment, resetting qubits.
  */
-void qsimTupleRuntime::initialize(OptionalCString env)
+void QsimTupleRuntime::initialize(OptionalCString env)
 {
     if (env)
     {
@@ -28,7 +28,7 @@ void qsimTupleRuntime::initialize(OptionalCString env)
  * Execute circuit and mark the following N results as being part of an array
  * named tag
  */
-void qsimTupleRuntime::array_record_output(size_type s, OptionalCString tag)
+void QsimTupleRuntime::array_record_output(size_type s, OptionalCString tag)
 {
     execute_if_needed();
     start_tracking(GroupingType::array, tag, s);
@@ -39,7 +39,7 @@ void qsimTupleRuntime::array_record_output(size_type s, OptionalCString tag)
  * Execute circuit and mark the following N results as being part of a tuple
  * named tag
  */
-void qsimTupleRuntime::tuple_record_output(size_type s, OptionalCString tag)
+void QsimTupleRuntime::tuple_record_output(size_type s, OptionalCString tag)
 {
     execute_if_needed();
     start_tracking(GroupingType::tuple, tag, s);
@@ -49,7 +49,7 @@ void qsimTupleRuntime::tuple_record_output(size_type s, OptionalCString tag)
 /*!
  * Execute circuit and report a single measurement result
  */
-void qsimTupleRuntime::result_record_output(Result r, OptionalCString tag)
+void QsimTupleRuntime::result_record_output(Result r, OptionalCString tag)
 {
     execute_if_needed();
     Qubit q = sim_.result_to_qubit(r);
@@ -60,7 +60,7 @@ void qsimTupleRuntime::result_record_output(Result r, OptionalCString tag)
 // PRIVATE FUNCTIONS
 //---------------------------------------------------------------------------//
 
-void qsimTupleRuntime::execute_if_needed()
+void QsimTupleRuntime::execute_if_needed()
 {
     /*
     if (sim_.execute_if_needed() && print_accelbuf_)
@@ -70,7 +70,7 @@ void qsimTupleRuntime::execute_if_needed()
     */
 }
 
-void qsimTupleRuntime::start_tracking(GroupingType type,
+void QsimTupleRuntime::start_tracking(GroupingType type,
                                       std::string tag,
                                       size_type num_results)
 {
@@ -89,7 +89,7 @@ void qsimTupleRuntime::start_tracking(GroupingType type,
     }
 }
 
-void qsimTupleRuntime::push_result(Qubit q)
+void QsimTupleRuntime::push_result(Qubit q)
 {
     QIREE_EXPECT(valid_);
     QIREE_EXPECT(qubits_.size() < num_results_);
@@ -100,14 +100,14 @@ void qsimTupleRuntime::push_result(Qubit q)
     }
 }
 
-void qsimTupleRuntime::print_header(size_type num_distinct)
+void QsimTupleRuntime::print_header(size_type num_distinct)
 {
     auto name = get_name();
     output_ << name << " " << tag_ << " length " << qubits_.size()
             << " distinct results " << num_distinct << std::endl;
 }
 
-void qsimTupleRuntime::finish_tuple()
+void QsimTupleRuntime::finish_tuple()
 {
     // auto counts = sim_.get_marginal_counts(qubits_);
     std::map<std::string, int> counts = {{"0", 0}, {"1", 0}};  // Placeholder

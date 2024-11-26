@@ -3,7 +3,7 @@
 // See the top-level COPYRIGHT file for details.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //---------------------------------------------------------------------------//
-//! \file qirqsim/qsimQuantum.hh
+//! \file qirqsim/QsimQuantum.hh
 //---------------------------------------------------------------------------//
 #pragma once
 
@@ -46,11 +46,11 @@ struct Factory
 
 namespace qiree
 {
-class qsimQuantum final : virtual public QuantumNotImpl
+class QsimQuantum final : virtual public QuantumNotImpl
 {
   public:
     // Define constructors and destructors
-    qsimQuantum(std::ostream& os, size_type shots);  // Construct with number
+    QsimQuantum(std::ostream& os, size_type shots);  // Construct with number
                                                      // of shots
 
     // Define types
@@ -63,7 +63,7 @@ class qsimQuantum final : virtual public QuantumNotImpl
 
     State init_state_space();
 
-    QIREE_DELETE_COPY_MOVE(qsimQuantum);  // Delete copy and move constructors
+    QIREE_DELETE_COPY_MOVE(QsimQuantum);  // Delete copy and move constructors
 
     //!@{
     //! \name Accessors

@@ -61,7 +61,7 @@ endif()
 #---------------------------------------------------------------------------##
 
 if(QIREE_USE_QSIM)
-  qiree_add_test(qirqsim qsimQuantum)
+  qiree_add_test(qirqsim QsimQuantum)
 endif()
 
 #---------------------------------------------------------------------------##

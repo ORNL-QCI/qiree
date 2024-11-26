@@ -6,9 +6,9 @@
 
 # Adding qsim as a library to qiree
 qiree_add_library(qirqsim
-  qsimQuantum.cc
-  qsimDefaultRuntime.cc
-  qsimTupleRuntime.cc
+  QsimQuantum.cc
+  QsimDefaultRuntime.cc
+  QsimTupleRuntime.cc
   BufferManager.cc
 )
 

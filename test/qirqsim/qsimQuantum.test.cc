@@ -3,15 +3,15 @@
 // See the top-level COPYRIGHT file for details.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //---------------------------------------------------------------------------//
-//! \file qirxacc/XaccQuantum.test.cc
+//! \file qirxacc/QsimQuantum.test.cc
 //---------------------------------------------------------------------------//
-#include "qirqsim/qsimQuantum.hh"
+#include "qirqsim/QsimQuantum.hh"
 
 #include <regex>
 
 #include "qiree/Types.hh"
 #include "qiree_test.hh"
-#include "qirqsim/qsimDefaultRuntime.hh"
+#include "qirqsim/QsimDefaultRuntime.hh"
 
 namespace qiree
 {
@@ -19,7 +19,7 @@ namespace test
 {
 //---------------------------------------------------------------------------//
 
-class qsimQuantumTest : public ::qiree::test::Test
+class QsimQuantumTest : public ::qiree::test::Test
 {
   protected:
     void SetUp() override {}
@@ -34,7 +34,7 @@ class qsimQuantumTest : public ::qiree::test::Test
 };
 
 
-TEST_F(qsimQuantumTest, sim_dynamicbv)
+TEST_F(QsimQuantumTest, sim_dynamicbv)
 {
     using Q = Qubit;
     using R = Result;
@@ -43,8 +43,8 @@ TEST_F(qsimQuantumTest, sim_dynamicbv)
     os << '\n';
 
     // Create a simulator that will write to the string stream
-    qsimQuantum qsim_sim{os, 1};
-    qsimDefaultRuntime qsim_rt{os, qsim_sim};
+    QsimQuantum qsim_sim{os, 1};
+    QsimDefaultRuntime qsim_rt{os, qsim_sim};
 
     // Call functions in the same sequence that dynamicbv.ll would
     qsim_sim.set_up([] {
@@ -90,7 +90,7 @@ TEST_F(qsimQuantumTest, sim_dynamicbv)
     qsim_sim.tear_down();
     auto result = clean_output(os.str());
     EXPECT_EQ(R"(
-)", result) << result; // TODO: Modify qsimDefaultRuntime.cc so that it stores a result to be compared here (currently just prints as it goes...)
+)", result) << result; // TODO: Modify QsimDefaultRuntime.cc so that it stores a result to be compared here (currently just prints as it goes...)
 }
 
 //---------------------------------------------------------------------------//

@@ -3,10 +3,10 @@
 // See the top-level COPYRIGHT file for details.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //---------------------------------------------------------------------------//
-//! \file qirxacc/qsimQuantum.cc
+//! \file qirxacc/QsimQuantum.cc
 //---------------------------------------------------------------------------//
 
-#include "qsimQuantum.hh"
+#include "QsimQuantum.hh"
 
 #include <algorithm>
 #include <cassert>
@@ -42,7 +42,7 @@ namespace qiree
 Initialize the qsim simulator
 */
 
-qsimQuantum::State qsimQuantum::init_state_space()
+QsimQuantum::State QsimQuantum::init_state_space()
 {  // check if StateSpace is the proper type for the output, problably it is
    // just State from the Fatory struct.
     std::srand(static_cast<unsigned int>(std::time(nullptr)));  // Seed the
@@ -58,7 +58,7 @@ qsimQuantum::State qsimQuantum::init_state_space()
     qsimParam.max_fused_size = 2;  // Set the maximum size of fused gates
     qsimParam.verbosity = 0;  // see verbosity in run_qsim.h
     // Initialize the qsim simulator
-    qsimQuantum::StateSpace state_space
+    QsimQuantum::StateSpace state_space
         = Factory(numThreads).CreateStateSpace();  // Create the state space
     State state = state_space.Create(this->num_qubits());  // Create the state
     // Check if the state is null
@@ -72,14 +72,14 @@ qsimQuantum::State qsimQuantum::init_state_space()
     return state;
 }
 
-qsimQuantum::qsimQuantum(std::ostream& os, size_type shots) : output_(os) {}
+QsimQuantum::QsimQuantum(std::ostream& os, size_type shots) : output_(os) {}
 
 //---------------------------------------------------------------------------//
 /*
 Prepare to build a quantum circuit for an entry point
 */
 
-void qsimQuantum::set_up(EntryPointAttrs const& attrs)
+void QsimQuantum::set_up(EntryPointAttrs const& attrs)
 {
     QIREE_VALIDATE(attrs.required_num_qubits > 0,
                    << "input is not a quantum program");
@@ -103,12 +103,12 @@ void qsimQuantum::set_up(EntryPointAttrs const& attrs)
 Complete an execution
 */
 
-void qsimQuantum::repCount(int rep)
+void QsimQuantum::repCount(int rep)
 {
     repetition = rep;
 }
 
-void qsimQuantum::tear_down()
+void QsimQuantum::tear_down()
 {
     q_circuit = {};
     q_circuit.num_qubits = num_qubits_;
@@ -120,7 +120,7 @@ void qsimQuantum::tear_down()
 Reset the qubit
 */
 
-void qsimQuantum::reset(Qubit q)
+void QsimQuantum::reset(Qubit q)
 {
     q.value = 0;
 }
@@ -130,7 +130,7 @@ void qsimQuantum::reset(Qubit q)
 Read the value of a result. This utilizes the new BufferManager.
 */
 
-QState qsimQuantum::read_result(Result r)
+QState QsimQuantum::read_result(Result r)
 {
     std::string q_index_string = std::to_string(r.value);
     auto meas_results = execute_if_needed();
@@ -163,7 +163,7 @@ Map a qubit to a result index
 (TODO: find how to link the classical register to the quantum register in qsim)
 */
 
-void qsimQuantum::mz(Qubit q, Result r)
+void QsimQuantum::mz(Qubit q, Result r)
 {  // we don't classical register yet.
     QIREE_EXPECT(q.value < this->num_qubits());  // TODO: q must be in the set
                                                  // of qubits, e.g., what
@@ -183,71 +183,71 @@ Quantum Instruction Mapping
 */
 
 // 1. Entangling gates
-void qsimQuantum::cx(Qubit q1, Qubit q2)
+void QsimQuantum::cx(Qubit q1, Qubit q2)
 {
     q_circuit.gates.push_back(qsim::GateCNot<float>::Create(
         execution_time++, this->getQubitIndex(q1), this->getQubitIndex(q2)));
 }
-void qsimQuantum::cnot(Qubit q1, Qubit q2)
+void QsimQuantum::cnot(Qubit q1, Qubit q2)
 {
     q_circuit.gates.push_back(qsim::GateCNot<float>::Create(
         execution_time++, this->getQubitIndex(q1), this->getQubitIndex(q2)));
 }
-void qsimQuantum::cz(Qubit q1, Qubit q2)
+void QsimQuantum::cz(Qubit q1, Qubit q2)
 {
     q_circuit.gates.push_back(qsim::GateCZ<float>::Create(
         execution_time++, this->getQubitIndex(q1), this->getQubitIndex(q2)));
 }
 // 2. Local gates
-void qsimQuantum::h(Qubit q)
+void QsimQuantum::h(Qubit q)
 {
     q_circuit.gates.push_back(
         qsim::GateHd<float>::Create(execution_time++, this->getQubitIndex(q)));
 }
-void qsimQuantum::s(Qubit q)
+void QsimQuantum::s(Qubit q)
 {
     q_circuit.gates.push_back(
         qsim::GateS<float>::Create(execution_time++, this->getQubitIndex(q)));
 }
-void qsimQuantum::t(Qubit q)
+void QsimQuantum::t(Qubit q)
 {
     q_circuit.gates.push_back(
         qsim::GateT<float>::Create(execution_time++, this->getQubitIndex(q)));
 }
 // 2.1 Pauli gates
-void qsimQuantum::x(Qubit q)
+void QsimQuantum::x(Qubit q)
 {
     q_circuit.gates.push_back(
         qsim::GateX<float>::Create(execution_time++, this->getQubitIndex(q)));
 }
-void qsimQuantum::y(Qubit q)
+void QsimQuantum::y(Qubit q)
 {
     q_circuit.gates.push_back(
         qsim::GateY<float>::Create(execution_time++, this->getQubitIndex(q)));
 }
-void qsimQuantum::z(Qubit q)
+void QsimQuantum::z(Qubit q)
 {
     q_circuit.gates.push_back(
         qsim::GateZ<float>::Create(execution_time++, this->getQubitIndex(q)));
 }
 // 2.2 rotation gates
-void qsimQuantum::rx(double theta, Qubit q)
+void QsimQuantum::rx(double theta, Qubit q)
 {
     q_circuit.gates.push_back(qsim::GateRX<float>::Create(
         execution_time++, this->getQubitIndex(q), theta));
 }
-void qsimQuantum::ry(double theta, Qubit q)
+void QsimQuantum::ry(double theta, Qubit q)
 {
     q_circuit.gates.push_back(qsim::GateRY<float>::Create(
         execution_time++, this->getQubitIndex(q), theta));
 }
-void qsimQuantum::rz(double theta, Qubit q)
+void QsimQuantum::rz(double theta, Qubit q)
 {
     q_circuit.gates.push_back(qsim::GateRZ<float>::Create(
         execution_time++, this->getQubitIndex(q), theta));
 }
 
-Qubit qsimQuantum::result_to_qubit(Result r)
+Qubit QsimQuantum::result_to_qubit(Result r)
 {
     // TODO: This function is not working. Giving 0 every time. Maybe not
     // needed.
@@ -257,13 +257,13 @@ Qubit qsimQuantum::result_to_qubit(Result r)
                                        // something else here
 }
 
-void qsimQuantum::print_accelbuf()
+void QsimQuantum::print_accelbuf()
 {
     // TODO: to be implemented, we can create a buffer class to store the
     // results
 }
 
-qsimQuantum::VecMeas qsimQuantum::execute_if_needed()
+QsimQuantum::VecMeas QsimQuantum::execute_if_needed()
 {
     std::vector<StateSpace::MeasurementResult> meas_results;  // Vector to hold
                                                               // measurement

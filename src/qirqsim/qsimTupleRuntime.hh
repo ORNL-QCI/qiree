@@ -3,18 +3,18 @@
 // See the top-level COPYRIGHT file for details.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //---------------------------------------------------------------------------//
-//! \file qirqsim/qsimTupleRuntime.hh
+//! \file qirqsim/QsimTupleRuntime.hh
 //---------------------------------------------------------------------------//
 #pragma once
 
-#include "qsimQuantum.hh"
+#include "QsimQuantum.hh"
 
 namespace qiree
 {
 
 /*!
  * Print per-tuple (or per-array) measurement statistics. (Compare with \ref
- * qsimDefaultRuntime.)
+ * QsimDefaultRuntime.)
  *
  * Example:
  * \code
@@ -24,16 +24,16 @@ namespace qiree
  * \endcode
  */
 
-class qsimTupleRuntime final : virtual public RuntimeInterface
+class QsimTupleRuntime final : virtual public RuntimeInterface
 {
   public:
     /*!
-     * Construct an \c qsimTupleRuntime.
+     * Construct an \c QsimTupleRuntime.
      * The \c print_accelbuf argument determines whether the qsim \c
      * AcceleratorBuffer is dumped after execution.
      */
-    qsimTupleRuntime(std::ostream& output,
-                     qsimQuantum& sim,
+    QsimTupleRuntime(std::ostream& output,
+                     QsimQuantum& sim,
                      bool print_accelbuf = true)
         : output_(output)
         , sim_(sim)
@@ -67,7 +67,7 @@ class qsimTupleRuntime final : virtual public RuntimeInterface
     };
 
     std::ostream& output_;
-    qsimQuantum& sim_;
+    QsimQuantum& sim_;
     bool const print_accelbuf_;
     bool valid_;
     GroupingType type_;
