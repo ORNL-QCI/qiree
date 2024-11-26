@@ -62,11 +62,8 @@ QsimQuantum::State QsimQuantum::init_state_space()
         = Factory(numThreads).CreateStateSpace();  // Create the state space
     State state = state_space.Create(this->num_qubits());  // Create the state
     // Check if the state is null
-    if (state_space.IsNull(state))
-    {
-        qsim::IO::errorf(
-            "not enough memory: is the number of qubits too large?\n");
-    }
+    QIREE_VALIDATE(!state_space.IsNull(state),
+            << "not enough memory: is the number of qubits too large?";
     state_space.SetStateZero(state);  // Set the state to zero, TODO: the
                                       // initial state is not necessarily zero
     return state;
@@ -76,7 +73,7 @@ QsimQuantum::QsimQuantum(std::ostream& os, size_type shots) : output_(os) {}
 
 //---------------------------------------------------------------------------//
 /*
-Prepare to build a quantum circuit for an entry point
+* Prepare to build a quantum circuit for an entry point
 */
 
 void QsimQuantum::set_up(EntryPointAttrs const& attrs)
@@ -100,7 +97,7 @@ void QsimQuantum::set_up(EntryPointAttrs const& attrs)
 
 //---------------------------------------------------------------------------//
 /*
-Complete an execution
+* Complete an execution
 */
 
 void QsimQuantum::repCount(int rep)
@@ -117,7 +114,7 @@ void QsimQuantum::tear_down()
 
 //---------------------------------------------------------------------------//
 /*
-Reset the qubit
+* Reset the qubit
 */
 
 void QsimQuantum::reset(Qubit q)
@@ -127,7 +124,7 @@ void QsimQuantum::reset(Qubit q)
 
 //----------------------------------------------------------------------------//
 /*
-Read the value of a result. This utilizes the new BufferManager.
+* Read the value of a result. This utilizes the new BufferManager.
 */
 
 QState QsimQuantum::read_result(Result r)
@@ -159,8 +156,8 @@ QState QsimQuantum::read_result(Result r)
 
 //---------------------------------------------------------------------------//
 /*
-Map a qubit to a result index
-(TODO: find how to link the classical register to the quantum register in qsim)
+* Map a qubit to a result index
+* (TODO: find how to link the classical register to the quantum register in qsim)
 */
 
 void QsimQuantum::mz(Qubit q, Result r)
@@ -179,7 +176,7 @@ void QsimQuantum::mz(Qubit q, Result r)
 
 //---------------------------------------------------------------------------//
 /*
-Quantum Instruction Mapping
+* Quantum Instruction Mapping
 */
 
 // 1. Entangling gates
