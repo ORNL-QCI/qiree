@@ -88,9 +88,12 @@ TEST_F(QsimQuantumTest, sim_dynamicbv)
     qsim_rt.result_record_output(R{0},"");
     qsim_rt.result_record_output(R{1},"");
     qsim_sim.tear_down();
-    auto result = clean_output(os.str());
-    EXPECT_EQ(R"(
-)", result) << result; // TODO: Modify QsimDefaultRuntime.cc so that it stores a result to be compared here (currently just prints as it goes...)
+
+    ASSERT_EQ(2, qsim_sim.num_qubits());
+    EXPECT_EQ(1, qsim_sim.manager.getBufferValue("q0", "0").value());
+    EXPECT_EQ(2, qsim_sim.manager.getBufferValue("q0", "1").value());
+    EXPECT_EQ(2, qsim_sim.manager.getBufferValue("q1", "0").value());
+    EXPECT_EQ(1, qsim_sim.manager.getBufferValue("q1", "1").value());
 }
 
 //---------------------------------------------------------------------------//
