@@ -49,20 +49,18 @@ struct Factory
 };
 
 //---------------------------------------------------------------------------//
-/*
+/*!
  * Initialize the qsim simulator
  */
-
 QsimQuantum::QsimQuantum(std::ostream& os, unsigned long int seed)
     : output_(os), seed_(seed)
 {
 }
 
 //---------------------------------------------------------------------------//
-/*
+/*!
  * Prepare to build a quantum circuit for an entry point
  */
-
 void QsimQuantum::set_up(EntryPointAttrs const& attrs)
 {
     QIREE_VALIDATE(attrs.required_num_qubits > 0,
@@ -74,62 +72,51 @@ void QsimQuantum::set_up(EntryPointAttrs const& attrs)
     num_qubits_ = attrs.required_num_qubits;  // Set the number of qubits
 
     // Get the number of threads
-    numThreads
+    num_threads_
         = std::max(1, static_cast<int>(std::thread::hardware_concurrency()));
 
     // Initialize the qsim simulator
     QsimQuantum::StateSpace state_space
-        = Factory(numThreads).CreateStateSpace();  // Create the state space
-    
+        = Factory(num_threads_).CreateStateSpace();  // Create the state space
+
     // Create the state
     State state = state_space.Create(this->num_qubits());
     // Check if the state is null
     QIREE_VALIDATE(!state_space.IsNull(state),
                    << "not enough memory: is the number of qubits too large?");
-    
+
     state_space.SetStateZero(state);  // Set the state to zero, TODO: the
                                       // initial state is not necessarily zero
 
-    state_ = std::make_shared<State>(std::move(state));  
+    state_ = std::make_shared<State>(std::move(state));
 
     // Allocate the number of qubits in the circuit
-    q_circuit.num_qubits = num_qubits_;  
-    execution_time = 0;  // Initialize execution time
-    static unsigned int rep = 0;
-    rep++;
-    this->repCount(rep);
+    q_circuit.num_qubits = num_qubits_;
+    gate_index_ = 0;  // Initialize execution time
 }
 
 //---------------------------------------------------------------------------//
-/*
+/*!
  * Complete an execution
  */
-
-void QsimQuantum::repCount(int rep)
-{
-    repetition = rep;
-}
-
 void QsimQuantum::tear_down()
 {
     q_circuit = {};
 }
 
 //---------------------------------------------------------------------------//
-/*
+/*!
  * Reset the qubit
  */
-
 void QsimQuantum::reset(Qubit q)
 {
     q.value = 0;
 }
 
 //----------------------------------------------------------------------------//
-/*
+/*!
  * Read the value of a result. This utilizes the new BufferManager.
  */
-
 QState QsimQuantum::read_result(Result r)
 {
     using Fuser = qsim::MultiQubitGateFuser<qsim::IO, qsim::GateQSim<float>>;
@@ -147,11 +134,8 @@ QState QsimQuantum::read_result(Result r)
     qsimParam.verbosity = 0;  // see verbosity in run_qsim.h
 
     // Run the simulation
-    bool const run_success = Runner::Run(qsimParam,
-                                         Factory(numThreads),
-                                         q_circuit,
-                                         *state_,
-                                         meas_results);
+    bool const run_success = Runner::Run(
+        qsimParam, Factory(num_threads_), q_circuit, *state_, meas_results);
 
     assert(run_success);  // Ensure the run was successful
     // reset circuit here
@@ -183,12 +167,12 @@ QState QsimQuantum::read_result(Result r)
 }
 
 //---------------------------------------------------------------------------//
-/*
- * Map a qubit to a result index
+/*!
+ * Map a qubit to a result index.
+ *
  * (TODO: find how to link the classical register to the quantum register in
  * qsim)
  */
-
 void QsimQuantum::mz(Qubit q, Result r)
 {  // we don't classical register yet.
     QIREE_EXPECT(q.value < this->num_qubits());  // TODO: q must be in the set
@@ -201,8 +185,8 @@ void QsimQuantum::mz(Qubit q, Result r)
     QIREE_EXPECT(q.value == r.value);
     // Add measurement instruction
     this->q_circuit.gates.push_back(
-        qsim::gate::Measurement<qsim::GateQSim<float>>::Create(
-            execution_time++, {this->getQubitIndex(q)}));
+        qsim::gate::Measurement<qsim::GateQSim<float>>::Create(gate_index_++,
+                                                               {q.value}));
 }
 
 //---------------------------------------------------------------------------//
@@ -213,66 +197,66 @@ void QsimQuantum::mz(Qubit q, Result r)
 // 1. Entangling gates
 void QsimQuantum::cx(Qubit q1, Qubit q2)
 {
-    q_circuit.gates.push_back(qsim::GateCNot<float>::Create(
-        execution_time++, this->getQubitIndex(q1), this->getQubitIndex(q2)));
+    q_circuit.gates.push_back(
+        qsim::GateCNot<float>::Create(gate_index_++, q1.value, q2.value));
 }
 void QsimQuantum::cnot(Qubit q1, Qubit q2)
 {
-    q_circuit.gates.push_back(qsim::GateCNot<float>::Create(
-        execution_time++, this->getQubitIndex(q1), this->getQubitIndex(q2)));
+    q_circuit.gates.push_back(
+        qsim::GateCNot<float>::Create(gate_index_++, q1.value, q2.value));
 }
 void QsimQuantum::cz(Qubit q1, Qubit q2)
 {
-    q_circuit.gates.push_back(qsim::GateCZ<float>::Create(
-        execution_time++, this->getQubitIndex(q1), this->getQubitIndex(q2)));
+    q_circuit.gates.push_back(
+        qsim::GateCZ<float>::Create(gate_index_++, q1.value, q2.value));
 }
 // 2. Local gates
 void QsimQuantum::h(Qubit q)
 {
     q_circuit.gates.push_back(
-        qsim::GateHd<float>::Create(execution_time++, this->getQubitIndex(q)));
+        qsim::GateHd<float>::Create(gate_index_++, q.value));
 }
 void QsimQuantum::s(Qubit q)
 {
     q_circuit.gates.push_back(
-        qsim::GateS<float>::Create(execution_time++, this->getQubitIndex(q)));
+        qsim::GateS<float>::Create(gate_index_++, q.value));
 }
 void QsimQuantum::t(Qubit q)
 {
     q_circuit.gates.push_back(
-        qsim::GateT<float>::Create(execution_time++, this->getQubitIndex(q)));
+        qsim::GateT<float>::Create(gate_index_++, q.value));
 }
 // 2.1 Pauli gates
 void QsimQuantum::x(Qubit q)
 {
     q_circuit.gates.push_back(
-        qsim::GateX<float>::Create(execution_time++, this->getQubitIndex(q)));
+        qsim::GateX<float>::Create(gate_index_++, q.value));
 }
 void QsimQuantum::y(Qubit q)
 {
     q_circuit.gates.push_back(
-        qsim::GateY<float>::Create(execution_time++, this->getQubitIndex(q)));
+        qsim::GateY<float>::Create(gate_index_++, q.value));
 }
 void QsimQuantum::z(Qubit q)
 {
     q_circuit.gates.push_back(
-        qsim::GateZ<float>::Create(execution_time++, this->getQubitIndex(q)));
+        qsim::GateZ<float>::Create(gate_index_++, q.value));
 }
 // 2.2 rotation gates
 void QsimQuantum::rx(double theta, Qubit q)
 {
-    q_circuit.gates.push_back(qsim::GateRX<float>::Create(
-        execution_time++, this->getQubitIndex(q), theta));
+    q_circuit.gates.push_back(
+        qsim::GateRX<float>::Create(gate_index_++, q.value, theta));
 }
 void QsimQuantum::ry(double theta, Qubit q)
 {
-    q_circuit.gates.push_back(qsim::GateRY<float>::Create(
-        execution_time++, this->getQubitIndex(q), theta));
+    q_circuit.gates.push_back(
+        qsim::GateRY<float>::Create(gate_index_++, q.value, theta));
 }
 void QsimQuantum::rz(double theta, Qubit q)
 {
-    q_circuit.gates.push_back(qsim::GateRZ<float>::Create(
-        execution_time++, this->getQubitIndex(q), theta));
+    q_circuit.gates.push_back(
+        qsim::GateRZ<float>::Create(gate_index_++, q.value, theta));
 }
 
 Qubit QsimQuantum::result_to_qubit(Result r)

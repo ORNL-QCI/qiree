@@ -22,12 +22,15 @@
 
 namespace qiree
 {
+//---------------------------------------------------------------------------//
+/*!
+ * Create and execute quantum circuits using google Qsim.
+ */
 class QsimQuantum final : virtual public QuantumNotImpl
 {
   public:
-    // Define constructors and destructors
     // Construct with number of shots
-    QsimQuantum(std::ostream& os, size_type shots);  
+    QsimQuantum(std::ostream& os, size_type shots);
 
     QIREE_DELETE_COPY_MOVE(QsimQuantum);  // Delete copy and move constructors
 
@@ -35,12 +38,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
     //! \name Accessors
     size_type num_results() const { return result_to_qubit_.size(); }
     size_type num_qubits() const { return num_qubits_; }
-
-    unsigned getQubitIndex(Qubit q)
-    {
-        return static_cast<unsigned>(q.value);  // Return the value of the
-                                                // qubit
-    }
     //!@}
 
     //!@{
@@ -62,10 +59,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
     //! \name Utilities for runtime
     // Get runtime qubit corresponding to a runtime result
     Qubit result_to_qubit(Result);
-
-    // Wrapper for qsim
-    // std::map<std::string, int>
-    // get_marginal_counts(std::vector<Qubit> const& qubits);
 
     // Run the circuit on the accelerator if we have not already. Returns true
     // if the circuit was executed.
@@ -100,9 +93,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
 
     // Update the buffer
     BufferManager manager;
-    // Number of repetitions
-    int repetition;
-    void repCount(int rep);
 
   private:
 
@@ -112,23 +102,14 @@ class QsimQuantum final : virtual public QuantumNotImpl
     using StateSpace = Simulator::StateSpace;
     using State = StateSpace::State;
 
-    enum class Endianness
-    {
-        little,
-        big
-    };
-    
-    unsigned numThreads;  // Number of threads to use
-    unsigned max_fused_size;  // Maximum size of fused gates
+    unsigned num_threads_;  // Number of threads to use
     qsim::Circuit<qsim::GateQSim<float>> q_circuit;  // Quantum circuit object
 
     unsigned long int seed_;
-    size_t execution_time;  // when the quantum operation will be executed
+    size_t gate_index_;  // when the quantum operation will be executed
 
-    bool executed;
     size_type num_qubits_{};
     std::vector<Qubit> result_to_qubit_;
-    Endianness endian_;
 
     std::ostream& output_;
     std::shared_ptr<Simulator> simulator_;
