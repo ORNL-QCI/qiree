@@ -6,8 +6,7 @@
 //! \file qirqsim/BufferManager.hh
 //---------------------------------------------------------------------------//
 
-#ifndef BUFFER_MANAGER_H
-#define BUFFER_MANAGER_H
+#pragma once
 
 #include <functional>
 #include <optional>
@@ -49,4 +48,4 @@ class BufferManager
     std::unordered_map<std::string, int> simple_buffer;
 };
 
-#endif  // BUFFER_MANAGER_H
+// BUFFER_MANAGER_H
