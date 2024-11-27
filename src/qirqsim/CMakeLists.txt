@@ -8,7 +8,6 @@
 qiree_add_library(qirqsim
   QsimQuantum.cc
   QsimDefaultRuntime.cc
-  QsimTupleRuntime.cc
   BufferManager.cc
 )
 

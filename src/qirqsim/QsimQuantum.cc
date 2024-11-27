@@ -58,7 +58,7 @@ struct QsimQuantum::Factory
 struct QsimQuantum::State
 {
     qsim::Circuit<qsim::GateQSim<float>> circuit;
-    Factory::StateSpace::State state;
+    std::optional<Factory::StateSpace::State> state;
 };
 
 //---------------------------------------------------------------------------//
@@ -100,11 +100,11 @@ void QsimQuantum::set_up(EntryPointAttrs const& attrs)
     // Create the state
     state_->state = state_space.Create(this->num_qubits());
     // Check if the state is null
-    QIREE_VALIDATE(!state_space.IsNull(state),
+    QIREE_VALIDATE(!state_space.IsNull(*state_->state),
                    << "not enough memory: is the number of qubits too large?");
 
-    state_space.SetStateZero(state);  // Set the state to zero, TODO: the
-                                      // initial state is not necessarily zero
+    // TODO: initial states shouldn't necessarily be zero
+    state_space.SetStateZero(*state_->state);
 
     // Allocate the number of qubits in the circuit
     state_->circuit.num_qubits = num_qubits_;
@@ -137,7 +137,7 @@ QState QsimQuantum::read_result(Result r)
 {
     using Fuser = qsim::MultiQubitGateFuser<qsim::IO, qsim::GateQSim<float>>;
     using Runner = qsim::QSimRunner<qsim::IO, Fuser, Factory>;
-    using VecMeas = std::vector<StateSpace::MeasurementResult>;
+    using StateSpace = Factory::StateSpace;
 
     // Vector to hold measurement results, this must be empty before running
     std::vector<StateSpace::MeasurementResult> meas_results;
@@ -153,7 +153,7 @@ QState QsimQuantum::read_result(Result r)
     bool const run_success = Runner::Run(qsimParam,
                                          Factory(num_threads_),
                                          state_->circuit,
-                                         state_->state,
+                                         *state_->state,
                                          meas_results);
 
     QIREE_ASSERT(run_success);  // Ensure the run was successful
@@ -204,8 +204,8 @@ void QsimQuantum::mz(Qubit q, Result r)
     QIREE_EXPECT(q.value == r.value);
     // Add measurement instruction
     state_->circuit.gates.push_back(
-        qsim::gate::Measurement<qsim::GateQSim<float>>::Create(gate_index_++,
-                                                               {q.value}));
+        qsim::gate::Measurement<qsim::GateQSim<float>>::Create(
+            gate_index_++, {static_cast<unsigned int>(q.value)}));
 }
 
 //---------------------------------------------------------------------------//

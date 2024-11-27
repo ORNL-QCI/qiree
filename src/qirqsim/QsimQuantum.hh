@@ -27,7 +27,7 @@ class QsimQuantum final : virtual public QuantumNotImpl
 {
   public:
     // Construct with number of shots
-    QsimQuantum(std::ostream& os, size_type shots);
+    QsimQuantum(std::ostream& os, unsigned long int shots);
     ~QsimQuantum();
 
     QIREE_DELETE_COPY_MOVE(QsimQuantum);  // Delete copy and move constructors
@@ -101,18 +101,14 @@ class QsimQuantum final : virtual public QuantumNotImpl
 
     //// DATA ////
 
-    unsigned num_threads_;  // Number of threads to use
+    std::ostream& output_;
+    unsigned long int seed_{};
+    std::unique_ptr<State> state_;
 
-    unsigned long int seed_;
+    unsigned num_threads_{};  // Number of threads to use
     size_t gate_index_;  // when the quantum operation will be executed
-
     size_type num_qubits_{};
     std::vector<Qubit> result_to_qubit_;
-
-    std::ostream& output_;
-
-    // Quantum circuit, simulator, and measured results
-    std::unique_ptr<State> state_;
 };
 
 }  // namespace qiree

@@ -12,17 +12,12 @@
 #include <CLI/CLI.hpp>
 
 #include "qiree_version.h"
-#include "qiree/Executor.hh"
-#include "qiree/Module.hh"
-#include "qiree/QuantumNotImpl.hh"
 
 #include "qiree/Executor.hh"
 #include "qiree/Module.hh"
 #include "qiree/QuantumNotImpl.hh"
-
 #include "qirqsim/QsimDefaultRuntime.hh"
 #include "qirqsim/QsimQuantum.hh"
-#include "qirqsim/QsimTupleRuntime.hh"
 
 using namespace std::string_view_literals;
 
@@ -36,22 +31,17 @@ void run(std::string const& filename,
 {
     // Load the input
     Executor execute{Module{filename}};
-    
+
     // Set up qsim
     QsimQuantum sim(std::cout, 0);
-    
-    // Collect the statistics 
+
+    // Collect the statistics
     std::unique_ptr<RuntimeInterface> rt;
-    //if (group_tuples){
-    //    rt = std::make_unique<QsimTupleRuntime>(
-    //        std::cout, sim);
-    //} else {
-        rt = std::make_unique<QsimDefaultRuntime>(
-            std::cout, sim);
-    //}
+    rt = std::make_unique<QsimDefaultRuntime>(std::cout, sim);
 
     // Run several time = shots (default 1)
-    for (int i = 0; i < num_shots; i++){    
+    for (int i = 0; i < num_shots; i++)
+    {
         execute(sim, *rt);
     }
 
@@ -60,7 +50,7 @@ void run(std::string const& filename,
     std::cout << "-------------------" << std::endl;
     std::cout << "Number of shots: " << num_shots << std::endl;
     std::cout << "Number of qubits: " << sim.num_qubits() << std::endl;
-    
+
     for(int q_index = 0; q_index < sim.num_qubits(); q_index++){
         int value_0 = 0;
         int value_1 = 0;
@@ -83,7 +73,7 @@ int main(int argc, char* argv[])
     int num_shots{1};
     std::string filename;
     //bool group_tuples{false};
- 
+
     CLI::App app;
 
     auto* filename_opt
@@ -93,16 +83,16 @@ int main(int argc, char* argv[])
     auto* nshot_opt
         = app.add_option("-s,--shots", num_shots, "Number of shots");
     nshot_opt->capture_default_str();
-    
+
     //app.add_flag("--group-tuples,!--no-group-tuples",
     //            group_tuples,
     //            "Print per-tuple measurement statistics rather than "
     //            "per-qubit");
-    
+
     CLI11_PARSE(app, argc, argv);
 
     //qiree::app::run(filename, num_shots, group_tuples);
     qiree::app::run(filename, num_shots);
-        
+
     return EXIT_SUCCESS;
 }
