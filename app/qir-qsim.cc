@@ -38,7 +38,7 @@ void run(std::string const& filename,
     Executor execute{Module{filename}};
     
     // Set up qsim
-    QsimQuantum sim(std::cout, num_shots);
+    QsimQuantum sim(std::cout, 0);
     
     // Collect the statistics 
     std::unique_ptr<RuntimeInterface> rt;

@@ -50,8 +50,8 @@ class QsimQuantum final : virtual public QuantumNotImpl
 {
   public:
     // Define constructors and destructors
-    QsimQuantum(std::ostream& os, size_type shots);  // Construct with number
-                                                     // of shots
+    // Construct with number of shots
+    QsimQuantum(std::ostream& os, size_type shots);  
 
     // Define types
     using Simulator = qsim::Simulator<qsim::For>;
@@ -157,6 +157,7 @@ class QsimQuantum final : virtual public QuantumNotImpl
     qsim::Circuit<qsim::GateQSim<float>> q_circuit;  // Quantum circuit object
 
     Runner::Parameter qsimParam;  // Parameters for qsim
+    unsigned long int seed_;
     size_t execution_time;  // when the quantum operation will be executed
 
     bool executed;

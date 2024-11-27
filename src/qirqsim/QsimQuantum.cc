@@ -39,22 +39,18 @@ namespace qiree
 {
 //---------------------------------------------------------------------------//
 /*
-Initialize the qsim simulator
+* Initialize the qsim simulator
 */
 
 QsimQuantum::State QsimQuantum::init_state_space()
-{  // check if StateSpace is the proper type for the output, problably it is
-   // just State from the Fatory struct.
-    std::srand(static_cast<unsigned int>(std::time(nullptr)));  // Seed the
-                                                                // random
-                                                                // number
-                                                                // generator
-    qsimParam.seed = std::rand();  // Set the seed for qsim parameters
-    numThreads = std::max(
-        1, static_cast<int>(std::thread::hardware_concurrency()));  // Get the
-                                                                    // number
-                                                                    // of
-                                                                    // threads
+{   
+    // check if StateSpace is the proper type for the output, problably it is
+    // just State from the Factory struct.
+    qsimParam.seed = seed_;
+    seed_++;
+    // Get the number of threads
+    numThreads
+        = std::max(1, static_cast<int>(std::thread::hardware_concurrency()));
     qsimParam.max_fused_size = 2;  // Set the maximum size of fused gates
     qsimParam.verbosity = 0;  // see verbosity in run_qsim.h
     // Initialize the qsim simulator
@@ -63,13 +59,13 @@ QsimQuantum::State QsimQuantum::init_state_space()
     State state = state_space.Create(this->num_qubits());  // Create the state
     // Check if the state is null
     QIREE_VALIDATE(!state_space.IsNull(state),
-            << "not enough memory: is the number of qubits too large?";
+            << "not enough memory: is the number of qubits too large?");
     state_space.SetStateZero(state);  // Set the state to zero, TODO: the
                                       // initial state is not necessarily zero
     return state;
 }
 
-QsimQuantum::QsimQuantum(std::ostream& os, size_type shots) : output_(os) {}
+QsimQuantum::QsimQuantum(std::ostream& os, unsigned long int seed) : output_(os), seed_(seed) {}
 
 //---------------------------------------------------------------------------//
 /*
