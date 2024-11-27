@@ -7,9 +7,6 @@
 //---------------------------------------------------------------------------//
 #pragma once
 
-#include <cassert>
-#include <initializer_list>
-#include <map>
 #include <memory>
 #include <ostream>
 #include <vector>
@@ -31,6 +28,7 @@ class QsimQuantum final : virtual public QuantumNotImpl
   public:
     // Construct with number of shots
     QsimQuantum(std::ostream& os, size_type shots);
+    ~QsimQuantum();
 
     QIREE_DELETE_COPY_MOVE(QsimQuantum);  // Delete copy and move constructors
 
@@ -98,12 +96,12 @@ class QsimQuantum final : virtual public QuantumNotImpl
 
     //// TYPES ////
 
-    using Simulator = qsim::Simulator<qsim::For>;
-    using StateSpace = Simulator::StateSpace;
-    using State = StateSpace::State;
+    struct Factory;
+    struct State;
+
+    //// DATA ////
 
     unsigned num_threads_;  // Number of threads to use
-    qsim::Circuit<qsim::GateQSim<float>> q_circuit;  // Quantum circuit object
 
     unsigned long int seed_;
     size_t gate_index_;  // when the quantum operation will be executed
@@ -112,9 +110,9 @@ class QsimQuantum final : virtual public QuantumNotImpl
     std::vector<Qubit> result_to_qubit_;
 
     std::ostream& output_;
-    std::shared_ptr<Simulator> simulator_;
-    std::shared_ptr<StateSpace> statespace_;
-    std::shared_ptr<State> state_;
+
+    // Quantum circuit, simulator, and measured results
+    std::unique_ptr<State> state_;
 };
 
 }  // namespace qiree

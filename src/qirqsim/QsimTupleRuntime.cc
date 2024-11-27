@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 #include "QsimTupleRuntime.hh"
 
+#include
 #include "qiree/Assert.hh"
 
 namespace qiree
