@@ -43,7 +43,7 @@ TEST_F(QsimQuantumTest, sim_dynamicbv)
     os << '\n';
 
     // Create a simulator that will write to the string stream
-    QsimQuantum qsim_sim{os, 1};
+    QsimQuantum qsim_sim{os, 0};
     QsimDefaultRuntime qsim_rt{os, qsim_sim};
 
     // Call functions in the same sequence that dynamicbv.ll would
