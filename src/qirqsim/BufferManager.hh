@@ -32,6 +32,7 @@ class BufferManager
 {
   public:
     // Method to update the buffer with a key-value pair
+    // TODO: Don't use strings here
     void updateBuffer(std::string const& qubit,
                       std::string const& state,
                       int const& value);

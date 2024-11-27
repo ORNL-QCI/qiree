@@ -13,36 +13,12 @@
 #include <memory>
 #include <ostream>
 #include <vector>
-#include <qsim/lib/circuit.h>
-#include <qsim/lib/circuit_qsim_parser.h>
-#include <qsim/lib/formux.h>
-#include <qsim/lib/fuser.h>
-#include <qsim/lib/fuser_mqubit.h>
-#include <qsim/lib/gate.h>
-#include <qsim/lib/gates_qsim.h>
-#include <qsim/lib/io.h>
-#include <qsim/lib/io_file.h>
-#include <qsim/lib/run_qsim.h>
-#include <qsim/lib/simmux.h>
-#include <qsim/lib/simulator_basic.h>
-#include <qsim/lib/statespace_basic.h>
-#include <qsim/lib/util_cpu.h>
 
 #include "BufferManager.hh"
 #include "qiree/Macros.hh"
 #include "qiree/QuantumNotImpl.hh"
 #include "qiree/RuntimeInterface.hh"
 #include "qiree/Types.hh"
-
-struct Factory
-{  // Factory class for creating simulators in qsim
-    Factory(unsigned num_threads) : num_threads(num_threads) {}
-    using Simulator = qsim::Simulator<qsim::For>;
-    using StateSpace = Simulator::StateSpace;
-    StateSpace CreateStateSpace() const { return StateSpace(num_threads); }
-    Simulator CreateSimulator() const { return Simulator(num_threads); }
-    unsigned num_threads;
-};
 
 namespace qiree
 {
@@ -52,16 +28,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
     // Define constructors and destructors
     // Construct with number of shots
     QsimQuantum(std::ostream& os, size_type shots);  
-
-    // Define types
-    using Simulator = qsim::Simulator<qsim::For>;
-    using StateSpace = Simulator::StateSpace;
-    using State = StateSpace::State;
-    using Fuser = qsim::MultiQubitGateFuser<qsim::IO, qsim::GateQSim<float>>;
-    using Runner = qsim::QSimRunner<qsim::IO, Fuser, Factory>;
-    using VecMeas = std::vector<StateSpace::MeasurementResult>;
-
-    State init_state_space();
 
     QIREE_DELETE_COPY_MOVE(QsimQuantum);  // Delete copy and move constructors
 
@@ -103,7 +69,7 @@ class QsimQuantum final : virtual public QuantumNotImpl
 
     // Run the circuit on the accelerator if we have not already. Returns true
     // if the circuit was executed.
-    VecMeas execute_if_needed();
+    void execute_if_needed();
 
     void print_accelbuf();
     //!@}
@@ -132,13 +98,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
     void z(Qubit) final;
     //!@}
 
-    // Get the quantum circuit
-    qsim::Circuit<qsim::GateQSim<float>> get_circuit() const
-    {
-        return q_circuit;
-    }
-    // Get the state space
-    State const& get_state() const { return *state_; }
     // Update the buffer
     BufferManager manager;
     // Number of repetitions
@@ -146,17 +105,23 @@ class QsimQuantum final : virtual public QuantumNotImpl
     void repCount(int rep);
 
   private:
+
     //// TYPES ////
+
+    using Simulator = qsim::Simulator<qsim::For>;
+    using StateSpace = Simulator::StateSpace;
+    using State = StateSpace::State;
+
     enum class Endianness
     {
         little,
         big
     };
+    
     unsigned numThreads;  // Number of threads to use
     unsigned max_fused_size;  // Maximum size of fused gates
     qsim::Circuit<qsim::GateQSim<float>> q_circuit;  // Quantum circuit object
 
-    Runner::Parameter qsimParam;  // Parameters for qsim
     unsigned long int seed_;
     size_t execution_time;  // when the quantum operation will be executed
 
@@ -169,13 +134,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
     std::shared_ptr<Simulator> simulator_;
     std::shared_ptr<StateSpace> statespace_;
     std::shared_ptr<State> state_;
-};
-
-class buffer
-{
-  public:
-    buffer(size_t size) : size(size) {}
-    size_t size;
 };
 
 }  // namespace qiree

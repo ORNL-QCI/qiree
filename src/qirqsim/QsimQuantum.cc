@@ -37,40 +37,31 @@
 
 namespace qiree
 {
+
+struct Factory
+{  // Factory class for creating simulators in qsim
+    Factory(unsigned num_threads) : num_threads(num_threads) {}
+    using Simulator = qsim::Simulator<qsim::For>;
+    using StateSpace = Simulator::StateSpace;
+    StateSpace CreateStateSpace() const { return StateSpace(num_threads); }
+    Simulator CreateSimulator() const { return Simulator(num_threads); }
+    unsigned num_threads;
+};
+
 //---------------------------------------------------------------------------//
 /*
-* Initialize the qsim simulator
-*/
+ * Initialize the qsim simulator
+ */
 
-QsimQuantum::State QsimQuantum::init_state_space()
-{   
-    // check if StateSpace is the proper type for the output, problably it is
-    // just State from the Factory struct.
-    qsimParam.seed = seed_;
-    seed_++;
-    // Get the number of threads
-    numThreads
-        = std::max(1, static_cast<int>(std::thread::hardware_concurrency()));
-    qsimParam.max_fused_size = 2;  // Set the maximum size of fused gates
-    qsimParam.verbosity = 0;  // see verbosity in run_qsim.h
-    // Initialize the qsim simulator
-    QsimQuantum::StateSpace state_space
-        = Factory(numThreads).CreateStateSpace();  // Create the state space
-    State state = state_space.Create(this->num_qubits());  // Create the state
-    // Check if the state is null
-    QIREE_VALIDATE(!state_space.IsNull(state),
-            << "not enough memory: is the number of qubits too large?");
-    state_space.SetStateZero(state);  // Set the state to zero, TODO: the
-                                      // initial state is not necessarily zero
-    return state;
+QsimQuantum::QsimQuantum(std::ostream& os, unsigned long int seed)
+    : output_(os), seed_(seed)
+{
 }
 
-QsimQuantum::QsimQuantum(std::ostream& os, unsigned long int seed) : output_(os), seed_(seed) {}
-
 //---------------------------------------------------------------------------//
 /*
-* Prepare to build a quantum circuit for an entry point
-*/
+ * Prepare to build a quantum circuit for an entry point
+ */
 
 void QsimQuantum::set_up(EntryPointAttrs const& attrs)
 {
@@ -81,10 +72,28 @@ void QsimQuantum::set_up(EntryPointAttrs const& attrs)
     // (probably not true in general)
     result_to_qubit_.resize(attrs.required_num_results);
     num_qubits_ = attrs.required_num_qubits;  // Set the number of qubits
-    state_ = std::make_shared<State>(init_state_space());  // Set the state
-                                                           // space? Maybe.
-    q_circuit.num_qubits = num_qubits_;  // Allocate the number of qubits in
-                                         // the circuit
+
+    // Get the number of threads
+    numThreads
+        = std::max(1, static_cast<int>(std::thread::hardware_concurrency()));
+
+    // Initialize the qsim simulator
+    QsimQuantum::StateSpace state_space
+        = Factory(numThreads).CreateStateSpace();  // Create the state space
+    
+    // Create the state
+    State state = state_space.Create(this->num_qubits());
+    // Check if the state is null
+    QIREE_VALIDATE(!state_space.IsNull(state),
+                   << "not enough memory: is the number of qubits too large?");
+    
+    state_space.SetStateZero(state);  // Set the state to zero, TODO: the
+                                      // initial state is not necessarily zero
+
+    state_ = std::make_shared<State>(std::move(state));  
+
+    // Allocate the number of qubits in the circuit
+    q_circuit.num_qubits = num_qubits_;  
     execution_time = 0;  // Initialize execution time
     static unsigned int rep = 0;
     rep++;
@@ -93,8 +102,8 @@ void QsimQuantum::set_up(EntryPointAttrs const& attrs)
 
 //---------------------------------------------------------------------------//
 /*
-* Complete an execution
-*/
+ * Complete an execution
+ */
 
 void QsimQuantum::repCount(int rep)
 {
@@ -104,14 +113,12 @@ void QsimQuantum::repCount(int rep)
 void QsimQuantum::tear_down()
 {
     q_circuit = {};
-    q_circuit.num_qubits = num_qubits_;
-    state_ = std::make_shared<State>(init_state_space());
 }
 
 //---------------------------------------------------------------------------//
 /*
-* Reset the qubit
-*/
+ * Reset the qubit
+ */
 
 void QsimQuantum::reset(Qubit q)
 {
@@ -120,18 +127,43 @@ void QsimQuantum::reset(Qubit q)
 
 //----------------------------------------------------------------------------//
 /*
-* Read the value of a result. This utilizes the new BufferManager.
-*/
+ * Read the value of a result. This utilizes the new BufferManager.
+ */
 
 QState QsimQuantum::read_result(Result r)
 {
-    std::string q_index_string = std::to_string(r.value);
-    auto meas_results = execute_if_needed();
+    using Fuser = qsim::MultiQubitGateFuser<qsim::IO, qsim::GateQSim<float>>;
+    using Runner = qsim::QSimRunner<qsim::IO, Fuser, Factory>;
+    using VecMeas = std::vector<StateSpace::MeasurementResult>;
+
+    // Vector to hold measurement results, this must be empty before running
+    std::vector<StateSpace::MeasurementResult> meas_results;
+    std::string stringResult;
+
+    Runner::Parameter qsimParam;  // Parameters for qsim
+    qsimParam.seed = seed_;
+    seed_++;
+    qsimParam.max_fused_size = 2;  // Set the maximum size of fused gates
+    qsimParam.verbosity = 0;  // see verbosity in run_qsim.h
+
+    // Run the simulation
+    bool const run_success = Runner::Run(qsimParam,
+                                         Factory(numThreads),
+                                         q_circuit,
+                                         *state_,
+                                         meas_results);
+
+    assert(run_success);  // Ensure the run was successful
+    // reset circuit here
+    q_circuit = {};
+    q_circuit.num_qubits = num_qubits_;
+
     if (meas_results.size() == 1 && meas_results[0].bitstring.size() == 1)
     {
         auto const bitResult = meas_results[0].bitstring[0];
         assert(bitResult == 0 || bitResult == 1);
         std::string stringResult = std::to_string(bitResult);
+        std::string q_index_string = std::to_string(r.value);
         if (stringResult == "1")
         {
             manager.updateBuffer("q" + q_index_string, "1", 1);
@@ -152,9 +184,10 @@ QState QsimQuantum::read_result(Result r)
 
 //---------------------------------------------------------------------------//
 /*
-* Map a qubit to a result index
-* (TODO: find how to link the classical register to the quantum register in qsim)
-*/
+ * Map a qubit to a result index
+ * (TODO: find how to link the classical register to the quantum register in
+ * qsim)
+ */
 
 void QsimQuantum::mz(Qubit q, Result r)
 {  // we don't classical register yet.
@@ -164,6 +197,8 @@ void QsimQuantum::mz(Qubit q, Result r)
                                                  // are {2,3,4,5}, q is less
                                                  // than num_qubits but not it
                                                  // is in the set of qubits.
+    // TODO: maybe not what we want long term
+    QIREE_EXPECT(q.value == r.value);
     // Add measurement instruction
     this->q_circuit.gates.push_back(
         qsim::gate::Measurement<qsim::GateQSim<float>>::Create(
@@ -172,8 +207,8 @@ void QsimQuantum::mz(Qubit q, Result r)
 
 //---------------------------------------------------------------------------//
 /*
-* Quantum Instruction Mapping
-*/
+ * Quantum Instruction Mapping
+ */
 
 // 1. Entangling gates
 void QsimQuantum::cx(Qubit q1, Qubit q2)
@@ -256,26 +291,9 @@ void QsimQuantum::print_accelbuf()
     // results
 }
 
-QsimQuantum::VecMeas QsimQuantum::execute_if_needed()
+void QsimQuantum::execute_if_needed()
 {
-    std::vector<StateSpace::MeasurementResult> meas_results;  // Vector to hold
-                                                              // measurement
-                                                              // results, this
-                                                              // must be empty
-                                                              // before running
-    std::string stringResult;
-    static unsigned long int seed = 0;
-    qsimParam.seed = seed++;
-    bool const run_success = Runner::Run(qsimParam,
-                                         Factory(numThreads),
-                                         q_circuit,
-                                         *state_,
-                                         meas_results);  // Run the simulation
-    assert(run_success);  // Ensure the run was successful
-    // reset circuit here
-    q_circuit = {};
-    q_circuit.num_qubits = num_qubits_;
-    return meas_results;
+    QIREE_EXPECT(false);
 }
 
 }  // namespace qiree
