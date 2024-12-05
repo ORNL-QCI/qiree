@@ -31,7 +31,7 @@ class QuantumNotImpl : virtual public QuantumInterface
     //@{
     //! \name Gates
 
-    void ccx(Qubit, Qubit) override;
+    void ccx(Qubit, Qubit, Qubit) override;
     void cnot(Qubit, Qubit) override;
     void cx(Qubit, Qubit) override;
     void cy(Qubit, Qubit) override;
