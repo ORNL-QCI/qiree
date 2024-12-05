@@ -20,16 +20,14 @@ RUN apt install -y --no-install-recommends ninja-build \
                 gpg \
                 libzstd-dev
 
-RUN ln -sf /usr/bin/gcc-11 /usr/bin/gcc && \
-    ln -sf /usr/bin/g++-11 /usr/bin/g++ && \
-    ln -sf /usr/bin/gcc-11 /usr/bin/cc && \
-    ln -sf /usr/bin/g++-11 /usr/bin/c++
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100 && \
+    update-alternatives --set gcc /usr/bin/gcc-11 && \
+    update-alternatives --set g++ /usr/bin/g++-11
 
 WORKDIR /home/dev
-RUN git clone https://github.com/danclaudino/xacc.git
+RUN git clone https://github.com/ORNL-QCI/xacc.git
 WORKDIR /home/dev/xacc/build
-RUN git fetch origin
-RUN git checkout origin/ibm_update
 RUN cmake -GNinja /home/dev/xacc -DXACC_BUILD_TESTS=TRUE -DXACC_REMOTE_ACCELERATORS=ON -DQIREE_MINIMAL_BUILD=ON
 RUN cmake --build . --target install
 RUN ctest --output-on-failure
