@@ -79,17 +79,6 @@ XaccQuantum::~XaccQuantum()
 
 //---------------------------------------------------------------------------//
 /*!
- * Update the XACC accelerator and shot count.
- */
-void XaccQuantum::set_accelerator_and_shots(
-    std::string const& accel_name, size_type shots) {
-    accelerator_ = xacc::getAccelerator(accel_name);
-    QIREE_VALIDATE(accelerator_, << "failed to create accelerator");
-    accelerator_->updateConfiguration({{"shots", static_cast<int>(shots)}});
-}
-
-//---------------------------------------------------------------------------//
-/*!
  * Prepare to build a quantum circuit for an entry point.
  */
 void XaccQuantum::set_up(EntryPointAttrs const& attrs)

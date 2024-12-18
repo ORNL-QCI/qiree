@@ -116,6 +116,7 @@ Module::Module(UPModule&& module) : module_{std::move(module)}
 //---------------------------------------------------------------------------//
 /*!
  * Construct with an LLVM module and an entry point.
+ * Useful when there are multiple entry points.
  */
 Module::Module(UPModule&& module, std::string const& entrypoint)
     : module_{std::move(module)}
@@ -127,7 +128,6 @@ Module::Module(UPModule&& module, std::string const& entrypoint)
     QIREE_VALIDATE(entrypoint_,
                    << "no entrypoint function '" << entrypoint << "' exists");
 }
-
 
 //---------------------------------------------------------------------------//
 /*!
@@ -141,6 +141,7 @@ Module::Module(std::string const& filename)
 //---------------------------------------------------------------------------//
 /*!
  * Construct with an LLVM IR file (bitcode or disassembled) and entry point.
+ * Useful when there are multiple entry points.
  */
 Module::Module(std::string const& filename, std::string const& entrypoint)
     : module_{load_llvm_module(filename)}
