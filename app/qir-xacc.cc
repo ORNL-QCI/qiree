@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
     int num_shots{1024};
     std::string accel_name;
     std::string filename;
-    bool print_accelbuf{true};
+    bool no_print_accelbuf{false};
     bool group_tuples{false};
 
     CLI::App app;
@@ -80,11 +80,18 @@ int main(int argc, char* argv[])
     auto* nshot_opt
         = app.add_option("-s,--shots", num_shots, "Number of shots");
     nshot_opt->capture_default_str();
+    app.add_flag("--no-print-xacc-accelbuf",
+                 no_print_accelbuf,
+                 "Do not print XACC AcceleratorBuffer");
+    app.add_flag("--group-tuples",
+                 group_tuples,
+                 "Print per-tuple/per-array measurement statistics rather "
+                 "than per-qubit");
 
     CLI11_PARSE(app, argc, argv);
 
     qiree::app::run(
-        filename, accel_name, num_shots, print_accelbuf, group_tuples);
+        filename, accel_name, num_shots, !no_print_accelbuf, group_tuples);
 
     return EXIT_SUCCESS;
 }
