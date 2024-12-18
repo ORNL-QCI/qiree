@@ -68,6 +68,14 @@ void XaccTupleRuntime::tuple_record_output(size_type s, OptionalCString tag)
  */
 void XaccTupleRuntime::result_record_output(Result r, OptionalCString)
 {
+    QIREE_VALIDATE(valid_,
+                   << "result_record_output() called without an accompanying "
+                      "array_record_output/tuple_record_output. (Results "
+                      "cannot be grouped by tuple if they are not inside "
+                      "tuples at all.) Please make sure every "
+                      "result_record_output() in your QIR is preceded by a "
+                      "array_record_output() or tuple_record_output().");
+
     execute_if_needed();
     Qubit q = xacc_.result_to_qubit(r);
     push_result(q);
