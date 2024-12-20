@@ -1,0 +1,69 @@
+# Author: Narasinga Rao Miniskar
+# Contact: miniskarnr@ornl.gov
+
+Bootstrap: docker
+From: ubuntu:22.04
+Stage: build
+
+%labels
+    Author Narasinga Rao Miniskar
+    Version v1.0
+
+%environment
+    export DEBIAN_FRONTEND=noninteractive
+    export PATH=/software/qiree/build/bin:/root/.xacc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+    export LD_LIBRARY_PATH=/software/qiree/build/lib:/root/.xacc/lib:$LD_LIBRARY_PATH
+
+%post
+    apt -y update && \
+    apt install -y --no-install-recommends ninja-build \
+                   libssl-dev \
+                   libcurl4-openssl-dev \
+                   autoconf automake autotools-dev \
+                   build-essential \
+                   python3 \
+                   libpython3-dev \
+                   python3-pip \
+                   libblas-dev \
+                   liblapack-dev \
+                   libncurses-dev \
+                   gcc-11 \
+                   g++-11 \
+                   git \
+                   vim \
+                   unzip \
+                   curl \
+                   cmake \
+                   wget \
+                   lsb-release \
+                   software-properties-common \
+                   gpg \
+                   libzstd-dev && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100 && \
+    update-alternatives --set gcc /usr/bin/gcc-11 && \
+    update-alternatives --set g++ /usr/bin/g++-11
+
+    # Build XACC
+    mkdir -p /software && cd /software && \
+    git clone https://github.com/ORNL-QCI/xacc.git && \
+    mkdir -p /software/xacc/build && cd /software/xacc/build && \
+    cmake -GNinja /software/xacc -DXACC_BUILD_TESTS=TRUE -DXACC_REMOTE_ACCELERATORS=ON -DQIREE_MINIMAL_BUILD=ON && \
+    cmake --build . --target install && \
+    ctest --output-on-failure
+
+    # Install LLVM
+    mkdir -p /software/llvm && cd /software/llvm && \
+    wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 18
+    apt install -y clang-format-18
+
+    # Build QIREE
+    mkdir -p /software && cd /software && \
+    git clone https://github.com/ORNL-QCI/qiree.git && \
+    mkdir -p /software/qiree/build && cd /software/qiree/build && \
+    cmake -GNinja /software/qiree -DCMAKE_PREFIX_PATH=$HOME/.xacc 
+    cmake --build .
+
+%runscript
+    echo "Container initialized. Customize the runscript section to add your commands."
+
