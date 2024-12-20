@@ -10,5 +10,7 @@
 #define qiree_config_h
 
 #cmakedefine01 QIREE_DEBUG
+#cmakedefine01 QIREE_USE_QSIM
+#cmakedefine01 QIREE_USE_XACC
 
 #endif /* qiree_config_h */
