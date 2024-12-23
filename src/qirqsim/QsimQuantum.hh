@@ -11,11 +11,11 @@
 #include <ostream>
 #include <vector>
 
-#include "BufferManager.hh"
 #include "qiree/Macros.hh"
 #include "qiree/QuantumNotImpl.hh"
 #include "qiree/RuntimeInterface.hh"
 #include "qiree/Types.hh"
+#include "qiree/OutputDistribution.hh"
 
 namespace qiree
 {
@@ -90,7 +90,7 @@ class QsimQuantum final : virtual public QuantumNotImpl
     //!@}
 
     // Update the buffer
-    BufferManager manager;
+    Buffer manager;
 
   private:
 
