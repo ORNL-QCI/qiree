@@ -19,6 +19,7 @@ qiree_add_library(qiree
   Module.cc
   Executor.cc
   QuantumNotImpl.cc
+  OutputDistribution.cc
 )
 target_compile_features(qiree PUBLIC cxx_std_17)
 target_link_libraries(qiree
