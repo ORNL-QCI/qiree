@@ -207,66 +207,54 @@ QState QsimQuantum::read_result(Result r)
 // 1. Entangling gates
 void QsimQuantum::cx(Qubit q1, Qubit q2)
 {
-    state_->circuit.gates.push_back(
-        qsim::GateCNot<float>::Create(gate_index_++, q1.value, q2.value));
+    this->add_gate<qsim::GateCNot>(q1.value, q2.value);
 }
 void QsimQuantum::cnot(Qubit q1, Qubit q2)
 {
-    state_->circuit.gates.push_back(
-        qsim::GateCNot<float>::Create(gate_index_++, q1.value, q2.value));
+    this->add_gate<qsim::GateCNot>(q1.value, q2.value);
 }
 void QsimQuantum::cz(Qubit q1, Qubit q2)
 {
-    state_->circuit.gates.push_back(
-        qsim::GateCZ<float>::Create(gate_index_++, q1.value, q2.value));
+    this->add_gate<qsim::GateCZ>(q1.value, q2.value);
 }
 // 2. Local gates
 void QsimQuantum::h(Qubit q)
 {
-    state_->circuit.gates.push_back(
-        qsim::GateHd<float>::Create(gate_index_++, q.value));
+    this->add_gate<qsim::GateHd>(q.value);
 }
 void QsimQuantum::s(Qubit q)
 {
-    state_->circuit.gates.push_back(
-        qsim::GateS<float>::Create(gate_index_++, q.value));
+    this->add_gate<qsim::GateS>(q.value);
 }
 void QsimQuantum::t(Qubit q)
 {
-    state_->circuit.gates.push_back(
-        qsim::GateT<float>::Create(gate_index_++, q.value));
+    this->add_gate<qsim::GateT>(q.value);
 }
 // 2.1 Pauli gates
 void QsimQuantum::x(Qubit q)
 {
-    state_->circuit.gates.push_back(
-        qsim::GateX<float>::Create(gate_index_++, q.value));
+    this->add_gate<qsim::GateX>(q.value);
 }
 void QsimQuantum::y(Qubit q)
 {
-    state_->circuit.gates.push_back(
-        qsim::GateY<float>::Create(gate_index_++, q.value));
+    this->add_gate<qsim::GateY>(q.value);
 }
 void QsimQuantum::z(Qubit q)
 {
-    state_->circuit.gates.push_back(
-        qsim::GateZ<float>::Create(gate_index_++, q.value));
+    this->add_gate<qsim::GateZ>(q.value);
 }
 // 2.2 rotation gates
 void QsimQuantum::rx(double theta, Qubit q)
 {
-    state_->circuit.gates.push_back(
-        qsim::GateRX<float>::Create(gate_index_++, q.value, theta));
+    this->add_gate<qsim::GateRX>(q.value, theta);
 }
 void QsimQuantum::ry(double theta, Qubit q)
 {
-    state_->circuit.gates.push_back(
-        qsim::GateRY<float>::Create(gate_index_++, q.value, theta));
+    this->add_gate<qsim::GateRY>(q.value, theta);
 }
 void QsimQuantum::rz(double theta, Qubit q)
 {
-    state_->circuit.gates.push_back(
-        qsim::GateRZ<float>::Create(gate_index_++, q.value, theta));
+    this->add_gate<qsim::GateRZ>(q.value, theta);
 }
 
 Qubit QsimQuantum::result_to_qubit(Result r)
@@ -288,6 +276,13 @@ void QsimQuantum::print_accelbuf()
 void QsimQuantum::execute_if_needed()
 {
     QIREE_EXPECT(false);
+}
+
+template<template<class> class Gate, class... Ts>
+void QsimQuantum::add_gate(Ts&&... args)
+{
+    state_->circuit.gates.push_back(
+        Gate<float>::Create(gate_index_++, std::forward<Ts>(args)...));
 }
 
 }  // namespace qiree

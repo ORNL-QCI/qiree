@@ -116,6 +116,11 @@ class QsimQuantum final : virtual public QuantumNotImpl
     size_t gate_index_;  // when the quantum operation will be executed
     size_type num_qubits_{};
     std::vector<Qubit> result_to_qubit_;
+
+    //// HELPER FUNCTIONS ////
+
+    template<template<class> class Gate, class... Ts>
+    void add_gate(Ts&&... args);
 };
 
 //---------------------------------------------------------------------------//
