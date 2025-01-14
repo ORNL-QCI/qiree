@@ -15,20 +15,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(cli11_proj)
 
 #-----------------------------------------------------------------------------#
-# QSIM FRONT END
-#-----------------------------------------------------------------------------#
-
-if(QIREE_USE_QSIM)
-  qiree_add_executable(qir-qsim
-    qir-qsim.cc
-  )
-  target_link_libraries(qir-qsim
-    PUBLIC QIREE::qiree QIREE::qirqsim
-    PRIVATE CLI11::CLI11
-  )
-endif()
-
-#-----------------------------------------------------------------------------#
 # XACC FRONT END
 #-----------------------------------------------------------------------------#
 
