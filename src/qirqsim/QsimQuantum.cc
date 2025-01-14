@@ -82,10 +82,11 @@ void QsimQuantum::set_up(EntryPointAttrs const& attrs)
 {
     QIREE_VALIDATE(attrs.required_num_qubits > 0,
                    << "input is not a quantum program");
+
     // Resize the result_to_qubit_ vector, based on the required number of
     // results... the idea is to have as many classical registers as qubits
     // (probably not true in general)
-    result_to_qubit_.resize(attrs.required_num_results);
+    results_.resize(attrs.required_num_results);
     num_qubits_ = attrs.required_num_qubits;  // Set the number of qubits
 
     // Get the number of threads
@@ -129,12 +130,25 @@ void QsimQuantum::reset(Qubit q)
     q.value = 0;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
- * Read the value of a result. This utilizes the new BufferManager.
+ * Map a qubit to a result index.
+ *
+ * (TODO: find how to link the classical register to the quantum register in
+ * qsim)
  */
-QState QsimQuantum::read_result(Result)
+void QsimQuantum::mz(Qubit q, Result r)
 {
+    QIREE_EXPECT(q.value < this->num_qubits());
+    QIREE_EXPECT(r.value < this->num_results());
+
+    // Add measurement instruction
+    state_->circuit.gates.push_back(
+        qsim::gate::Measurement<qsim::GateQSim<float>>::Create(
+            gate_index_++, {static_cast<unsigned int>(q.value)}));
+
+    //// EXECUTE CIRCUIT ////
+
     using Fuser = qsim::MultiQubitGateFuser<qsim::IO, qsim::GateQSim<float>>;
     using Runner = qsim::QSimRunner<qsim::IO, Fuser, Factory>;
     using StateSpace = Factory::StateSpace;
@@ -149,72 +163,47 @@ QState QsimQuantum::read_result(Result)
     qsimParam.max_fused_size = 2;  // Set the maximum size of fused gates
     qsimParam.verbosity = 0;  // see verbosity in run_qsim.h
 
-    // Run the simulation
+    // Run the simulation and check that it passed
     bool const run_success = Runner::Run(qsimParam,
                                          Factory(num_threads_),
                                          state_->circuit,
                                          *state_->state,
                                          meas_results);
+    QIREE_ASSERT(run_success);
+    QIREE_VALIDATE(
+        meas_results.size() == 1 && meas_results[0].bitstring.size() == 1,
+        << "inconsistent measured results size (" << meas_results.size()
+        << "), bitstring size");
 
-    QIREE_ASSERT(run_success);  // Ensure the run was successful
-    // reset circuit here
+    //// RESET CIRCUIT ////
+
     state_->circuit = {};
     state_->circuit.num_qubits = num_qubits_;
 
-#if 0
-    if (meas_results.size() == 1 && meas_results[0].bitstring.size() == 1)
-    {
-        auto const bitResult = meas_results[0].bitstring[0];
-        QIREE_ASSERT(bitResult == 0 || bitResult == 1);
-        std::string stringResult = std::to_string(bitResult);
-        std::string q_index_string = std::to_string(r.value);
-        if (stringResult == "1")
-        {
-            manager.updateBuffer("q" + q_index_string, "1", 1);
-            manager.updateBuffer("q" + q_index_string, 1);
-        }
-        else
-        {
-            manager.updateBuffer("q" + q_index_string, "0", 1);
-            manager.updateBuffer("q" + q_index_string, 0);
-        }
-    }
-    else
-    {
-        qsim::IO::errorf("Unexpected measurement results encountered.");
-    }
-#endif
-    return static_cast<QState>(meas_results[0].bitstring[0]);
+    //// STORE RESULT ////
+
+    auto result = meas_results[0].bitstring[0];
+    QIREE_ASSERT(result == 0 || result == 1);
+
+    results_[r.value] = result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
- * Map a qubit to a result index.
+ * Read the value of a result.
  *
- * (TODO: find how to link the classical register to the quantum register in
- * qsim)
+ * \todo We could add assertions to check that we actually measured into the
+ * given result.
  */
-void QsimQuantum::mz(Qubit q, Result r)
-{  // we don't classical register yet.
-    QIREE_EXPECT(q.value < this->num_qubits());  // TODO: q must be in the set
-                                                 // of qubits, e.g., what
-                                                 // happens if q=5 and qubits
-                                                 // are {2,3,4,5}, q is less
-                                                 // than num_qubits but not it
-                                                 // is in the set of qubits.
-    // TODO: maybe not what we want long term
-    QIREE_EXPECT(q.value == r.value);
-    // Add measurement instruction
-    state_->circuit.gates.push_back(
-        qsim::gate::Measurement<qsim::GateQSim<float>>::Create(
-            gate_index_++, {static_cast<unsigned int>(q.value)}));
+QState QsimQuantum::read_result(Result r)
+{
+    return this->get_result(r);
 }
 
 //---------------------------------------------------------------------------//
 /*
  * Quantum Instruction Mapping
  */
-
 // 1. Entangling gates
 void QsimQuantum::cx(Qubit q1, Qubit q2)
 {

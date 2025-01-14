@@ -11,6 +11,7 @@
 #include <ostream>
 #include <vector>
 
+#include "qiree/Assert.hh"
 #include "qiree/Macros.hh"
 #include "qiree/QuantumNotImpl.hh"
 #include "qiree/RuntimeInterface.hh"
@@ -33,8 +34,15 @@ class QsimQuantum final : virtual public QuantumNotImpl
 
     //!@{
     //! \name Accessors
-    size_type num_results() const { return result_to_qubit_.size(); }
+
+    //! Number of qubits in the circuit
     size_type num_qubits() const { return num_qubits_; }
+
+    //! Number of classical result registers
+    size_type num_results() const { return results_.size(); }
+
+    // Get the result from a classical register
+    inline QState get_result(Result r) const;
     //!@}
 
     //!@{
@@ -88,6 +96,8 @@ class QsimQuantum final : virtual public QuantumNotImpl
     void z(Qubit) final;
     //!@}
 
+    //
+
   private:
 
     //// TYPES ////
@@ -100,11 +110,23 @@ class QsimQuantum final : virtual public QuantumNotImpl
     std::ostream& output_;
     unsigned long int seed_{};
     std::unique_ptr<State> state_;
+    std::vector<bool> results_;
 
     unsigned num_threads_{};  // Number of threads to use
     size_t gate_index_;  // when the quantum operation will be executed
     size_type num_qubits_{};
     std::vector<Qubit> result_to_qubit_;
 };
+
+//---------------------------------------------------------------------------//
+/*!
+ * Get the result from a classical register.
+ */
+QState QsimQuantum::get_result(Result r) const
+{
+    QIREE_EXPECT(r.value < results_.size());
+    auto result_bool = static_cast<bool>(results_[r.value]);
+    return static_cast<QState>(result_bool);
+}
 
 }  // namespace qiree

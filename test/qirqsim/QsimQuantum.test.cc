@@ -53,49 +53,53 @@ TEST_F(QsimQuantumTest, sim_dynamicbv)
         attrs.required_num_results = 2;
         return attrs;
     }());
-    qsim_sim.h(Q{0});
-    qsim_sim.x(Q{1});
-    qsim_sim.h(Q{1});
-    qsim_sim.cnot(Q{0},Q{1});
-    qsim_sim.h(Q{0});
-    qsim_sim.mz(Q{0}, R{0});
-    qsim_sim.read_result(R{0});
-    qsim_sim.mz(Q{1}, R{1});
-    qsim_sim.read_result(R{1});
-    qsim_rt.array_record_output(2,"");
-    qsim_rt.result_record_output(R{0},"");
-    qsim_rt.result_record_output(R{1},"");
-    qsim_sim.h(Q{0});
-    qsim_sim.x(Q{1});
-    qsim_sim.h(Q{1});
-    qsim_sim.mz(Q{0}, R{0});
-    qsim_sim.read_result(R{0});
-    qsim_sim.mz(Q{1}, R{1});
-    qsim_sim.read_result(R{1});
-    qsim_rt.array_record_output(2,"");
-    qsim_rt.result_record_output(R{0},"");
-    qsim_rt.result_record_output(R{1},"");
-    qsim_sim.h(Q{0});
-    qsim_sim.x(Q{1});
-    qsim_sim.h(Q{1});
-    qsim_sim.cnot(Q{0},Q{1});
-    qsim_sim.h(Q{0});
-    qsim_sim.mz(Q{0}, R{0});
-    qsim_sim.read_result(R{0});
-    qsim_sim.mz(Q{1}, R{1});
-    qsim_sim.read_result(R{1});
-    qsim_rt.array_record_output(2,"");
-    qsim_rt.result_record_output(R{0},"");
-    qsim_rt.result_record_output(R{1},"");
-    qsim_sim.tear_down();
-
     ASSERT_EQ(2, qsim_sim.num_qubits());
-#if 0
-    EXPECT_EQ(1, qsim_sim.manager.getBufferValue("q0", "0").value());
-    EXPECT_EQ(2, qsim_sim.manager.getBufferValue("q0", "1").value());
-    EXPECT_EQ(2, qsim_sim.manager.getBufferValue("q1", "0").value());
-    EXPECT_EQ(1, qsim_sim.manager.getBufferValue("q1", "1").value());
-#endif
+    ASSERT_EQ(2, qsim_sim.num_results());
+
+    qsim_sim.h(Q{0});
+    qsim_sim.x(Q{1});
+    qsim_sim.h(Q{1});
+    qsim_sim.cnot(Q{0},Q{1});
+    qsim_sim.h(Q{0});
+    qsim_sim.mz(Q{0}, R{0});
+    qsim_sim.read_result(R{0});
+    qsim_sim.mz(Q{1}, R{1});
+    qsim_sim.read_result(R{1});
+    qsim_rt.array_record_output(2,"");
+    qsim_rt.result_record_output(R{0},"");
+    qsim_rt.result_record_output(R{1},"");
+    EXPECT_EQ(QState::one, qsim_sim.get_result(R{0}));
+    EXPECT_EQ(QState::one, qsim_sim.get_result(R{1}));
+
+    qsim_sim.h(Q{0});
+    qsim_sim.x(Q{1});
+    qsim_sim.h(Q{1});
+    qsim_sim.mz(Q{0}, R{0});
+    qsim_sim.read_result(R{0});
+    qsim_sim.mz(Q{1}, R{1});
+    qsim_sim.read_result(R{1});
+    qsim_rt.array_record_output(2,"");
+    qsim_rt.result_record_output(R{0},"");
+    qsim_rt.result_record_output(R{1},"");
+    EXPECT_EQ(QState::zero, qsim_sim.get_result(R{0}));
+    EXPECT_EQ(QState::zero, qsim_sim.get_result(R{1}));
+
+    qsim_sim.h(Q{0});
+    qsim_sim.x(Q{1});
+    qsim_sim.h(Q{1});
+    qsim_sim.cnot(Q{0},Q{1});
+    qsim_sim.h(Q{0});
+    qsim_sim.mz(Q{0}, R{0});
+    qsim_sim.read_result(R{0});
+    qsim_sim.mz(Q{1}, R{1});
+    qsim_sim.read_result(R{1});
+    qsim_rt.array_record_output(2,"");
+    qsim_rt.result_record_output(R{0},"");
+    qsim_rt.result_record_output(R{1},"");
+    EXPECT_EQ(QState::one, qsim_sim.get_result(R{0}));
+    EXPECT_EQ(QState::zero, qsim_sim.get_result(R{1}));
+
+    qsim_sim.tear_down();
 }
 
 //---------------------------------------------------------------------------//
