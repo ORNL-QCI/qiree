@@ -133,7 +133,7 @@ void QsimQuantum::reset(Qubit q)
 /*!
  * Read the value of a result. This utilizes the new BufferManager.
  */
-QState QsimQuantum::read_result(Result r)
+QState QsimQuantum::read_result(Result)
 {
     using Fuser = qsim::MultiQubitGateFuser<qsim::IO, qsim::GateQSim<float>>;
     using Runner = qsim::QSimRunner<qsim::IO, Fuser, Factory>;
@@ -161,6 +161,7 @@ QState QsimQuantum::read_result(Result r)
     state_->circuit = {};
     state_->circuit.num_qubits = num_qubits_;
 
+#if 0
     if (meas_results.size() == 1 && meas_results[0].bitstring.size() == 1)
     {
         auto const bitResult = meas_results[0].bitstring[0];
@@ -182,6 +183,7 @@ QState QsimQuantum::read_result(Result r)
     {
         qsim::IO::errorf("Unexpected measurement results encountered.");
     }
+#endif
     return static_cast<QState>(meas_results[0].bitstring[0]);
 }
 

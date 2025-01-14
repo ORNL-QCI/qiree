@@ -32,7 +32,7 @@ void QsimDefaultRuntime::initialize(OptionalCString env)
  * named tag
  */
 
-void QsimDefaultRuntime::array_record_output(size_type s, OptionalCString tag)
+void QsimDefaultRuntime::array_record_output(size_type, OptionalCString)
 {
     // this->execute_if_needed();
     // output_ << "array " << (tag ? tag : "<null>") << " length " << s
@@ -45,7 +45,7 @@ void QsimDefaultRuntime::array_record_output(size_type s, OptionalCString tag)
  * named tag
  */
 
-void QsimDefaultRuntime::tuple_record_output(size_type s, OptionalCString tag)
+void QsimDefaultRuntime::tuple_record_output(size_type, OptionalCString)
 {
     // this->execute_if_needed();
     // output_ << "tuple " << (tag ? tag : "<null>") << " length " << s
@@ -56,18 +56,21 @@ void QsimDefaultRuntime::tuple_record_output(size_type s, OptionalCString tag)
 /*!
  * Execute circuit and report a single measurement result
  */
-void QsimDefaultRuntime::result_record_output(Result r, OptionalCString tag)
+void QsimDefaultRuntime::result_record_output(Result, OptionalCString)
 {
     // Access values through the getter
     // This prints results every time result_record_output is called
     // Can comment out if only want to see final results
 
+#if 0
     if (auto value = sim_.manager.getBufferValue("q" + std::to_string(r.value));
         value.has_value())
     {
         std::cout << "q" << std::to_string(r.value) << " : " << value.value()
                   << "\n";
     }
+#endif
+    (void)sizeof(sim_);
 }
 
 }  // namespace qiree

@@ -15,7 +15,6 @@
 #include "qiree/QuantumNotImpl.hh"
 #include "qiree/RuntimeInterface.hh"
 #include "qiree/Types.hh"
-#include "qiree/OutputDistribution.hh"
 
 namespace qiree
 {
@@ -88,9 +87,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
     void y(Qubit) final;
     void z(Qubit) final;
     //!@}
-
-    // Update the buffer
-    Buffer manager;
 
   private:
 

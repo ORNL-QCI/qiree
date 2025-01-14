@@ -23,18 +23,6 @@
                 },
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/install-${presetName}"
             }
-        },
-        {
-            "name": "default",
-            "displayName": "Clang 16.0.6 x86_64-pc-linux-gnu",
-            "description": "Using compilers: C = /usr/bin/clang-16, CXX = /usr/bin/clang++-16",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "cacheVariables": {
-                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
-                "CMAKE_C_COMPILER": "/usr/bin/clang-16",
-                "CMAKE_CXX_COMPILER": "/usr/bin/clang++-16",
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
         }
     ],
     "buildPresets": [
