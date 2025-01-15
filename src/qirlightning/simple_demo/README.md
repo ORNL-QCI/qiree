@@ -36,7 +36,7 @@ You can swap `pennylane-lightning-kokkos` for `pennylane-lightning-gpu` for ligh
 To compile:
 
 ```
-$ clang++ --std=c++20 test_rt_device.cpp -I/home/joseph/work/qiree/catalyst/runtime/include -I/home/joseph/work/qiree/catalyst/runtime/lib/capi -I/home/joseph/work/qiree/catalyst/runtime/lib/backend/common -o test_rt_device.out
+$ clang++ --std=c++20 test_rt_device.cpp -I../catalyst_runtime/lib/capi -I../catalyst_runtime/include -o test_rt_device.out
 ```
 
 To run:
