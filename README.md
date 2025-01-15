@@ -136,16 +136,13 @@ to be added) for further information.
 
 ## Citation
 
-This code was was made public on github on June 24, 2024 and relased to [DOE CODE](https://www.osti.gov/doecode/biblio/149694) on January 15, 2025.
+This code was was made public on github on June 24, 2024 and released to [DOE CODE](https://www.osti.gov/doecode/biblio/149694) on January 15, 2025.
 ```
-@misc{doecode_149694,
-title = {QIR-EE},
-author = {Wong, Elaine and Leyton Ortega, Vicente and Johnson, Seth R. and Claudino, Daniel and Adams, Austin and Afrose, Sharmin and Gowrishankar, Meenambika and Humble, Travis S.},
-abstractNote = {The QIR Execution Engine library provides interfaces for easily processing Quantum Intermediate Representation code using the LLVM execution engine.},
-doi = {10.11578/qiree/dc.20250114.1},
-url = {https://doi.org/10.11578/qiree/dc.20250114.1},
+@misc{qireerepo,
+title = {{QIR-EE}},
+author = {{QIR-EE Developers}},
+url = {https://github.com/ORNL-QCI/qiree},
 howpublished = {[Computer Software] \url{https://doi.org/10.11578/qiree/dc.20250114.1}},
 year = {2025},
-month = {jan}
 }
 ```
