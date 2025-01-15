@@ -1,8 +1,8 @@
 # Simple Demo for Catalyst/Lightning runtime
 
-This is a super simple demo for using Catalyst runtime to drive Lightning devices. The example here uses `lightning.kokkos`, but can easily be updated to target other devices, e.g. lightning.gpu (if an Nvidia GPU is present). 
+This is a super simple demo for driving Lightning devices. The example here uses `lightning.kokkos`, but can easily be updated to target other devices, e.g. lightning.gpu (if an Nvidia GPU is present). 
 
-The new files required are in `../catalyst_runtime`, which contains a subset of files from the [Catalyst Runtime](https://github.com/PennyLaneAI/catalyst/tree/main/runtime).
+The only extra header files required are the `../catalyst_runtime/include`, which contains the include files from the [Catalyst Runtime ](https://github.com/PennyLaneAI/catalyst/tree/main/runtime/include) (for the QuantumDevice interface).
 
 ## Installing a lightning simulator
 
@@ -36,7 +36,7 @@ You can swap `pennylane-lightning-kokkos` for `pennylane-lightning-gpu` for ligh
 To compile:
 
 ```
-$ clang++ --std=c++20 test_rt_device.cpp -I/home/joseph/work/qiree/catalyst/runtime/include -I/home/joseph/work/qiree/catalyst/runtime/lib/capi -I/home/joseph/work/qiree/catalyst/runtime/lib/backend/common -o test_rt_device.out
+$ clang++ --std=c++20 test_rt_device.cpp -I../catalyst_runtime/include -o test_rt_device.out
 ```
 
 To run:
@@ -57,5 +57,6 @@ Measure on wire 0 = 0
 
 To run on other devices, e.g. lightning.gpu, you need to change:
 - `pip install custatevec-cu12 pennylane-lightning-gpu` (custatevec is a dependency)
-- replace `RTDLIB` and `RTDNAME` from `kokkos` to `GPU`
-- include `cuquantum` libraries when running, e.g. `LD_LIBRARY_PATH=/home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/cuquantum/lib/:$LD_LIBRARY_PATH ./test_rt_device.out`
+- replace `RTDLIB` from `kokkos` to `gpu`
+- replace `RTDDEVICE` from `Kokkos` to `GPU`
+- install `cuquantum` via `pip install custatevec-cu12`, then include `cuquantum` libraries when running, e.g. `LD_LIBRARY_PATH=/home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/cuquantum/lib/:$LD_LIBRARY_PATH ./test_rt_device.out`

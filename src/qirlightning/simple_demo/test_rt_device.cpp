@@ -1,40 +1,73 @@
-#include "ExecutionContext.hpp"
+#include <dlfcn.h>
+
+#include "QuantumDevice.hpp"
 
 // Runtime libraries (kokkos/GPU/qubit etc.)
-#define RTDLIB "/home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/pennylane_lightning/liblightning_kokkos_catalyst.so" // change to liblightning_gpu_catalyst.so
-#define RTDNAME "LightningKokkosSimulator" // change to LightningGPUSimulator
+#define RTDLIB                                                         \
+    "/home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/" \
+    "pennylane_lightning/liblightning_kokkos_catalyst.so";
+#define RTDDEVICE "LightningKokkosSimulator";
+
+extern "C" Catalyst::Runtime::QuantumDevice*
+GenericDeviceFactory(char const* kwargs);
 
 using namespace Catalyst::Runtime;
 
-static inline std::shared_ptr<RTDevice> loadRTDevice(const std::string &rtd_lib,
-                                                   const std::string &rtd_name = {},
-                                                   const std::string &rtd_kwargs = {})
+int main()
 {
-    ExecutionContext context;
-    return context.getOrCreateDevice(rtd_lib, rtd_name, rtd_kwargs);
-}
+    try
+    {
+        // Load lightning simulation library
+        std::string rtd_lib = RTDLIB;
+        std::string rtd_device = RTDDEVICE;
+        std::string kwargs = {};
+        auto rtld_flags = RTLD_LAZY | RTLD_NODELETE;
+        auto rtd_dylib_handler = dlopen(rtd_lib.c_str(), rtld_flags);
 
-int main() {
-    auto RTDevice = loadRTDevice(RTDLIB, RTDNAME, "");
+        if (!rtd_dylib_handler)
+        {
+            throw std::runtime_error("Failed to load library: " + rtd_lib);
+        }
 
-    // Allocate Qubits
-    RTDevice->getQuantumDevicePtr()->AllocateQubits(3);
+        // Find device factory
+        std::string factory_name = rtd_device + "Factory";
+        void* f_ptr = dlsym(rtd_dylib_handler, factory_name.c_str());
 
-    // Get Num Qubits
-    std::cout << "Num Qubits = " << RTDevice->getQuantumDevicePtr()->GetNumQubits() << std::endl;
+        if (!f_ptr)
+        {
+            dlclose(rtd_dylib_handler);
+            throw std::runtime_error("Failed to find factory function: "
+                                     + factory_name);
+        }
+        std::string rtd_kwargs = {};
+        auto rtd_qdevice = std::unique_ptr<QuantumDevice>(
+            reinterpret_cast<decltype(GenericDeviceFactory)*>(f_ptr)(
+                rtd_kwargs.c_str()));
 
-    // Apply Gate
-    RTDevice->getQuantumDevicePtr()->NamedOperation("Hadamard", {}, {0});
+        // Allocate Qubits
+        rtd_qdevice->AllocateQubits(3);
 
-    // Print State
-    std::cout << "State = " << std::endl;
-    RTDevice->getQuantumDevicePtr()->PrintState();
+        // Get Num Qubits
+        std::cout << "Num Qubits = " << rtd_qdevice->GetNumQubits()
+                  << std::endl;
 
-    // Measure
-    QubitIdType wire{0};
-    Result result = RTDevice->getQuantumDevicePtr()->Measure(wire, std::nullopt);
-    std::cout << "Measure on wire 0 = " << *result << std::endl;
+        // Apply Gate
+        rtd_qdevice->NamedOperation("Hadamard", {}, {0});
 
+        // Print State
+        std::cout << "State = " << std::endl;
+        rtd_qdevice->PrintState();
 
-    return 0;
+        // Measure
+        QubitIdType wire{0};
+        Result result = rtd_qdevice->Measure(wire, std::nullopt);
+        std::cout << "Measure on wire 0 = " << *result << std::endl;
+    }
+    catch (std::exception const& e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
 }
