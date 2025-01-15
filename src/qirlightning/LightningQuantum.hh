@@ -27,7 +27,7 @@ class LightningQuantum final : virtual public QuantumNotImpl
 {
   public:
     // Construct with number of shots
-    LightningQuantum(std::ostream& os, unsigned long int shots);
+    LightningQuantum(std::ostream& os);
     ~LightningQuantum();
 
     QIREE_DELETE_COPY_MOVE(LightningQuantum);  // Delete copy and move constructors
@@ -89,24 +89,14 @@ class LightningQuantum final : virtual public QuantumNotImpl
     void z(Qubit) final;
     //!@}
 
-    // Update the buffer
-    Buffer manager;
-
   private:
-
-    //// TYPES ////
-
-    struct Factory;
-    struct State;
-
+  
     //// DATA ////
 
     std::ostream& output_;
-    unsigned long int seed_{};
-    std::unique_ptr<State> state_;
+    std::unique_ptr<QuantumDevice> rtd_qdevice;
+    std::vector<bool> results_;
 
-    unsigned num_threads_{};  // Number of threads to use
-    size_t gate_index_;  // when the quantum operation will be executed
     size_type num_qubits_{};
     std::vector<Qubit> result_to_qubit_;
 };
