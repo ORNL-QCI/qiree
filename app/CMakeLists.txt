@@ -4,8 +4,8 @@
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #-----------------------------------------------------------------------------#
 
-include(FetchContent)
 FetchContent_Declare(
+  # Command Line Parser for C++ programs
   cli11_proj
   QUIET
   GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
@@ -13,6 +13,10 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(cli11_proj)
+
+#-----------------------------------------------------------------------------#
+# XACC FRONT END
+#-----------------------------------------------------------------------------#
 
 if(QIREE_USE_XACC)
   qiree_add_executable(qir-xacc
