@@ -76,7 +76,7 @@ QsimQuantum::~QsimQuantum() = default;
 
 //---------------------------------------------------------------------------//
 /*!
- * Prepare to build a quantum circuit for an entry point
+ * Prepare to build a quantum circuit for an entry point.
  */
 void QsimQuantum::set_up(EntryPointAttrs const& attrs)
 {
@@ -87,16 +87,12 @@ void QsimQuantum::set_up(EntryPointAttrs const& attrs)
     // results... the idea is to have as many classical registers as qubits
     // (probably not true in general)
     results_.resize(attrs.required_num_results);
-    num_qubits_ = attrs.required_num_qubits;  // Set the number of qubits
-
-    // Get the number of threads
+    num_qubits_ = attrs.required_num_qubits;
     num_threads_
         = std::max(1, static_cast<int>(std::thread::hardware_concurrency()));
 
     // Initialize the qsim simulator
-    auto state_space = Factory(num_threads_).CreateStateSpace();  // Create the
-                                                                  // state
-                                                                  // space
+    auto state_space = Factory(num_threads_).CreateStateSpace();
 
     // Create the state
     state_->state = state_space.Create(this->num_qubits());
@@ -109,12 +105,12 @@ void QsimQuantum::set_up(EntryPointAttrs const& attrs)
 
     // Allocate the number of qubits in the circuit
     state_->circuit.num_qubits = num_qubits_;
-    gate_index_ = 0;  // Initialize execution time
+    gate_index_ = 0;
 }
 
 //---------------------------------------------------------------------------//
 /*!
- * Complete an execution
+ * Complete an execution.
  */
 void QsimQuantum::tear_down()
 {
@@ -201,10 +197,7 @@ QState QsimQuantum::read_result(Result r)
 }
 
 //---------------------------------------------------------------------------//
-/*
- * Quantum Instruction Mapping
- */
-// 1. Entangling gates
+//// Entangling gates ////
 void QsimQuantum::cx(Qubit q1, Qubit q2)
 {
     this->add_gate<qsim::GateCNot>(q1.value, q2.value);
@@ -217,7 +210,8 @@ void QsimQuantum::cz(Qubit q1, Qubit q2)
 {
     this->add_gate<qsim::GateCZ>(q1.value, q2.value);
 }
-// 2. Local gates
+
+//// Local gates ////
 void QsimQuantum::h(Qubit q)
 {
     this->add_gate<qsim::GateHd>(q.value);
@@ -230,7 +224,8 @@ void QsimQuantum::t(Qubit q)
 {
     this->add_gate<qsim::GateT>(q.value);
 }
-// 2.1 Pauli gates
+
+//// Pauli gates ////
 void QsimQuantum::x(Qubit q)
 {
     this->add_gate<qsim::GateX>(q.value);
@@ -243,7 +238,8 @@ void QsimQuantum::z(Qubit q)
 {
     this->add_gate<qsim::GateZ>(q.value);
 }
-// 2.2 rotation gates
+
+//// Rotation gates ////
 void QsimQuantum::rx(double theta, Qubit q)
 {
     this->add_gate<qsim::GateRX>(q.value, theta);
@@ -257,27 +253,10 @@ void QsimQuantum::rz(double theta, Qubit q)
     this->add_gate<qsim::GateRZ>(q.value, theta);
 }
 
-Qubit QsimQuantum::result_to_qubit(Result r)
-{
-    // TODO: This function is not working. Giving 0 every time. Maybe not
-    // needed.
-    QIREE_EXPECT(r.value < this->num_results());
-    return result_to_qubit_[r.value];  // just copied this from the qirxacc, I
-                                       // have no idea if we need to do
-                                       // something else here
-}
-
-void QsimQuantum::print_accelbuf()
-{
-    // TODO: to be implemented, we can create a buffer class to store the
-    // results
-}
-
-void QsimQuantum::execute_if_needed()
-{
-    QIREE_EXPECT(false);
-}
-
+//----------------------------------------------------------------------------//
+// PRIVATE HELPERS
+//----------------------------------------------------------------------------//
+//! Create a gate and add it to the circuit
 template<template<class> class Gate, class... Ts>
 void QsimQuantum::add_gate(Ts&&... args)
 {

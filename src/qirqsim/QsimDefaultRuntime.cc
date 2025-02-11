@@ -17,7 +17,6 @@ namespace qiree
 /*!
  * Initialize the execution environment, resetting qubits.
  */
-
 void QsimDefaultRuntime::initialize(OptionalCString env)
 {
     if (env)
@@ -31,45 +30,24 @@ void QsimDefaultRuntime::initialize(OptionalCString env)
  * Execute circuit and mark the following N results as being part of an array
  * named tag
  */
-
-void QsimDefaultRuntime::array_record_output(size_type, OptionalCString)
-{
-    // this->execute_if_needed();
-    // output_ << "array " << (tag ? tag : "<null>") << " length " << s
-    //         << std::endl;
-}
+void QsimDefaultRuntime::array_record_output(size_type, OptionalCString) {}
 
 //---------------------------------------------------------------------------//
 /*!
  * Execute circuit and mark the following N results as being part of a tuple
- * named tag
+ * named tag.
  */
-
-void QsimDefaultRuntime::tuple_record_output(size_type, OptionalCString)
-{
-    // this->execute_if_needed();
-    // output_ << "tuple " << (tag ? tag : "<null>") << " length " << s
-    //         << std::endl;
-}
+void QsimDefaultRuntime::tuple_record_output(size_type, OptionalCString) {}
 
 //---------------------------------------------------------------------------//
 /*!
- * Execute circuit and report a single measurement result
+ * Execute circuit and report a single measurement result.
  */
 void QsimDefaultRuntime::result_record_output(Result, OptionalCString)
 {
     // Access values through the getter
     // This prints results every time result_record_output is called
     // Can comment out if only want to see final results
-
-#if 0
-    if (auto value = sim_.manager.getBufferValue("q" + std::to_string(r.value));
-        value.has_value())
-    {
-        std::cout << "q" << std::to_string(r.value) << " : " << value.value()
-                  << "\n";
-    }
-#endif
     (void)sizeof(sim_);
 }
 

@@ -61,18 +61,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
     //!@}
 
     //!@{
-    //! \name Utilities for runtime
-    // Get runtime qubit corresponding to a runtime result
-    Qubit result_to_qubit(Result);
-
-    // Run the circuit on the accelerator if we have not already. Returns true
-    // if the circuit was executed.
-    void execute_if_needed();
-
-    void print_accelbuf();
-    //!@}
-
-    //!@{
     //! \name Circuit construction
     // void ccx(Qubit, Qubit) final;
     void ccnot(Qubit, Qubit, Qubit);  // TODO: not in examples or qir runner
