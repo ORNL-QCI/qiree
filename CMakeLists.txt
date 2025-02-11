@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #----------------------------------------------------------------------------#
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.18)
 
 # Set QIREE_VERSION using git tags using the following format
 set(CGV_TAG_REGEX "v([0-9.]+)(-dev|-rc.[0-9]+)?")
@@ -12,12 +12,13 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/CgvFindVersion.cmake")
 cgv_find_version(QIREE)
 
 project(QIREE VERSION "${QIREE_VERSION}" LANGUAGES CXX)
-cmake_policy(VERSION 3.12...3.22)
+cmake_policy(VERSION 3.18...3.30)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+include(FetchContent)
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/QIREEUtils.cmake")
 
 macro(qiree_set_default name value)
@@ -34,9 +35,11 @@ endmacro()
 
 # Components
 option(QIREE_BUILD_DOCS "Build QIR-EE documentation" OFF)
-option(QIREE_BUILD_TESTS "Build QIR-EE unit tests" OFF)
+option(QIREE_BUILD_TESTS "Build QIR-EE unit tests" ON)
 option(QIREE_BUILD_EXAMPLES "Build QIR-EE examples" OFF)
+option(QIREE_USE_QSIM "Download and build Google qsim backend" OFF)
 option(QIREE_USE_XACC "Build XACC interface" ON)
+
 qiree_set_default(BUILD_TESTING ${QIREE_BUILD_TESTS})
 
 # Assertion handling
@@ -111,8 +114,28 @@ set(QIREE_RUNTIME_OUTPUT_DIRECTORY
 enable_language(C) # Needed for LLVM
 find_package(LLVM REQUIRED)
 if((LLVM_VERSION VERSION_LESS 14)
-  OR (LLVM_VERSION VERSION_GREATER_EQUAL 19))
-  message(WARNING "QIR-EE is only tested with LLVM 14-18: found version ${LLVM_VERSION}")
+  OR (LLVM_VERSION VERSION_GREATER_EQUAL 20))
+  message(WARNING "QIR-EE is only tested with LLVM 14-19: found version ${LLVM_VERSION}")
+endif()
+
+if(QIREE_USE_QSIM)
+  # Declare and download qsim: it's header-only and the code is in "lib",
+  # so download it into "external/qsim" directory and include "external"
+  FetchContent_Declare(
+    qsim_content
+    QUIET
+    GIT_REPOSITORY https://github.com/quantumlib/qsim.git
+    GIT_TAG 55b4d0e7ea8f085a1709c2c06ff1e28b3aa93357 # 'main' on 22 Nov 2024
+    SOURCE_SUBDIR "lib" # Don't load top-level cmake file
+    SOURCE_DIR "external/qsim"
+  )
+  FetchContent_MakeAvailable(qsim_content)
+  qiree_add_library(qiree_qsim INTERFACE)
+  add_library(QIREE::qsim ALIAS qiree_qsim)
+  target_include_directories(qiree_qsim SYSTEM INTERFACE
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/external>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/external>"
+  )
 endif()
 
 if(QIREE_USE_XACC)
@@ -185,7 +208,7 @@ add_subdirectory(app)
 #----------------------------------------------------------------------------#
 
 if(QIREE_BUILD_EXAMPLES)
-   add_subdirectory(examples)
+  add_subdirectory(examples)
 endif()
 
 #----------------------------------------------------------------------------#
