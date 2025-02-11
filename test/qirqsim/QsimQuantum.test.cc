@@ -33,7 +33,6 @@ class QsimQuantumTest : public ::qiree::test::Test
     }
 };
 
-
 TEST_F(QsimQuantumTest, sim_dynamicbv)
 {
     using Q = Qubit;
@@ -59,15 +58,15 @@ TEST_F(QsimQuantumTest, sim_dynamicbv)
     qsim_sim.h(Q{0});
     qsim_sim.x(Q{1});
     qsim_sim.h(Q{1});
-    qsim_sim.cnot(Q{0},Q{1});
+    qsim_sim.cnot(Q{0}, Q{1});
     qsim_sim.h(Q{0});
     qsim_sim.mz(Q{0}, R{0});
     qsim_sim.read_result(R{0});
     qsim_sim.mz(Q{1}, R{1});
     qsim_sim.read_result(R{1});
-    qsim_rt.array_record_output(2,"");
-    qsim_rt.result_record_output(R{0},"");
-    qsim_rt.result_record_output(R{1},"");
+    qsim_rt.array_record_output(2, "");
+    qsim_rt.result_record_output(R{0}, "");
+    qsim_rt.result_record_output(R{1}, "");
     EXPECT_EQ(QState::one, qsim_sim.get_result(R{0}));
     EXPECT_EQ(QState::one, qsim_sim.get_result(R{1}));
 
@@ -78,24 +77,24 @@ TEST_F(QsimQuantumTest, sim_dynamicbv)
     qsim_sim.read_result(R{0});
     qsim_sim.mz(Q{1}, R{1});
     qsim_sim.read_result(R{1});
-    qsim_rt.array_record_output(2,"");
-    qsim_rt.result_record_output(R{0},"");
-    qsim_rt.result_record_output(R{1},"");
+    qsim_rt.array_record_output(2, "");
+    qsim_rt.result_record_output(R{0}, "");
+    qsim_rt.result_record_output(R{1}, "");
     EXPECT_EQ(QState::zero, qsim_sim.get_result(R{0}));
     EXPECT_EQ(QState::zero, qsim_sim.get_result(R{1}));
 
     qsim_sim.h(Q{0});
     qsim_sim.x(Q{1});
     qsim_sim.h(Q{1});
-    qsim_sim.cnot(Q{0},Q{1});
+    qsim_sim.cnot(Q{0}, Q{1});
     qsim_sim.h(Q{0});
     qsim_sim.mz(Q{0}, R{0});
     qsim_sim.read_result(R{0});
     qsim_sim.mz(Q{1}, R{1});
     qsim_sim.read_result(R{1});
-    qsim_rt.array_record_output(2,"");
-    qsim_rt.result_record_output(R{0},"");
-    qsim_rt.result_record_output(R{1},"");
+    qsim_rt.array_record_output(2, "");
+    qsim_rt.result_record_output(R{0}, "");
+    qsim_rt.result_record_output(R{1}, "");
     EXPECT_EQ(QState::one, qsim_sim.get_result(R{0}));
     EXPECT_EQ(QState::zero, qsim_sim.get_result(R{1}));
 

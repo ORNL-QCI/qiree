@@ -87,7 +87,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
     //
 
   private:
-
     //// TYPES ////
 
     struct Factory;
