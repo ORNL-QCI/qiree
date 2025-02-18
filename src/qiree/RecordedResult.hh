@@ -43,6 +43,12 @@ class RecordedResult
     {
     }
 
+    //! Construct with an explicit vector for testing
+    explicit RecordedResult(VecBits&& bits)
+        : bits_(std::move(bits)), entry_labels_(bits_.size())
+    {
+    }
+
     inline void push_back(QState result, OptionalCString label = nullptr);
 
     //! Accessors
