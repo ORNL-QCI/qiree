@@ -16,20 +16,11 @@ namespace qiree
 {
 //---------------------------------------------------------------------------//
 /*!
- * Accumulate sequential measurement outcomes and their optional labels.
+ * Accumulate sequential measurement outcomes from a single "shot".
  *
  * Each call to result_record_output appends a measurement bit (derived from
  * the provided Result) and its associated label. The storage is preallocated
  * via array_record_output.
- *
- * Example usage:
- * \code
- * RecordedResult rt;
- * rt.array_record_output(3, nullptr);
- * rt.result_record_output(Result{2}, "foo"); // pushes true
- * rt.result_record_output(Result{0}, "bar"); // pushes true
- * rt.result_record_output(Result{1}, "baz"); // pushes false
- * \endcode
  */
 //---------------------------------------------------------------------------//
 
@@ -47,6 +38,7 @@ class RecordedResult
 
     // Construct with size and optional label
     RecordedResult(std::size_t count, OptionalCString label);
+
     explicit RecordedResult(std::size_t count) : RecordedResult{count, nullptr}
     {
     }
