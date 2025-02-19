@@ -7,11 +7,32 @@
 //---------------------------------------------------------------------------//
 #include "ResultDistribution.hh"
 
+#include <algorithm>
+
 #include "RecordedResult.hh"
 #include "qiree/Assert.hh"
 
 namespace qiree
 {
+namespace
+{
+//---------------------------------------------------------------------------//
+/*!
+ * Convert bits to a bit string key ("0" for false, "1" for true).
+ */
+std::string to_key(std::vector<bool> const& bits)
+{
+    std::string key;
+    key.reserve(bits.size());
+    for (bool bit : bits)
+    {
+        key.push_back(bit ? '1' : '0');
+    }
+    return key;
+}
+
+}  // namespace
+
 //---------------------------------------------------------------------------//
 /*!
  * Accumulate a single shot.
@@ -20,9 +41,9 @@ void ResultDistribution::accumulate(RecordedResult const& result)
 {
     auto const& bits = result.bits();
 
-    // Use key_length_ == 0 as the uninitialized state.
     if (QIREE_UNLIKELY(key_length_ == 0))
     {
+        // This is the first result: store the key length
         key_length_ = bits.size();
     }
     else
@@ -33,15 +54,7 @@ void ResultDistribution::accumulate(RecordedResult const& result)
                        << key_length_);
     }
 
-    // Convert bits to a bit string key ("0" for false, "1" for true)
-    std::string key;
-    key.reserve(key_length_);
-    for (bool bit : bits)
-    {
-        key.push_back(bit ? '1' : '0');
-    }
-
-    ++distribution_[key];
+    ++distribution_[to_key(bits)];
 }
 
 //---------------------------------------------------------------------------//
