@@ -101,6 +101,46 @@ TEST_F(QsimQuantumTest, sim_dynamicbv)
     qsim_sim.tear_down();
 }
 
+TEST_F(QsimQuantumTest, result_order)
+{
+    using Q = Qubit;
+    using R = Result;
+
+    std::ostringstream os;
+    os << '\n';
+
+    // Create a simulator that will write to the string stream
+    QsimQuantum qis{os, 0};
+    QsimDefaultRuntime rt{os, qis};
+
+    // Call functions in the same sequence that dynamicbv.ll would
+    qis.set_up([] {
+        EntryPointAttrs attrs;
+        attrs.required_num_qubits = 4;
+        attrs.required_num_results = 3;
+        return attrs;
+    }());
+    qis.mz(Q{0}, R{2});
+    qis.mz(Q{1}, R{1});
+    qis.mz(Q{2}, R{0});
+    std::vector<bool> expected;
+    expected.push_back(static_cast<bool>(qis.get_result(R{2})));
+    expected.push_back(static_cast<bool>(qis.get_result(R{0})));
+    expected.push_back(static_cast<bool>(qis.get_result(R{1})));
+    // So the internal result "buffer" is now {true, false, true}
+    rt.array_record_output(3, "array");
+    rt.result_record_output(R{2}, "foo");  // pushes true
+    rt.result_record_output(R{0}, "bar");  // pushes true
+    rt.result_record_output(R{1}, "baz");  // pushes false
+
+    auto const& result = rt.result();
+    EXPECT_EQ("array", result.container_label());
+    EXPECT_EQ(expected, result.bits());
+    EXPECT_EQ((std::vector<std::string>{"foo", "bar", "baz"}),
+              result.entry_labels());
+
+    qis.tear_down();
+}
 //---------------------------------------------------------------------------//
 }  // namespace test
 }  // namespace qiree

@@ -25,30 +25,4 @@ void QsimDefaultRuntime::initialize(OptionalCString env)
     }
 }
 
-//---------------------------------------------------------------------------//
-/*!
- * Execute circuit and mark the following N results as being part of an array
- * named tag
- */
-void QsimDefaultRuntime::array_record_output(size_type, OptionalCString) {}
-
-//---------------------------------------------------------------------------//
-/*!
- * Execute circuit and mark the following N results as being part of a tuple
- * named tag.
- */
-void QsimDefaultRuntime::tuple_record_output(size_type, OptionalCString) {}
-
-//---------------------------------------------------------------------------//
-/*!
- * Execute circuit and report a single measurement result.
- */
-void QsimDefaultRuntime::result_record_output(Result, OptionalCString)
-{
-    // Access values through the getter
-    // This prints results every time result_record_output is called
-    // Can comment out if only want to see final results
-    (void)sizeof(sim_);
-}
-
 }  // namespace qiree
