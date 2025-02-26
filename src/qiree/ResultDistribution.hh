@@ -16,14 +16,17 @@ class RecordedResult;
 //---------------------------------------------------------------------------//
 /*!
  * Distribution of recorded results from shots.
-
-The distribution is formed by accumulating multiple \c RecordedResult
-instances into a sparse map of {bit string -> count}. The length of the bit
-string is the same for all keys. We provide accessors by string key such
-as \c 01001 which corresponds to a bit string `{false, true, ...}`. It is
-serializable to JSON, creating an object that has bit strings as keys and
-counts as values.
-
+ * The distribution is formed by accumulating multiple \c RecordedResult
+ * instances into a sparse map of {bit string -> count}. The length of the bit
+ * string is the same for all keys. We provide accessors by little-endian
+ * string key such as \c "01001" which corresponds to a bit string \code
+ * {false, true, false, false, true}
+ * \endcode
+ * Little-endian is an "array-like" representation (the initial
+ * character corresponds to the zeroth qubit) rather than a "number-like"
+ * representation (i.e., a base-2 encoding of the qubits). It is serializable
+ * to JSON, creating an object that has bit strings as keys and counts as
+ * values.
  */
 class ResultDistribution
 {
