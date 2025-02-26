@@ -18,6 +18,7 @@ qiree_add_library(qiree
   Assert.cc
   Module.cc
   Executor.cc
+  ResultDistribution.cc
   QuantumNotImpl.cc
 )
 target_compile_features(qiree PUBLIC cxx_std_17)
