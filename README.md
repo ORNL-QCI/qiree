@@ -134,3 +134,15 @@ to be added) for further information.
 | **src**       | Library source code                                   |
 | **test**      | Unit tests                                            |
 
+## Citation
+
+This code was was made public on github on June 24, 2024 and released to [DOE CODE](https://www.osti.gov/doecode/biblio/149694) on January 15, 2025.
+```
+@misc{qireerepo,
+title = {{QIR-EE}},
+author = {{QIR-EE Developers}},
+url = {https://github.com/ORNL-QCI/qiree},
+howpublished = {[Computer Software] \url{https://doi.org/10.11578/qiree/dc.20250114.1}},
+year = {2025},
+}
+```

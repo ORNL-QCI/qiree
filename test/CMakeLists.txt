@@ -45,6 +45,7 @@ endfunction()
 
 qiree_add_test(qiree Executor)
 qiree_add_test(qiree Module)
+qiree_add_test(qiree ResultDistribution)
 
 #---------------------------------------------------------------------------##
 # QIRXACC TESTS

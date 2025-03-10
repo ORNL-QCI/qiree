@@ -61,18 +61,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
     //!@}
 
     //!@{
-    //! \name Utilities for runtime
-    // Get runtime qubit corresponding to a runtime result
-    Qubit result_to_qubit(Result);
-
-    // Run the circuit on the accelerator if we have not already. Returns true
-    // if the circuit was executed.
-    void execute_if_needed();
-
-    void print_accelbuf();
-    //!@}
-
-    //!@{
     //! \name Circuit construction
     // void ccx(Qubit, Qubit) final;
     void ccnot(Qubit, Qubit, Qubit);  // TODO: not in examples or qir runner
@@ -99,7 +87,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
     //
 
   private:
-
     //// TYPES ////
 
     struct Factory;
@@ -111,10 +98,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
     unsigned long int seed_{};
     std::unique_ptr<State> state_;
     std::vector<bool> results_;
-
-    unsigned num_threads_{};  // Number of threads to use
-    size_t gate_index_;  // when the quantum operation will be executed
-    size_type num_qubits_{};
     std::vector<Qubit> result_to_qubit_;
 
     //// HELPER FUNCTIONS ////
