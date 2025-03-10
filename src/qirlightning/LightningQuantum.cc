@@ -14,17 +14,16 @@
 #include <stdexcept>
 #include <thread>
 #include <utility>
+#include <dlfcn.h>
 
 #include "qiree/Assert.hh"
-
-// Lightning
-#include "QuantumDevice.hpp"
 
 #define RTDLIB                                                         \
     "/home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/" \
     "pennylane_lightning/liblightning_kokkos_catalyst.so";
 #define RTDDEVICE "LightningKokkosSimulator";
-
+extern "C" Catalyst::Runtime::QuantumDevice*
+GenericDeviceFactory(char const* kwargs);
 namespace qiree
 {
 using namespace Catalyst::Runtime;
@@ -33,13 +32,13 @@ using namespace Catalyst::Runtime;
 /*!
  * Initialize the Lightning simulator
  */
-LightningQuantum::LightningQuantum(std::ostream& os) : output_(os)
+LightningQuantum::LightningQuantum(std::ostream& os, unsigned long int seed) : output_(os)
 {
     std::string rtd_lib = RTDLIB;
     std::string rtd_device = RTDDEVICE;
     std::string kwargs = {};
     auto rtld_flags = RTLD_LAZY | RTLD_NODELETE;
-    auto rtd_dylib_handler = dlopen(rtd_lib.c_str(), rtld_flags);
+    rtd_dylib_handler = dlopen(rtd_lib.c_str(), rtld_flags);
 
     if (!rtd_dylib_handler)
     {
@@ -76,6 +75,7 @@ void LightningQuantum::set_up(EntryPointAttrs const& attrs)
                    << "input is not a quantum program");
 
     num_qubits_ = attrs.required_num_qubits;  // Set the number of qubits
+    results_.resize(attrs.required_num_results);
 
     rtd_qdevice->AllocateQubits(num_qubits_);
 }
@@ -98,7 +98,9 @@ void LightningQuantum::tear_down()
  */
 void LightningQuantum::reset(Qubit q)
 {
-    rtd_qdevice->SetState({{0, 0}}, {q.value});    
+    std::vector<int8_t> data = {0}; 
+    DataView<int8_t, 1> state(data);
+    std::vector<QubitIdType> wires = {static_cast<intptr_t>(q.value)};    rtd_qdevice->SetBasisState(state, wires);    
 }
 
 //----------------------------------------------------------------------------//
@@ -107,7 +109,7 @@ void LightningQuantum::reset(Qubit q)
  */
 QState LightningQuantum::read_result(Result r)
 {
-    return results_[r.value]
+    return this->get_result(r);
 }
 
 //---------------------------------------------------------------------------//
@@ -119,17 +121,8 @@ QState LightningQuantum::read_result(Result r)
  */
 void LightningQuantum::mz(Qubit q, Result r)
 { 
-    QIREE_EXPECT(q.value < this->num_qubits());  // TODO: q must be in
-                                                       // the set of qubits,
-                                                       // e.g., what happens if
-                                                       // q=5 and qubits are
-                                                       // {2,3,4,5}, q is less
-                                                       // than num_qubits but
-                                                       // not it is in the set
-                                                       // of qubits.
-    // TODO: maybe not what we want long term
-    QIREE_EXPECT(q.value == r.value);
-    // Add measurement instruction
+    QIREE_EXPECT(q.value < this->num_qubits());  
+    QIREE_EXPECT(r.value < this->num_results());
     results_[r.value] = rtd_qdevice->Measure(q.value, std::nullopt);
 }
 
@@ -142,61 +135,56 @@ void LightningQuantum::mz(Qubit q, Result r)
 void LightningQuantum::cx(Qubit q1, Qubit q2)
 {
     rtd_qdevice->NamedOperation(
-        "CNOT", {}, {q1.value, q2.value});
+        "CNOT", {}, {static_cast<intptr_t>(q1.value), static_cast<intptr_t>(q2.value)});
 }
 void LightningQuantum::cnot(Qubit q1, Qubit q2)
 {
     rtd_qdevice->NamedOperation(
-        "CNOT", {}, {q1.value, q2.value});
+        "CNOT", {}, {static_cast<intptr_t>(q1.value), static_cast<intptr_t>(q2.value)});
 }
 void LightningQuantum::cz(Qubit q1, Qubit q2)
 {
     rtd_qdevice->NamedOperation(
-        "CZ", {}, {q1.value, q2.value});
+        "CZ", {}, {static_cast<intptr_t>(q1.value), static_cast<intptr_t>(q2.value)});
 }
 // 2. Local gates
 void LightningQuantum::h(Qubit q)
 {
-    rtd_qdevice->NamedOperation("Hadamard", {}, {q.value});
+    rtd_qdevice->NamedOperation("Hadamard", {}, {static_cast<intptr_t>(q.value)});
 }
 void LightningQuantum::s(Qubit q)
 {
-    rtd_qdevice->NamedOperation("S", {}, {q.value});
+    rtd_qdevice->NamedOperation("S", {}, {static_cast<intptr_t>(q.value)});
 }
 void LightningQuantum::t(Qubit q)
 {
-    rtd_qdevice->NamedOperation("T", {}, {q.value});
+    rtd_qdevice->NamedOperation("T", {}, {static_cast<intptr_t>(q.value)});
 }
 // 2.1 Pauli gates
 void LightningQuantum::x(Qubit q)
 {
-    rtd_qdevice->NamedOperation("PauliX", {}, {q.value});
+    rtd_qdevice->NamedOperation("PauliX", {}, {static_cast<intptr_t>(q.value)});
 }
 void LightningQuantum::y(Qubit q)
 {
-    rtd_qdevice->NamedOperation("PauliY", {}, {q.value});
+    rtd_qdevice->NamedOperation("PauliY", {}, {static_cast<intptr_t>(q.value)});
 }
 void LightningQuantum::z(Qubit q)
 {
-    rtd_qdevice->NamedOperation("PauliZ", {}, {q.value});
+    rtd_qdevice->NamedOperation("PauliZ", {}, {static_cast<intptr_t>(q.value)});
 }
 // 2.2 rotation gates
 void LightningQuantum::rx(double theta, Qubit q)
 {
-    rtd_qdevice->NamedOperation("RX", {theta}, {q.value});
+    rtd_qdevice->NamedOperation("RX", {theta}, {static_cast<intptr_t>(q.value)});
 }
 void LightningQuantum::ry(double theta, Qubit q)
 {
-    rtd_qdevice->NamedOperation("RY", {theta}, {q.value});
+    rtd_qdevice->NamedOperation("RY", {theta}, {static_cast<intptr_t>(q.value)});
 }
 void LightningQuantum::rz(double theta, Qubit q)
 {
-    rtd_qdevice->NamedOperation("RZ", {theta}, {q.value});
-}
-
-Qubit LightningQuantum::result_to_qubit(Result r)
-{
-    return result_to_qubit_[r.value];  
+    rtd_qdevice->NamedOperation("RZ", {theta}, {static_cast<intptr_t>(q.value)});
 }
 
 }  // namespace qiree

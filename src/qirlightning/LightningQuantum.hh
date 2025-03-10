@@ -11,11 +11,14 @@
 #include <ostream>
 #include <vector>
 
+#include "qiree/Assert.hh"
 #include "qiree/Macros.hh"
 #include "qiree/QuantumNotImpl.hh"
 #include "qiree/RuntimeInterface.hh"
 #include "qiree/Types.hh"
-#include "qiree/OutputDistribution.hh"
+
+// Lightning
+#include "QuantumDevice.hpp"
 
 namespace qiree
 {
@@ -27,15 +30,23 @@ class LightningQuantum final : virtual public QuantumNotImpl
 {
   public:
     // Construct with number of shots
-    LightningQuantum(std::ostream& os);
+    LightningQuantum(std::ostream& os, unsigned long int shots);
     ~LightningQuantum();
 
     QIREE_DELETE_COPY_MOVE(LightningQuantum);  // Delete copy and move constructors
 
+
     //!@{
     //! \name Accessors
-    size_type num_results() const { return result_to_qubit_.size(); }
+
+    //! Number of qubits in the circuit
     size_type num_qubits() const { return num_qubits_; }
+
+    //! Number of classical result registers
+    size_type num_results() const { return results_.size(); }
+
+    // Get the result from a classical register
+    inline QState get_result(Result r) const;
     //!@}
 
     //!@{
@@ -53,17 +64,6 @@ class LightningQuantum final : virtual public QuantumNotImpl
     QState read_result(Result) final;
     //!@}
 
-    //!@{
-    //! \name Utilities for runtime
-    // Get runtime qubit corresponding to a runtime result
-    Qubit result_to_qubit(Result);
-
-    // Run the circuit on the accelerator if we have not already. Returns true
-    // if the circuit was executed.
-    void execute_if_needed();
-
-    void print_accelbuf();
-    //!@}
 
     //!@{
     //! \name Circuit construction
@@ -90,15 +90,31 @@ class LightningQuantum final : virtual public QuantumNotImpl
     //!@}
 
   private:
+    //// TYPES ////
+
+    struct Factory;
+    struct State;
   
     //// DATA ////
 
     std::ostream& output_;
-    std::unique_ptr<QuantumDevice> rtd_qdevice;
+    void* rtd_dylib_handler;
+    std::unique_ptr<Catalyst::Runtime::QuantumDevice> rtd_qdevice;
     std::vector<bool> results_;
 
     size_type num_qubits_{};
     std::vector<Qubit> result_to_qubit_;
 };
+
+//---------------------------------------------------------------------------//
+/*!
+ * Get the result from a classical register.
+ */
+QState LightningQuantum::get_result(Result r) const
+{
+    QIREE_EXPECT(r.value < results_.size());
+    auto result_bool = static_cast<bool>(results_[r.value]);
+    return static_cast<QState>(result_bool);
+}
 
 }  // namespace qiree
