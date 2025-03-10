@@ -42,7 +42,7 @@ class QsimDefaultRuntime final : virtual public RuntimeInterface
 
     //!@{
     //! \name Runtime interface
-    
+
     // Initialize the execution environment, resetting qubits
     void initialize(OptionalCString env) override;
 
