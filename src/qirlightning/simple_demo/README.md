@@ -16,7 +16,7 @@ $ pip install pennylane-lightning-kokkos
 
 $ pip show pennylane-lightning-kokkos
 Name: PennyLane_Lightning_Kokkos
-Version: 0.39.0
+Version: 0.40.0
 Summary: PennyLane-Lightning plugin
 Home-page: https://github.com/PennyLaneAI/pennylane-lightning
 Author: 
@@ -39,6 +39,8 @@ To compile:
 $ clang++ --std=c++20 test_rt_device.cpp -I../catalyst_runtime/include -o test_rt_device.out
 ```
 
+## Running the example
+
 To run:
 
 ```
@@ -55,8 +57,10 @@ State =
 Measure on wire 0 = 0
 ```
 
+## Running on other devices
+
 To run on other devices, e.g. lightning.gpu, you need to change:
-- `pip install custatevec-cu12 pennylane-lightning-gpu` (custatevec is a dependency)
+- Install pennylane-lightning-gpu: `pip install pennylane-lightning-gpu`
 - replace `RTDLIB` from `kokkos` to `gpu`
 - replace `RTDDEVICE` from `Kokkos` to `GPU`
-- install `cuquantum` via `pip install custatevec-cu12`, then include `cuquantum` libraries when running, e.g. `LD_LIBRARY_PATH=/home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/cuquantum/lib/:$LD_LIBRARY_PATH ./test_rt_device.out`
+- Include `cuquantum` libraries when running (which was installed as a dependency), i.e. `LD_LIBRARY_PATH=$(python -c "import site; print( f'{site.getsitepackages()[0]}/cuquantum')")/lib:$LD_LIBRARY_PATH ./test_rt_device.out`

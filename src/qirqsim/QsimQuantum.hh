@@ -98,6 +98,10 @@ class QsimQuantum final : virtual public QuantumNotImpl
     unsigned long int seed_{};
     std::unique_ptr<State> state_;
     std::vector<bool> results_;
+    
+    unsigned num_threads_{};  // Number of threads to use
+    size_t gate_index_;  // when the quantum operation will be executed
+    size_type num_qubits_{};
     std::vector<Qubit> result_to_qubit_;
 
     //// HELPER FUNCTIONS ////
