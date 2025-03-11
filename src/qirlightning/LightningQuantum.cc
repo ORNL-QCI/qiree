@@ -15,6 +15,7 @@
 #include <thread>
 #include <utility>
 #include <dlfcn.h>
+#include <random>
 
 #include "qiree/Assert.hh"
 
@@ -32,7 +33,7 @@ using namespace Catalyst::Runtime;
 /*!
  * Initialize the Lightning simulator
  */
-LightningQuantum::LightningQuantum(std::ostream& os, unsigned long int seed) : output_(os)
+LightningQuantum::LightningQuantum(std::ostream& os, unsigned long int seed) : output_(os), seed_(seed)
 {
     std::string rtd_lib = RTDLIB;
     std::string rtd_device = RTDDEVICE;
@@ -123,6 +124,9 @@ void LightningQuantum::mz(Qubit q, Result r)
 { 
     QIREE_EXPECT(q.value < this->num_qubits());  
     QIREE_EXPECT(r.value < this->num_results());
+    std::mt19937 gen(seed_);
+    seed_++;
+    rtd_qdevice->SetDevicePRNG(&gen);
     results_[r.value] = rtd_qdevice->Measure(q.value, std::nullopt);
 }
 
