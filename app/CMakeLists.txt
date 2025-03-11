@@ -30,7 +30,7 @@ if(QIREE_USE_QSIM)
     PRIVATE CLI11::CLI11
   )
   target_link_libraries(qir-qsim
-    PUBLIC QIREE::qiree QIREE::qirqsim
+    PUBLIC QIREE::qiree QIREE::qirqsim qir.qsim.lib
     PRIVATE CLI11::CLI11
   )
 endif()
@@ -46,12 +46,12 @@ if(QIREE_USE_XACC)
   qiree_add_library(qir.xacc.lib SHARED
     qir-xacc-lib.cc
   )
-  target_link_libraries(qir-xacc
+  target_link_libraries(qir.xacc.lib
     PUBLIC QIREE::qiree QIREE::qirxacc
     PRIVATE CLI11::CLI11
   )
-  target_link_libraries(qir.xacc.lib
-    PUBLIC QIREE::qiree QIREE::qirxacc
+  target_link_libraries(qir-xacc
+    PUBLIC QIREE::qiree QIREE::qirxacc qir.xacc.lib
     PRIVATE CLI11::CLI11
   )
 endif()
