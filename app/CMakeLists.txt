@@ -22,6 +22,13 @@ if(QIREE_USE_QSIM)
   qiree_add_executable(qir-qsim
     qir-qsim.cc
   )
+  qiree_add_library(qir.qsim.lib SHARED
+    qir-qsim-lib.cc
+  )
+  target_link_libraries(qir.qsim.lib
+    PUBLIC QIREE::qiree QIREE::qirqsim
+    PRIVATE CLI11::CLI11
+  )
   target_link_libraries(qir-qsim
     PUBLIC QIREE::qiree QIREE::qirqsim
     PRIVATE CLI11::CLI11
