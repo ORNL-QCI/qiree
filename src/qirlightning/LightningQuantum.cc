@@ -116,9 +116,6 @@ QState LightningQuantum::read_result(Result r)
 //---------------------------------------------------------------------------//
 /*!
  * Map a qubit to a result index.
- *
- * (TODO: find how to link the classical register to the quantum register in
- * qsim)
  */
 void LightningQuantum::mz(Qubit q, Result r)
 { 

@@ -1,0 +1,63 @@
+# Lightning backend
+
+## Installing a lightning simulator
+
+When installing [Pennylane-Lightning](https://github.com/PennyLaneAI/pennylane-lightning) from pip or source, you will have the shared objects for each of the simulator installed. These are named `liblightning_kokkos_catalyst.so`/`liblightning_GPU_catalyst.so` etc. 
+
+Running `pip install pennylane` or `pip install pennylane-lightning` will install the `lightning.qubit` (CPU) simulator, and other simulators can be installed by running `pip install pennylane-lightning-kokkos / pennylane-lightning-gpu`.
+
+Example:
+```
+$ pip install pennylane-lightning-kokkos
+
+$ pip show pennylane-lightning-kokkos
+Name: PennyLane_Lightning_Kokkos
+Version: 0.40.0
+Summary: PennyLane-Lightning plugin
+Home-page: https://github.com/PennyLaneAI/pennylane-lightning
+Author: 
+Author-email: 
+License: Apache License 2.0
+Location: /home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages
+Requires: pennylane, pennylane-lightning
+
+$ ls /home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/pennylane_lightning
+... liblightning_kokkos_catalyst.so ...
+```
+
+You can swap `pennylane-lightning-kokkos` for `pennylane-lightning-gpu` for lightning.gpu and `pennylane-lightning` for lightning.gpu simulators.
+
+## Compilation
+
+Turn on `QIREE_USE_LIGHTNING` in CMakeLists.txt
+
+To compile:
+
+```
+mkdir build; cd build
+cmake ..
+make
+
+```
+
+## Running the example
+
+To run:
+
+```
+$ ./bin/qir-lightning ../examples/bell.ll -s 1
+(Extra debug output:
+NamedOperation: Hadamard
+NamedOperation: CNOT
+Measure
+Measure)
+{"11":1}
+```
+
+## Running on other devices
+
+To run on other devices, e.g. lightning.gpu, you need to change:
+- Install pennylane-lightning-gpu: `pip install pennylane-lightning-gpu`
+- replace `RTDLIB` from `kokkos` to `gpu`
+- replace `RTDDEVICE` from `Kokkos` to `GPU`
+- Include `cuquantum` libraries when running (which was installed as a dependency), i.e. `LD_LIBRARY_PATH=$(python -c "import site; print( f'{site.getsitepackages()[0]}/cuquantum')")/lib:$LD_LIBRARY_PATH ./test_rt_device.out`
