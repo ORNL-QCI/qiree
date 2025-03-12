@@ -1,4 +1,4 @@
-# Lightning backend
+# QIR-EE with Lightning simulator backend
 
 ## Installing a lightning simulator
 
@@ -37,7 +37,7 @@ You can swap `pennylane-lightning-kokkos` for `pennylane-lightning-gpu` for ligh
 
 The [lightning repository page](https://github.com/PennyLaneAI/pennylane-lightning) contains information on how to install Lightning simulators from source. This will necessary for e.g. Kokkos with HIP backend.
 
-## Compilation
+## Compile QIR-EE with Lightning backend
 
 - Set `QIREE_USE_LIGHTNING` to `ON` in `qiree/CMakeLists.txt`
 - Specify the simulator path and name in `qiree/src/qirlightning/CMakeLists`, set:
