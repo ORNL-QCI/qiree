@@ -3,7 +3,7 @@
 // See the top-level COPYRIGHT file for details.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //---------------------------------------------------------------------------//
-//! \file qir-xacc/qir-xacc.cc
+//! \file app/qir-xacc.cc
 //---------------------------------------------------------------------------//
 #include <cstdlib>
 #include <iostream>
@@ -22,41 +22,7 @@
 
 using namespace std::string_view_literals;
 
-namespace qiree
-{
-namespace app
-{
-//---------------------------------------------------------------------------//
-void run(std::string const& filename,
-         std::string const& accel_name,
-         int num_shots,
-         bool print_accelbuf,
-         bool group_tuples)
-{
-    // Load the input
-    Executor execute{Module{filename}};
-
-    // Set up XACC
-    XaccQuantum xacc(std::cout, accel_name, num_shots);
-    std::unique_ptr<RuntimeInterface> rt;
-    if (group_tuples)
-    {
-        rt = std::make_unique<XaccTupleRuntime>(
-            std::cout, xacc, print_accelbuf);
-    }
-    else
-    {
-        rt = std::make_unique<XaccDefaultRuntime>(
-            std::cout, xacc, print_accelbuf);
-    }
-
-    // Run
-    execute(xacc, *rt);
-}
-
-//---------------------------------------------------------------------------//
-}  // namespace app
-}  // namespace qiree
+int parse_input(int argc, char* argv[]);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -64,34 +30,5 @@ void run(std::string const& filename,
  */
 int main(int argc, char* argv[])
 {
-    int num_shots{1024};
-    std::string accel_name;
-    std::string filename;
-    bool no_print_accelbuf{false};
-    bool group_tuples{false};
-
-    CLI::App app;
-    auto* filename_opt
-        = app.add_option("--input,-i,input", filename, "QIR input file");
-    filename_opt->required();
-    auto* accel_opt
-        = app.add_option("-a,--accelerator", accel_name, "Accelerator name");
-    accel_opt->required();
-    auto* nshot_opt
-        = app.add_option("-s,--shots", num_shots, "Number of shots");
-    nshot_opt->capture_default_str();
-    app.add_flag("--no-print-xacc-accelbuf",
-                 no_print_accelbuf,
-                 "Do not print XACC AcceleratorBuffer");
-    app.add_flag("--group-tuples",
-                 group_tuples,
-                 "Print per-tuple/per-array measurement statistics rather "
-                 "than per-qubit");
-
-    CLI11_PARSE(app, argc, argv);
-
-    qiree::app::run(
-        filename, accel_name, num_shots, !no_print_accelbuf, group_tuples);
-
-    return EXIT_SUCCESS;
+    return parse_input(argc, argv);
 }
