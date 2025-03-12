@@ -2,11 +2,11 @@
 
 ## Installing a lightning simulator
 
-When installing [Pennylane-Lightning](https://github.com/PennyLaneAI/pennylane-lightning) from pip or source, you will have the shared objects for each of the simulator installed. These are named `liblightning_kokkos_catalyst.so`/`liblightning_GPU_catalyst.so` etc. 
+More information on installing Pennylane Lightning simulators can be found in [lightning repository](https://github.com/PennyLaneAI/pennylane-lightning).
 
-Running `pip install pennylane` or `pip install pennylane-lightning` will install the `lightning.qubit` (CPU) simulator, and other simulators can be installed by running `pip install pennylane-lightning-kokkos / pennylane-lightning-gpu`.
+### Quick start
+The easiest way to get started is install a Lightning simulator from PyPI via pip:
 
-Example:
 ```
 $ pip install pennylane-lightning-kokkos
 
@@ -20,20 +20,37 @@ Author-email:
 License: Apache License 2.0
 Location: /home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages
 Requires: pennylane, pennylane-lightning
+```
+Running `pip install pennylane` or `pip install pennylane-lightning` will install the `lightning.qubit` (CPU) simulator, and other simulators can be installed by running `pip install pennylane-lightning-kokkos / pennylane-lightning-gpu`.
 
+When installing [Pennylane-Lightning](https://github.com/PennyLaneAI/pennylane-lightning) from pip or source, you will have the shared objects for each of the simulator installed. These are named `liblightning_qubit_catalyst.so`/`liblightning_kokkos_catalyst.so`/`liblightning_GPU_catalyst.so` respectively.
+
+Example:
+```
 $ ls /home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/pennylane_lightning
 ... liblightning_kokkos_catalyst.so ...
 ```
 
 You can swap `pennylane-lightning-kokkos` for `pennylane-lightning-gpu` for lightning.gpu and `pennylane-lightning` for lightning.gpu simulators.
 
+### Compiling Lightning from Source
+
+The [lightning repository page](https://github.com/PennyLaneAI/pennylane-lightning) contains information on how to install Lightning simulators from source. This will necessary for e.g. Kokkos with HIP backend.
+
 ## Compilation
 
-Turn on `QIREE_USE_LIGHTNING` in CMakeLists.txt
+- Set `QIREE_USE_LIGHTNING` to `ON` in `qiree/CMakeLists.txt`
+- Specify the simulator path and name in `qiree/src/qirlightning/CMakeLists`, set:
+    - `RTDLIB_PATH` to the path of the simulator `.so`
+    - `RTDDEVICE_NAME` to `LightningSimulator`/`LightningKokkosSimulator`/`LightningGPUSimulator`
+These could also be set in cmake using the variables `-D...`
+
+Note: when running on GPU, include `cuquantum` libraries in the library path (which will be installed as a dependency from Python), i.e. `LD_LIBRARY_PATH=$(python -c "import site; print( f'{site.getsitepackages()[0]}/cuquantum')")/lib:$LD_LIBRARY_PATH ./test_rt_device.out`
 
 To compile:
 
 ```
+cd qiree/
 mkdir build; cd build
 cmake ..
 make
@@ -45,16 +62,11 @@ make
 To run:
 
 ```
-$ ./bin/qir-lightning ../examples/bell.ll -s 1
-(Extra debug output:
-NamedOperation: Hadamard
-NamedOperation: CNOT
-Measure
-Measure)
-{"11":1}
+$ ./bin/qir-lightning ../examples/bell.ll -s 100
+{"00":43,"11":57}
 ```
 
-## Running on other devices
+## Running on GPU
 
 To run on other devices, e.g. lightning.gpu, you need to change:
 - Install pennylane-lightning-gpu: `pip install pennylane-lightning-gpu`

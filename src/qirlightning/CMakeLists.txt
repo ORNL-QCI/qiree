@@ -7,10 +7,18 @@
 # Include directories for catalyst_runtime
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/catalyst_runtime/include")
 
+set(RTDLIB_PATH "/home/joseph/work/qiree/pennylane-lightning/build_lightning_qubit/liblightning_qubit_catalyst.so")
+set(RTDDEVICE_NAME "LightningSimulator")
+
 # Adding lightning as a library to qiree
 qiree_add_library(qirlightning
   LightningQuantum.cc
   LightningDefaultRuntime.cc
+)
+
+target_compile_definitions(qirlightning PRIVATE
+    RTDLIB="${RTDLIB_PATH}"
+    RTDDEVICE="${RTDDEVICE_NAME}"
 )
 
 #Link the lightning library to qiree and any other relevant libraries

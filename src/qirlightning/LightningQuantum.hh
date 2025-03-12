@@ -68,7 +68,7 @@ class LightningQuantum final : virtual public QuantumNotImpl
     //!@{
     //! \name Circuit construction
     // void ccx(Qubit, Qubit) final;
-    void ccnot(Qubit, Qubit, Qubit);  // TODO: not in examples or qir runner
+    void ccnot(Qubit, Qubit, Qubit); 
     void cnot(Qubit, Qubit) final;
     void cx(Qubit, Qubit) final;
     // void cy(Qubit, Qubit) final;

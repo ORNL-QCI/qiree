@@ -19,10 +19,6 @@
 
 #include "qiree/Assert.hh"
 
-#define RTDLIB                                                         \
-    "/home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/" \
-    "pennylane_lightning/liblightning_kokkos_catalyst.so";
-#define RTDDEVICE "LightningKokkosSimulator";
 extern "C" Catalyst::Runtime::QuantumDevice*
 GenericDeviceFactory(char const* kwargs);
 namespace qiree
@@ -35,6 +31,27 @@ using namespace Catalyst::Runtime;
  */
 LightningQuantum::LightningQuantum(std::ostream& os, unsigned long int seed) : output_(os), seed_(seed)
 {
+}
+
+//---------------------------------------------------------------------------//
+//! Default destructor
+LightningQuantum::~LightningQuantum() = default;
+
+//---------------------------------------------------------------------------//
+/*!
+ * Prepare to build a quantum circuit for an entry point
+ */
+void LightningQuantum::set_up(EntryPointAttrs const& attrs)
+{
+    QIREE_VALIDATE(attrs.required_num_qubits > 0,
+                   << "input is not a quantum program");
+    num_qubits_ = attrs.required_num_qubits;  // Set the number of qubits
+    results_.resize(attrs.required_num_results);
+
+
+    // We load the library every time because we currently have an issue 
+    // with releasing qubits in Catalyst.
+    // Once that is fixed, this can go to the constructor to execute once
     std::string rtd_lib = RTDLIB;
     std::string rtd_device = RTDDEVICE;
     std::string kwargs = {};
@@ -60,23 +77,6 @@ LightningQuantum::LightningQuantum(std::ostream& os, unsigned long int seed) : o
     rtd_qdevice = std::unique_ptr<QuantumDevice>(
         reinterpret_cast<decltype(GenericDeviceFactory)*>(f_ptr)(
             rtd_kwargs.c_str()));
-}
-
-//---------------------------------------------------------------------------//
-//! Default destructor
-LightningQuantum::~LightningQuantum() = default;
-
-//---------------------------------------------------------------------------//
-/*!
- * Prepare to build a quantum circuit for an entry point
- */
-void LightningQuantum::set_up(EntryPointAttrs const& attrs)
-{
-    QIREE_VALIDATE(attrs.required_num_qubits > 0,
-                   << "input is not a quantum program");
-
-    num_qubits_ = attrs.required_num_qubits;  // Set the number of qubits
-    results_.resize(attrs.required_num_results);
 
     rtd_qdevice->AllocateQubits(num_qubits_);
 }
@@ -87,10 +87,12 @@ void LightningQuantum::set_up(EntryPointAttrs const& attrs)
  */
 void LightningQuantum::tear_down()
 {
+    // This should go to the destructor once we fix the issue with releasing qubits
     if (rtd_dylib_handler)
     {
         dlclose(rtd_dylib_handler);
-    }
+    };
+  
 }
 
 //---------------------------------------------------------------------------//
@@ -106,7 +108,7 @@ void LightningQuantum::reset(Qubit q)
 
 //----------------------------------------------------------------------------//
 /*!
- * Read the value of a result. This utilizes the new BufferManager.
+ * Read the value of a result. 
  */
 QState LightningQuantum::read_result(Result r)
 {
@@ -124,7 +126,8 @@ void LightningQuantum::mz(Qubit q, Result r)
     std::mt19937 gen(seed_);
     seed_++;
     rtd_qdevice->SetDevicePRNG(&gen);
-    results_[r.value] = rtd_qdevice->Measure(q.value, std::nullopt);
+    auto result = rtd_qdevice->Measure(static_cast<intptr_t>(q.value), std::nullopt);
+    results_[r.value] = *result;
 }
 
 //---------------------------------------------------------------------------//

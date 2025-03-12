@@ -37,7 +37,7 @@ endmacro()
 option(QIREE_BUILD_DOCS "Build QIR-EE documentation" OFF)
 option(QIREE_BUILD_TESTS "Build QIR-EE unit tests" ON)
 option(QIREE_BUILD_EXAMPLES "Build QIR-EE examples" OFF)
-option(QIREE_USE_QSIM "Download and build Google qsim backend" OFF)
+option(QIREE_USE_QSIM "Download and build Google qsim backend" ON)
 option(QIREE_USE_XACC "Build XACC interface" OFF)
 option(QIREE_USE_LIGHTNING "Build Pennylane Lightning backend" ON)
 
