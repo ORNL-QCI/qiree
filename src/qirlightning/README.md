@@ -66,10 +66,3 @@ $ ./bin/qir-lightning ../examples/bell.ll -s 100
 {"00":43,"11":57}
 ```
 
-## Running on GPU
-
-To run on other devices, e.g. lightning.gpu, you need to change:
-- Install pennylane-lightning-gpu: `pip install pennylane-lightning-gpu`
-- replace `RTDLIB` from `kokkos` to `gpu`
-- replace `RTDDEVICE` from `Kokkos` to `GPU`
-- Include `cuquantum` libraries when running (which was installed as a dependency), i.e. `LD_LIBRARY_PATH=$(python -c "import site; print( f'{site.getsitepackages()[0]}/cuquantum')")/lib:$LD_LIBRARY_PATH ./test_rt_device.out`
