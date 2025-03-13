@@ -33,6 +33,8 @@ You can swap `pennylane-lightning-kokkos` for `pennylane-lightning-gpu` for ligh
 
 ## Compilation
 
+First update the `RTDLIB` in `test_rt_device.cpp` to the local path where lightning is installed (i.e. `<site packages path>` from above).
+
 To compile:
 
 ```
