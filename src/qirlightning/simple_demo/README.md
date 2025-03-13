@@ -22,10 +22,10 @@ Home-page: https://github.com/PennyLaneAI/pennylane-lightning
 Author: 
 Author-email: 
 License: Apache License 2.0
-Location: /home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages
+Location: <site packages path>
 Requires: pennylane, pennylane-lightning
 
-$ ls /home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/pennylane_lightning
+$ ls <site packages path>/pennylane_lightning
 ... liblightning_kokkos_catalyst.so ...
 ```
 

@@ -18,7 +18,7 @@ Home-page: https://github.com/PennyLaneAI/pennylane-lightning
 Author: 
 Author-email: 
 License: Apache License 2.0
-Location: /home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages
+Location: <site packages path>
 Requires: pennylane, pennylane-lightning
 ```
 Running `pip install pennylane` or `pip install pennylane-lightning` will install the `lightning.qubit` (CPU) simulator, and other simulators can be installed by running `pip install pennylane-lightning-kokkos / pennylane-lightning-gpu`.
@@ -27,7 +27,7 @@ When installing [Pennylane-Lightning](https://github.com/PennyLaneAI/pennylane-l
 
 Example:
 ```
-$ ls /home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/pennylane_lightning
+$ ls <site packages path>
 ... liblightning_kokkos_catalyst.so ...
 ```
 
@@ -43,7 +43,7 @@ The [lightning repository page](https://github.com/PennyLaneAI/pennylane-lightni
 - Set the environment variable `LIGHTNING_SIM_PATH` to the shared object of the Lightning Simulator, e.g.
 
 ```
-export LIGHTNING_SIM_PATH=/home/joseph/work/qiree/pennylane-lightning/build_lightning_qubit/liblightning_qubit_catalyst.so
+export LIGHTNING_SIM_PATH=<site packages path>/pennylane_lightning/liblightning_qubit_catalyst.so
 ```
 
 Note: when running on GPU, include `cuquantum` libraries in the library path (which will be installed as a dependency from Python), i.e. `LD_LIBRARY_PATH=$(python -c "import site; print( f'{site.getsitepackages()[0]}/cuquantum')")/lib:$LD_LIBRARY_PATH ./test_rt_device.out`

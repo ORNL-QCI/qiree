@@ -5,7 +5,7 @@
 // Runtime libraries (kokkos/GPU/qubit etc.)
 // Update these paths to point to the correct library
 #define RTDLIB                                                         \
-    "/home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/" \
+    "<UPDATE: site packages path>" \
     "pennylane_lightning/liblightning_kokkos_catalyst.so";
 #define RTDDEVICE "LightningKokkosSimulator";
 
