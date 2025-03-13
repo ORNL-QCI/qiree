@@ -31,27 +31,6 @@ using namespace Catalyst::Runtime;
  */
 LightningQuantum::LightningQuantum(std::ostream& os, unsigned long int seed) : output_(os), seed_(seed)
 {
-}
-
-//---------------------------------------------------------------------------//
-//! Default destructor
-LightningQuantum::~LightningQuantum() = default;
-
-//---------------------------------------------------------------------------//
-/*!
- * Prepare to build a quantum circuit for an entry point
- */
-void LightningQuantum::set_up(EntryPointAttrs const& attrs)
-{
-    QIREE_VALIDATE(attrs.required_num_qubits > 0,
-                   << "input is not a quantum program");
-    num_qubits_ = attrs.required_num_qubits;  // Set the number of qubits
-    results_.resize(attrs.required_num_results);
-
-
-    // We load the library every time because we currently have an issue 
-    // with releasing qubits in Catalyst.
-    // Once that is fixed, this can go to the constructor to execute once
     std::string rtd_lib = RTDLIB;
     std::string rtd_device = RTDDEVICE;
     std::string kwargs = {};
@@ -65,17 +44,40 @@ void LightningQuantum::set_up(EntryPointAttrs const& attrs)
 
     // Find device factory
     std::string factory_name = rtd_device + "Factory";
-    void* f_ptr = dlsym(rtd_dylib_handler, factory_name.c_str());
+    factory_f_ptr = dlsym(rtd_dylib_handler, factory_name.c_str());
 
-    if (!f_ptr)
+    if (!factory_f_ptr)
     {
         dlclose(rtd_dylib_handler);
         throw std::runtime_error("Failed to find factory function: "
                                  + factory_name);
     }
+}
+
+//---------------------------------------------------------------------------//
+//! Default destructor
+LightningQuantum::~LightningQuantum() {
+
+    if (rtd_dylib_handler)
+    {
+        dlclose(rtd_dylib_handler);
+    };
+};
+
+//---------------------------------------------------------------------------//
+/*!
+ * Prepare to build a quantum circuit for an entry point
+ */
+void LightningQuantum::set_up(EntryPointAttrs const& attrs)
+{
+    QIREE_VALIDATE(attrs.required_num_qubits > 0,
+                   << "input is not a quantum program");
+    num_qubits_ = attrs.required_num_qubits;  // Set the number of qubits
+    results_.resize(attrs.required_num_results);
+
     std::string rtd_kwargs = {};
     rtd_qdevice = std::unique_ptr<QuantumDevice>(
-        reinterpret_cast<decltype(GenericDeviceFactory)*>(f_ptr)(
+        reinterpret_cast<decltype(GenericDeviceFactory)*>(factory_f_ptr)(
             rtd_kwargs.c_str()));
 
     rtd_qdevice->AllocateQubits(num_qubits_);
@@ -87,11 +89,6 @@ void LightningQuantum::set_up(EntryPointAttrs const& attrs)
  */
 void LightningQuantum::tear_down()
 {
-    // This should go to the destructor once we fix the issue with releasing qubits
-    if (rtd_dylib_handler)
-    {
-        dlclose(rtd_dylib_handler);
-    };
   
 }
 
@@ -103,7 +100,8 @@ void LightningQuantum::reset(Qubit q)
 {
     std::vector<int8_t> data = {0}; 
     DataView<int8_t, 1> state(data);
-    std::vector<QubitIdType> wires = {static_cast<intptr_t>(q.value)};    rtd_qdevice->SetBasisState(state, wires);    
+    std::vector<QubitIdType> wires = {static_cast<intptr_t>(q.value)};    
+    rtd_qdevice->SetBasisState(state, wires);    
 }
 
 //----------------------------------------------------------------------------//

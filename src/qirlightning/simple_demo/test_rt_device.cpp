@@ -6,8 +6,8 @@
 // Update these paths to point to the correct library
 #define RTDLIB                                                         \
     "/home/joseph/work/qiree/venv-qiree/lib/python3.10/site-packages/" \
-    "pennylane_lightning/liblightning_gpu_catalyst.so";
-#define RTDDEVICE "LightningGPUSimulator";
+    "pennylane_lightning/liblightning_kokkos_catalyst.so";
+#define RTDDEVICE "LightningKokkosSimulator";
 
 extern "C" Catalyst::Runtime::QuantumDevice*
 GenericDeviceFactory(char const* kwargs);

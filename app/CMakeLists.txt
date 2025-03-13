@@ -40,9 +40,6 @@ endif()
 #-----------------------------------------------------------------------------#
 
 if(QIREE_USE_LIGHTNING)
-
-  # Include directories for catalyst_runtime
-  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../src/qirlightning/catalyst_runtime/include")
   qiree_add_executable(qir-lightning
     qir-lightning.cc
   )

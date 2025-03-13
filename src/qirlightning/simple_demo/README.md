@@ -2,13 +2,13 @@
 
 This is a super simple demo for driving Lightning devices. The example here uses `lightning.kokkos`, but can easily be updated to target other devices, e.g. lightning.gpu (if an Nvidia GPU is present). 
 
-The only extra header files required are the `../catalyst_runtime/include`, which contains the include files from the [Catalyst Runtime ](https://github.com/PennyLaneAI/catalyst/tree/main/runtime/include) (for the QuantumDevice interface).
+Some Catalyst include files are copied here for convenience - they are in `./snapshot_catalyst_runtime/include`. These are required for the QuantumDevice interface. For the qiree source, these files are fetched automatically during CMake, and these are not used.
 
 ## Installing a lightning simulator
 
 When installing [Pennylane-Lightning](https://github.com/PennyLaneAI/pennylane-lightning) from pip or source, you will have the shared objects for each of the simulator installed. These are named `liblightning_kokkos_catalyst.so`/`liblightning_GPU_catalyst.so` etc. 
 
-Running `pip install pennylane` or `pip install pennylane-lightning` will install the `lightning.qubit` (CPU) simulator, and other simulators can be installed by running `pip install pennylane-lightning-kokkos / pennylane-lightning-gpu`.
+To get started, run `pip install pennylane` or `pip install pennylane-lightning` - this will install the `lightning.qubit` (CPU) simulator, and other simulators can be installed by running `pip install pennylane-lightning-kokkos / pennylane-lightning-gpu`.
 
 Example:
 ```
@@ -36,7 +36,7 @@ You can swap `pennylane-lightning-kokkos` for `pennylane-lightning-gpu` for ligh
 To compile:
 
 ```
-$ clang++ --std=c++20 test_rt_device.cpp -I../catalyst_runtime/include -o test_rt_device.out
+$ clang++ --std=c++20 test_rt_device.cpp -I./snapshot_catalyst_runtime/include -o test_rt_device.out
 ```
 
 ## Running the example
@@ -61,6 +61,7 @@ Measure on wire 0 = 0
 
 To run on other devices, e.g. lightning.gpu, you need to change:
 - Install pennylane-lightning-gpu: `pip install pennylane-lightning-gpu`
+In the c++ file:
 - replace `RTDLIB` from `kokkos` to `gpu`
 - replace `RTDDEVICE` from `Kokkos` to `GPU`
 - Include `cuquantum` libraries when running (which was installed as a dependency), i.e. `LD_LIBRARY_PATH=$(python -c "import site; print( f'{site.getsitepackages()[0]}/cuquantum')")/lib:$LD_LIBRARY_PATH ./test_rt_device.out`

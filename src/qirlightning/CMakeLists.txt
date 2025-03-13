@@ -4,16 +4,47 @@
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #----------------------------------------------------------------------------#
 
-# Include directories for catalyst_runtime
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/catalyst_runtime/include")
+# Fetch Catalyst runtime include files
+include(FetchContent)
 
-set(RTDLIB_PATH "/home/joseph/work/qiree/pennylane-lightning/build_lightning_qubit/liblightning_qubit_catalyst.so")
-set(RTDDEVICE_NAME "LightningSimulator")
+include("${CMAKE_CURRENT_SOURCE_DIR}/support_catalyst.cmake")
+FindCatalyst(qirlightning)
+
+# Set the path to the lightning simulator shared library
+if(DEFINED ENV{LIGHTNING_SIM_PATH})
+  set(RTDLIB_PATH "$ENV{LIGHTNING_SIM_PATH}")
+  message(STATUS "RTDLIB_PATH set from environment variable LIGHTNING_SIM_PATH: ${RTDLIB_PATH}")
+else()
+  # Update hard coded path is not found in environment
+  set(RTDLIB_PATH "/home/joseph/work/qiree/pennylane-lightning/build_lightning_kokkos/liblightning_kokkos_catalyst.so")
+  message(STATUS "RTDLIB_PATH set to default value: ${RTDLIB_PATH}")
+endif()
+
+# Set the device name for the lightning simulator
+execute_process(
+    COMMAND nm -DC "${RTDLIB_PATH}" | grep " Factory"
+    OUTPUT_VARIABLE GREP_OUTPUT
+    ERROR_QUIET
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+
+if(GREP_OUTPUT)
+  string(REGEX MATCH "T (.*)Factory" SYMBOL_MATCH "${GREP_OUTPUT}")
+  if(SYMBOL_MATCH)
+    string(REGEX REPLACE "T (.*)Factory" "\\1" RTDDEVICE_NAME "${SYMBOL_MATCH}")
+    message(STATUS "Found Lightning Simulator. Extracted RTDDEVICE_NAME: ${RTDDEVICE_NAME}")
+  else()
+    message(WARNING "Symbol 'Factory' found, but regex failed to extract.")
+  endif()
+else()
+  message(WARNING "Symbol 'Factory' not found in ${RTDLIB_PATH}")
+endif()
+
 
 # Adding lightning as a library to qiree
 qiree_add_library(qirlightning
-  LightningQuantum.cc
-  LightningDefaultRuntime.cc
+LightningQuantum.cc
+LightningDefaultRuntime.cc
 )
 
 target_compile_definitions(qirlightning PRIVATE

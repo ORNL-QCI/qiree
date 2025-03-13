@@ -40,10 +40,11 @@ The [lightning repository page](https://github.com/PennyLaneAI/pennylane-lightni
 ## Compile QIR-EE with Lightning backend
 
 - Set `QIREE_USE_LIGHTNING` to `ON` in `qiree/CMakeLists.txt`
-- Specify the simulator path and name in `qiree/src/qirlightning/CMakeLists`, set:
-    - `RTDLIB_PATH` to the path of the simulator `.so`
-    - `RTDDEVICE_NAME` to `LightningSimulator`/`LightningKokkosSimulator`/`LightningGPUSimulator`
-These could also be set in cmake using the variables `-D...`
+- Set the environment variable `LIGHTNING_SIM_PATH` to the shared object of the Lightning Simulator, e.g.
+
+```
+export LIGHTNING_SIM_PATH=/home/joseph/work/qiree/pennylane-lightning/build_lightning_qubit/liblightning_qubit_catalyst.so
+```
 
 Note: when running on GPU, include `cuquantum` libraries in the library path (which will be installed as a dependency from Python), i.e. `LD_LIBRARY_PATH=$(python -c "import site; print( f'{site.getsitepackages()[0]}/cuquantum')")/lib:$LD_LIBRARY_PATH ./test_rt_device.out`
 
@@ -59,7 +60,7 @@ make
 
 ## Running the example
 
-To run:
+To run (in the `build` directory):
 
 ```
 $ ./bin/qir-lightning ../examples/bell.ll -s 100
