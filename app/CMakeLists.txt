@@ -22,15 +22,8 @@ if(QIREE_USE_QSIM)
   qiree_add_executable(qir-qsim
     qir-qsim.cc
   )
-  qiree_add_library(qir.qsim.lib SHARED
-    qir-qsim-lib.cc
-  )
-  target_link_libraries(qir.qsim.lib
-    PUBLIC QIREE::qiree QIREE::qirqsim
-    PRIVATE CLI11::CLI11
-  )
   target_link_libraries(qir-qsim
-    PUBLIC QIREE::qiree QIREE::qirqsim qir.qsim.lib
+    PUBLIC QIREE::qiree QIREE::qirqsim
     PRIVATE CLI11::CLI11
   )
 endif()
@@ -57,15 +50,8 @@ if(QIREE_USE_XACC)
   qiree_add_executable(qir-xacc
     qir-xacc.cc
   )
-  qiree_add_library(qir.xacc.lib SHARED
-    qir-xacc-lib.cc
-  )
-  target_link_libraries(qir.xacc.lib
-    PUBLIC QIREE::qiree QIREE::qirxacc
-    PRIVATE CLI11::CLI11
-  )
   target_link_libraries(qir-xacc
-    PUBLIC QIREE::qiree QIREE::qirxacc qir.xacc.lib
+    PUBLIC QIREE::qiree QIREE::qirxacc
     PRIVATE CLI11::CLI11
   )
 endif()
