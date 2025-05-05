@@ -43,10 +43,12 @@ The [lightning repository page](https://github.com/PennyLaneAI/pennylane-lightni
 - Set the environment variable `LIGHTNING_SIM_PATH` to the shared object of the Lightning Simulator, e.g.
 
 ```
-export LIGHTNING_SIM_PATH=<site packages path>/pennylane_lightning/liblightning_qubit_catalyst.so
+export LIGHTNING_SIM_PATH=$(python -c "import site; print( f'{site.getsitepackages()[0]}/pennylane_lightning')")/liblightning_kokkos_catalyst.so
 ```
 
-Note: when running on GPU, include `cuquantum` libraries in the library path (which will be installed as a dependency from Python), i.e. `LD_LIBRARY_PATH=$(python -c "import site; print( f'{site.getsitepackages()[0]}/cuquantum')")/lib:$LD_LIBRARY_PATH ./test_rt_device.out`
+Note: 
+- replace `libligghtning_kokkos_catalyst.so` with `liblightning_qubit_catalyst.so` or `liblightning_GPU_catalyst.so` if required.
+- when running on `GPU`, include `cuquantum` libraries in the library path (which will be installed as a dependency from Python), i.e. `LD_LIBRARY_PATH=$(python -c "import site; print( f'{site.getsitepackages()[0]}/cuquantum')")/lib:$LD_LIBRARY_PATH ./test_rt_device.out`
 
 To compile:
 

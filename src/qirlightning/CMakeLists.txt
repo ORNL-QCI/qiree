@@ -15,9 +15,8 @@ if(DEFINED ENV{LIGHTNING_SIM_PATH})
   set(RTDLIB_PATH "$ENV{LIGHTNING_SIM_PATH}")
   message(STATUS "RTDLIB_PATH set from environment variable LIGHTNING_SIM_PATH: ${RTDLIB_PATH}")
 else()
-  # Update hard coded path is not found in environment
-  set(RTDLIB_PATH "/home/joseph/work/qiree/pennylane-lightning/build_lightning_kokkos/liblightning_kokkos_catalyst.so")
-  message(STATUS "RTDLIB_PATH set to default value: ${RTDLIB_PATH}")
+  # Throw an error if the environment variable is not defined
+  message(FATAL_ERROR "Environment variable LIGHTNING_SIM_PATH is not defined. Please set it to the path of the Lightning simulator shared library.")
 endif()
 
 # Set the device name for the lightning simulator
@@ -34,10 +33,10 @@ if(GREP_OUTPUT)
     string(REGEX REPLACE "T (.*)Factory" "\\1" RTDDEVICE_NAME "${SYMBOL_MATCH}")
     message(STATUS "Found Lightning Simulator. Extracted RTDDEVICE_NAME: ${RTDDEVICE_NAME}")
   else()
-    message(WARNING "Symbol 'Factory' found, but regex failed to extract.")
+    message(FATAL_ERROR "Symbol 'Factory' found, but regex failed to extract.")
   endif()
 else()
-  message(WARNING "Symbol 'Factory' not found in ${RTDLIB_PATH}")
+  message(FATAL_ERROR "Symbol 'Factory' not found in ${RTDLIB_PATH}. Please ensure LIGHTNING_SIM_PATH is set correctly.")
 endif()
 
 
