@@ -49,11 +49,19 @@ int qiree_setup_executor(CQiree* manager,
 
 int qiree_execute(CQiree* manager, int num_shots);
 
-/* Encoded result: first entry is # pairs, every following pair is (bitstring,
- * count) [123, 0, 3, 15, 10, ...] 123: number of following entries 0:
- * 000000000 bitstring 3: number of samples of "0000000" 15: 00001111 bitstring
- * 10: number of samples
- * ....{ 123, (), ()... }
+/*
+ * Encoded result:
+ * - first entry is number of pairs
+ * - every following integer is a (bitstring, count) pair
+ * - the bitstring is "little endian" with shifting: qubit N is
+ *  `(value >> N) & 1` for N in [0, 64)
+ *
+ * Example: [123, 0, 3, 15, 10, ...]
+ * - 123: number of following entries
+ * - 0: 000000000 bitstring
+ * - 3: number of samples of "0000000"
+ * - 15: 00001111 bitstring
+ * - 10: number of samples
  */
 int qiree_save_result(CQiree* manager, size_t max, uint64_t* encoded);
 
