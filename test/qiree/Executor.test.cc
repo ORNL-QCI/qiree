@@ -70,6 +70,53 @@ tear_down
 }
 
 //---------------------------------------------------------------------------//
+TEST_F(ExecutorTest, measure_loop)
+{
+    auto result = this->run("unitaryhack2025/measure_loop.ll");
+    EXPECT_EQ(R"(
+set_up(q=1, r=1)
+h(Q{0})
+h(Q{0})
+h(Q{0})
+h(Q{0})
+h(Q{0})
+mz(Q{0},R{0})
+br(i1 %0, then, else)
+then:
+x(Q{0})
+br label continue
+else:
+br label continue
+continue:
+array_record_output(1)
+result_record_output(R{0})
+tear_down
+)",
+              result.commands.str());
+}
+
+//---------------------------------------------------------------------------//
+TEST_F(ExecutorTest, measure_reset)
+{
+    auto result = this->run("unitaryhack2025/measure_reset.ll");
+    EXPECT_EQ(R"(
+set_up(q=1, r=1)
+h(Q{0})
+mz(Q{0},R{0})
+read_result(R{0})
+br(i1 %0, then, else)
+then:
+x(Q{0})
+br label continue
+else:
+br label continue
+continue:
+tear_down
+)",
+              result.commands.str());
+}
+
+//---------------------------------------------------------------------------//
 TEST_F(ExecutorTest, bell)
 {
     auto result = this->run("bell.ll");
