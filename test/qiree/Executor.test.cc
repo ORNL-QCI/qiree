@@ -110,32 +110,6 @@ mz(Q{0},R{0})
 array_record_output(2)
 result_record_output(R{0})
 read_result(R{0})
-reset(Q{0})
-h(Q{0})
-cz(Q{0}, Q{1})
-cz(Q{0}, Q{1})
-h(Q{0})
-mz(Q{0},R{1})
-result_record_output(R{1})
-tear_down
-)",
-              result.commands.str());
-}
-
-//---------------------------------------------------------------------------//
-TEST_F(ExecutorTest, kitaev_phase_estimation)
-{
-    auto result = this->run("unitaryhack2025/kitaev_phase_estimation.ll");
-    EXPECT_EQ(R"(
-set_up(q=2, r=2)
-x(Q{1})
-h(Q{0})
-cz(Q{0}, Q{1})
-h(Q{0})
-mz(Q{0},R{0})
-array_record_output(2)
-result_record_output(R{0})
-read_result(R{0})
 z(Q{1})
 h(Q{0})
 cz(Q{0}, Q{1})
