@@ -78,14 +78,14 @@ set_up(q=5, r=3)
 cnot(Q{0}, Q{1})
 cnot(Q{0}, Q{2})
 x(Q{0})                 // deterministic injected error
-TODO: cx.body
-TODO: cx.body
+cnot(Q{1}, Q{3})
+cnot(Q{2}, Q{4})
 mz(Q{3},R{0})
 array_record_output(3)
 result_record_output(R{0})
 read_result(R{0})
-TODO: cx.body
-TODO: cx.body
+cnot(Q{2}, Q{3})
+cnot(Q{1}, Q{3})
 mz(Q{4},R{1})
 result_record_output(R{1})
 read_result(R{1})
