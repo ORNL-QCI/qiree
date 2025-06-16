@@ -14,6 +14,7 @@ entry:
   call void @__quantum__qis__cx__body(%Qubit* null,                       %Qubit* inttoptr (i64 3 to %Qubit*))
   call void @__quantum__qis__cx__body(%Qubit* inttoptr (i64 1 to %Qubit*), %Qubit* inttoptr (i64 3 to %Qubit*))
   call void @__quantum__qis__mz__body(%Qubit* inttoptr (i64 3 to %Qubit*), %Result* null)
+  call void @__quantum__rt__array_record_output(i64 [num_results], i8* null)
   call void @__quantum__rt__result_record_output(%Result* null,            i8* null)
   %0 = call i1 @__quantum__qis__read_result__body(%Result* null)
   br i1 %0, label %then, label %else
@@ -74,3 +75,5 @@ attributes #1 = { "irreversible" }
 !1 = !{i32 7, !"qir_minor_version",          i32 0}
 !2 = !{i32 1, !"dynamic_qubit_management",   i1 false}
 !3 = !{i32 1, !"dynamic_result_management", i1 false}
+
+declare void @__quantum__rt__array_record_output(i64, i8*)
