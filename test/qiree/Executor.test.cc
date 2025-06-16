@@ -80,6 +80,7 @@ cnot(Q{0}, Q{2})
 TODO: cx.body
 TODO: cx.body
 mz(Q{3},R{0})
+array_record_output(3)
 result_record_output(R{0})
 read_result(R{0})
 TODO: cx.body
@@ -104,6 +105,7 @@ TODO: x.body
 h(Q{0})
 TODO: cz.body
 mz(Q{0},R{0})
+array_record_output(2)
 result_record_output(R{0})
 read_result(R{0})
 mz(Q{1},R{1})
