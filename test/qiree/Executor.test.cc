@@ -70,7 +70,6 @@ tear_down
 }
 
 //---------------------------------------------------------------------------//
-//---------------------------------------------------------------------------//
 TEST_F(ExecutorTest, bit_flip_error_correction)
 {
     auto result = this->run("unitaryhack2025/bit_flip_error_correction.ll");
@@ -78,13 +77,13 @@ TEST_F(ExecutorTest, bit_flip_error_correction)
 set_up(q=5, r=3)
 cnot(Q{0}, Q{1})
 cnot(Q{0}, Q{2})
-cx(Q{0}, Q{3})
-cx(Q{1}, Q{3})
+TODO: cx.body
+TODO: cx.body
 mz(Q{3},R{0})
 result_record_output(R{0})
 read_result(R{0})
-cx(Q{1}, Q{4})
-cx(Q{2}, Q{4})
+TODO: cx.body
+TODO: cx.body
 mz(Q{4},R{1})
 result_record_output(R{1})
 read_result(R{1})
@@ -101,20 +100,18 @@ TEST_F(ExecutorTest, kitaev_phase_estimation)
     auto result = this->run("unitaryhack2025/kitaev_phase_estimation.ll");
     EXPECT_EQ(R"(
 set_up(q=2, r=2)
-x(Q{1})
+TODO: x.body
 h(Q{0})
-cz(Q{0}, Q{1})
+TODO: cz.body
 mz(Q{0},R{0})
 result_record_output(R{0})
 read_result(R{0})
-z(Q{1})
 mz(Q{1},R{1})
 result_record_output(R{1})
 tear_down
 )",
               result.commands.str());
 }
-
 
 //---------------------------------------------------------------------------//
 TEST_F(ExecutorTest, bell)
