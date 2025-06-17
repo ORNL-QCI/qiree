@@ -77,7 +77,7 @@ TEST_F(ExecutorTest, bit_flip_error_correction)
 set_up(q=5, r=3)
 cnot(Q{0}, Q{1})
 cnot(Q{0}, Q{2})
-TODO: x.body 
+TODO: x.body
 TODO: cx.body
 TODO: cx.body
 mz(Q{3},R{0})
