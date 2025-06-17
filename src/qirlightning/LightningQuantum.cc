@@ -98,10 +98,7 @@ void LightningQuantum::tear_down()
  */
 void LightningQuantum::reset(Qubit q)
 {
-    std::vector<int8_t> data = {0}; 
-    DataView<int8_t, 1> state(data);
-    std::vector<QubitIdType> wires = {static_cast<intptr_t>(q.value)};    
-    rtd_qdevice->SetBasisState(state, wires);    
+    q.value = 0;
 }
 
 //----------------------------------------------------------------------------//
