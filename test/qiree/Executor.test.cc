@@ -70,6 +70,59 @@ tear_down
 }
 
 //---------------------------------------------------------------------------//
+TEST_F(ExecutorTest, bit_flip_error_correction)
+{
+    auto result = this->run("unitaryhack2025/bit_flip_error_correction.ll");
+    EXPECT_EQ(R"(
+set_up(q=5, r=3)
+cnot(Q{0}, Q{1})
+cnot(Q{0}, Q{2})
+TODO: x.body
+TODO: cx.body
+TODO: cx.body
+mz(Q{3},R{0})
+array_record_output(3)
+result_record_output(R{0})
+read_result(R{0})
+TODO: cx.body
+TODO: cx.body
+mz(Q{4},R{1})
+result_record_output(R{1})
+read_result(R{1})
+mz(Q{0},R{2})
+result_record_output(R{2})
+tear_down
+)",
+              result.commands.str());
+}
+
+//---------------------------------------------------------------------------//
+TEST_F(ExecutorTest, kitaev_phase_estimation)
+{
+    auto result = this->run("unitaryhack2025/kitaev_phase_estimation.ll");
+    EXPECT_EQ(R"(
+set_up(q=2, r=2)
+TODO: x.body
+h(Q{0})
+TODO: cz.body
+h(Q{0})
+mz(Q{0},R{0})
+array_record_output(2)
+result_record_output(R{0})
+read_result(R{0})
+TODO: reset.body
+h(Q{0})
+TODO: cz.body
+TODO: cz.body
+h(Q{0})
+mz(Q{0},R{1})
+result_record_output(R{1})
+tear_down
+)",
+              result.commands.str());
+}
+
+//---------------------------------------------------------------------------//
 TEST_F(ExecutorTest, bell)
 {
     auto result = this->run("bell.ll");
