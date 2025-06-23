@@ -7,11 +7,12 @@
 //---------------------------------------------------------------------------//
 #pragma once
 
-#include "QsimQuantum.hh"
-#include "qiree/RecordedResult.hh"
+#include "qiree/SingleResultRuntime.hh"
 
 namespace qiree
 {
+//---------------------------------------------------------------------------//
+class QsimQuantum;
 
 /*!
  * Print per-qubit measurement statistics.
@@ -29,16 +30,11 @@ namespace qiree
  * \endcode
  */
 
-class QsimRuntime final : virtual public RuntimeInterface
+class QsimRuntime final : virtual public SingleResultRuntime
 {
   public:
-    /*!
-     * Construct \c QsimRuntime.
-     */
-    QsimRuntime(std::ostream& output, QsimQuantum& sim)
-        : output_(output), sim_(sim)
-    {
-    }
+    // Construct with quantum reference to access classical registers
+    QsimRuntime(std::ostream& output, QsimQuantum const& sim);
 
     //!@{
     //! \name Runtime interface
@@ -46,31 +42,10 @@ class QsimRuntime final : virtual public RuntimeInterface
     // Initialize the execution environment, resetting qubits
     void initialize(OptionalCString env) override;
 
-    //! Mark the following N results as being part of an array named tag
-    void array_record_output(size_type size, OptionalCString tag) final
-    {
-        result_ = RecordedResult(size, tag);
-    }
-
-    //! Mark the following N results as being part of a tuple named tag
-    void tuple_record_output(size_type size, OptionalCString tag) final
-    {
-        result_ = RecordedResult(size, tag);
-    }
-
-    //! Save one result
-    void result_record_output(Result result, OptionalCString tag) final
-    {
-        result_.push_back(sim_.get_result(result), tag);
-    }
     //!@}
-
-    RecordedResult const& result() const { return result_; }
 
   private:
     std::ostream& output_;
-    QsimQuantum& sim_;
-    RecordedResult result_;
 };
 
 }  // namespace qiree

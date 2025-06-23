@@ -193,7 +193,9 @@ void QsimQuantum::mz(Qubit q, Result r)
  */
 QState QsimQuantum::read_result(Result r) const
 {
-    return this->get_result(r);
+    QIREE_EXPECT(r.value < results_.size());
+    auto result_bool = static_cast<bool>(results_[r.value]);
+    return static_cast<QState>(result_bool);
 }
 
 //---------------------------------------------------------------------------//

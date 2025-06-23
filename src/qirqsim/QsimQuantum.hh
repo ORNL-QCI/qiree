@@ -41,8 +41,6 @@ class QsimQuantum final : virtual public QuantumNotImpl
     //! Number of classical result registers
     size_type num_results() const { return results_.size(); }
 
-    // Get the result from a classical register
-    inline QState get_result(Result r) const;
     //!@}
 
     //!@{
@@ -109,16 +107,5 @@ class QsimQuantum final : virtual public QuantumNotImpl
     template<template<class> class Gate, class... Ts>
     void add_gate(Ts&&... args);
 };
-
-//---------------------------------------------------------------------------//
-/*!
- * Get the result from a classical register.
- */
-QState QsimQuantum::get_result(Result r) const
-{
-    QIREE_EXPECT(r.value < results_.size());
-    auto result_bool = static_cast<bool>(results_[r.value]);
-    return static_cast<QState>(result_bool);
-}
 
 }  // namespace qiree

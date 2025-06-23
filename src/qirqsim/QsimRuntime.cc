@@ -9,10 +9,20 @@
 
 #include <iostream>
 
+#include "QsimQuantum.hh"
 #include "qiree/Assert.hh"
 
 namespace qiree
 {
+//---------------------------------------------------------------------------//
+/*!
+ * Construct with quantum reference to access classical registers.
+ */
+QsimRuntime::QsimRuntime(std::ostream& output, QsimQuantum const& sim)
+    : SingleResultRuntime{sim}, output_(output)
+{
+}
+
 //---------------------------------------------------------------------------//
 /*!
  * Initialize the execution environment, resetting qubits.
