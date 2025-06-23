@@ -14,21 +14,7 @@ namespace qiree
 //---------------------------------------------------------------------------//
 class QsimQuantum;
 
-/*!
- * Print per-qubit measurement statistics.
- *
- * Example for three qubits:
- * \code
- * Measurement output:
- * -------------------
- * Number of shots: 1024
- * Number of qubits: 3
- * q0 {0: 542, 1: 482}
- * q1 {0: 521, 1: 503}
- * q2 {0: 0, 1: 1024}
- *
- * \endcode
- */
+//---------------------------------------------------------------------------//
 
 class QsimRuntime final : virtual public SingleResultRuntime
 {
