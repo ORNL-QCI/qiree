@@ -57,7 +57,7 @@ class QsimQuantum final : virtual public QuantumNotImpl
     void mz(Qubit, Result) final;
 
     // Read the value of a result.
-    QState read_result(Result) final;
+    QState read_result(Result) const final;
     //!@}
 
     //!@{

@@ -60,7 +60,7 @@ void QuantumTestImpl::mz(Qubit q, Result r)
 /*!
  * Read the value of a result.
  */
-QState QuantumTestImpl::read_result(Result r)
+QState QuantumTestImpl::read_result(Result r) const
 {
     EXPECT_LT(r.value, this->num_results_);
     tr_->commands << "read_result(" << r << ")\n";

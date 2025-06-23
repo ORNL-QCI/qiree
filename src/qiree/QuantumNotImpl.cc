@@ -28,7 +28,7 @@ void QuantumNotImpl::mz(Qubit, Result)
 {
     QIREE_NOT_IMPLEMENTED("quantum instruction 'mz.body'");
 }
-QState QuantumNotImpl::read_result(Result)
+QState QuantumNotImpl::read_result(Result) const
 {
     QIREE_NOT_IMPLEMENTED("quantum instruction 'read_result.body'");
 }

@@ -61,7 +61,7 @@ class QuantumInterface
     virtual Result measure(Array, Array) = 0;  //!< body
     virtual Result mresetz(Qubit) = 0;  //!< body
     virtual void mz(Qubit, Result) = 0;  //!< body
-    virtual QState read_result(Result) = 0;  //!< body
+    virtual QState read_result(Result) const = 0;  //!< body
 
     //@}
     //@{
