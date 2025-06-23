@@ -3,7 +3,7 @@
 // See the top-level COPYRIGHT file for details.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //---------------------------------------------------------------------------//
-//! \file qir-xacc/qir-xacc.cc
+//! \file qir-qsim/qir-qsim.cc
 //---------------------------------------------------------------------------//
 #include <cstdlib>
 #include <iostream>
