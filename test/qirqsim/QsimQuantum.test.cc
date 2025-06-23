@@ -11,7 +11,7 @@
 
 #include "qiree/Types.hh"
 #include "qiree_test.hh"
-#include "qirqsim/QsimDefaultRuntime.hh"
+#include "qirqsim/QsimRuntime.hh"
 
 namespace qiree
 {
@@ -43,7 +43,7 @@ TEST_F(QsimQuantumTest, sim_dynamicbv)
 
     // Create a simulator that will write to the string stream
     QsimQuantum qsim_sim{os, 0};
-    QsimDefaultRuntime qsim_rt{os, qsim_sim};
+    QsimRuntime qsim_rt{os, qsim_sim};
 
     // Call functions in the same sequence that dynamicbv.ll would
     qsim_sim.set_up([] {
@@ -111,7 +111,7 @@ TEST_F(QsimQuantumTest, result_order)
 
     // Create a simulator that will write to the string stream
     QsimQuantum qis{os, 0};
-    QsimDefaultRuntime rt{os, qis};
+    QsimRuntime rt{os, qis};
 
     // Call functions in the same sequence that dynamicbv.ll would
     qis.set_up([] {

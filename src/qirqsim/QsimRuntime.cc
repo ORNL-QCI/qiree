@@ -3,9 +3,9 @@
 // See the top-level COPYRIGHT file for details.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //---------------------------------------------------------------------------//
-//! \file qirqsim/QsimDefaultRuntime.cc
+//! \file qirqsim/QsimRuntime.cc
 //---------------------------------------------------------------------------//
-#include "QsimDefaultRuntime.hh"
+#include "QsimRuntime.hh"
 
 #include <iostream>
 
@@ -17,7 +17,7 @@ namespace qiree
 /*!
  * Initialize the execution environment, resetting qubits.
  */
-void QsimDefaultRuntime::initialize(OptionalCString env)
+void QsimRuntime::initialize(OptionalCString env)
 {
     if (env)
     {

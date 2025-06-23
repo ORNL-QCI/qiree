@@ -13,8 +13,8 @@
 #include "qiree/Executor.hh"
 #include "qiree/Module.hh"
 #include "qiree/ResultDistribution.hh"
-#include "qirqsim/QsimDefaultRuntime.hh"
 #include "qirqsim/QsimQuantum.hh"
+#include "qirqsim/QsimRuntime.hh"
 
 using namespace std::string_view_literals;
 
@@ -30,7 +30,7 @@ void run(std::string const& filename, int num_shots)
 
     // Set up qsim
     QsimQuantum sim(std::cout, 0);
-    QsimDefaultRuntime rt(std::cout, sim);
+    QsimRuntime rt(std::cout, sim);
     ResultDistribution distribution;
 
     // Run several time = shots (default 1)

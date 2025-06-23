@@ -3,7 +3,7 @@
 // See the top-level COPYRIGHT file for details.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //---------------------------------------------------------------------------//
-//! \file qirqsim/QsimDefaultRuntime.hh
+//! \file qirqsim/QsimRuntime.hh
 //---------------------------------------------------------------------------//
 #pragma once
 
@@ -29,13 +29,13 @@ namespace qiree
  * \endcode
  */
 
-class QsimDefaultRuntime final : virtual public RuntimeInterface
+class QsimRuntime final : virtual public RuntimeInterface
 {
   public:
     /*!
-     * Construct \c QsimDefaultRuntime.
+     * Construct \c QsimRuntime.
      */
-    QsimDefaultRuntime(std::ostream& output, QsimQuantum& sim)
+    QsimRuntime(std::ostream& output, QsimQuantum& sim)
         : output_(output), sim_(sim)
     {
     }
