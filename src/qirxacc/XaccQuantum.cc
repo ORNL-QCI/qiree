@@ -143,7 +143,7 @@ continue:                                         ; preds = %else, %then
  *
  *
  */
-QState XaccQuantum::read_result(Result r)
+QState XaccQuantum::read_result(Result r) const
 {
     QIREE_EXPECT(r.value < this->num_results());
 

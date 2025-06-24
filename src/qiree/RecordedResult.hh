@@ -37,7 +37,7 @@ class RecordedResult
     RecordedResult() = default;
 
     // Construct with size and optional label
-    RecordedResult(std::size_t count, OptionalCString label);
+    inline RecordedResult(std::size_t count, OptionalCString label);
 
     explicit RecordedResult(std::size_t count) : RecordedResult{count, nullptr}
     {
