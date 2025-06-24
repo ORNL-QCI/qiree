@@ -25,7 +25,7 @@ class QuantumNotImpl : virtual public QuantumInterface
     Result measure(Array, Array) override;
     Result mresetz(Qubit) override;
     void mz(Qubit, Result) override;
-    QState read_result(Result) override;
+    QState read_result(Result) const override;
 
     //@}
     //@{

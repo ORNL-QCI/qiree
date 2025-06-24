@@ -7,7 +7,6 @@
 cmake_minimum_required(VERSION 3.18)
 
 # Set QIREE_VERSION using git tags using the following format
-set(CGV_TAG_REGEX "v([0-9.]+)(-dev|-rc.[0-9]+)?")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/CgvFindVersion.cmake")
 cgv_find_version(QIREE)
 
@@ -114,8 +113,8 @@ set(QIREE_RUNTIME_OUTPUT_DIRECTORY
 enable_language(C) # Needed for LLVM
 find_package(LLVM REQUIRED)
 if((LLVM_VERSION VERSION_LESS 14)
-  OR (LLVM_VERSION VERSION_GREATER_EQUAL 20))
-  message(WARNING "QIR-EE is only tested with LLVM 14-19: found version ${LLVM_VERSION}")
+  OR (LLVM_VERSION VERSION_GREATER_EQUAL 21))
+  message(WARNING "QIR-EE is only tested with LLVM 14-20: found version ${LLVM_VERSION}")
 endif()
 
 if(QIREE_USE_QSIM)

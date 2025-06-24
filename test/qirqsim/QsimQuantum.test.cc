@@ -11,7 +11,7 @@
 
 #include "qiree/Types.hh"
 #include "qiree_test.hh"
-#include "qirqsim/QsimDefaultRuntime.hh"
+#include "qirqsim/QsimRuntime.hh"
 
 namespace qiree
 {
@@ -43,7 +43,7 @@ TEST_F(QsimQuantumTest, sim_dynamicbv)
 
     // Create a simulator that will write to the string stream
     QsimQuantum qsim_sim{os, 0};
-    QsimDefaultRuntime qsim_rt{os, qsim_sim};
+    QsimRuntime qsim_rt{os, qsim_sim};
 
     // Call functions in the same sequence that dynamicbv.ll would
     qsim_sim.set_up([] {
@@ -67,8 +67,8 @@ TEST_F(QsimQuantumTest, sim_dynamicbv)
     qsim_rt.array_record_output(2, "");
     qsim_rt.result_record_output(R{0}, "");
     qsim_rt.result_record_output(R{1}, "");
-    EXPECT_EQ(QState::one, qsim_sim.get_result(R{0}));
-    EXPECT_EQ(QState::one, qsim_sim.get_result(R{1}));
+    EXPECT_EQ(QState::one, qsim_sim.read_result(R{0}));
+    EXPECT_EQ(QState::one, qsim_sim.read_result(R{1}));
 
     qsim_sim.h(Q{0});
     qsim_sim.x(Q{1});
@@ -80,8 +80,8 @@ TEST_F(QsimQuantumTest, sim_dynamicbv)
     qsim_rt.array_record_output(2, "");
     qsim_rt.result_record_output(R{0}, "");
     qsim_rt.result_record_output(R{1}, "");
-    EXPECT_EQ(QState::zero, qsim_sim.get_result(R{0}));
-    EXPECT_EQ(QState::zero, qsim_sim.get_result(R{1}));
+    EXPECT_EQ(QState::zero, qsim_sim.read_result(R{0}));
+    EXPECT_EQ(QState::zero, qsim_sim.read_result(R{1}));
 
     qsim_sim.h(Q{0});
     qsim_sim.x(Q{1});
@@ -95,8 +95,8 @@ TEST_F(QsimQuantumTest, sim_dynamicbv)
     qsim_rt.array_record_output(2, "");
     qsim_rt.result_record_output(R{0}, "");
     qsim_rt.result_record_output(R{1}, "");
-    EXPECT_EQ(QState::one, qsim_sim.get_result(R{0}));
-    EXPECT_EQ(QState::zero, qsim_sim.get_result(R{1}));
+    EXPECT_EQ(QState::one, qsim_sim.read_result(R{0}));
+    EXPECT_EQ(QState::zero, qsim_sim.read_result(R{1}));
 
     qsim_sim.tear_down();
 }
@@ -111,7 +111,7 @@ TEST_F(QsimQuantumTest, result_order)
 
     // Create a simulator that will write to the string stream
     QsimQuantum qis{os, 0};
-    QsimDefaultRuntime rt{os, qis};
+    QsimRuntime rt{os, qis};
 
     // Call functions in the same sequence that dynamicbv.ll would
     qis.set_up([] {
@@ -124,9 +124,9 @@ TEST_F(QsimQuantumTest, result_order)
     qis.mz(Q{1}, R{1});
     qis.mz(Q{2}, R{0});
     std::vector<bool> expected;
-    expected.push_back(static_cast<bool>(qis.get_result(R{2})));
-    expected.push_back(static_cast<bool>(qis.get_result(R{0})));
-    expected.push_back(static_cast<bool>(qis.get_result(R{1})));
+    expected.push_back(static_cast<bool>(qis.read_result(R{2})));
+    expected.push_back(static_cast<bool>(qis.read_result(R{0})));
+    expected.push_back(static_cast<bool>(qis.read_result(R{1})));
     // So the internal result "buffer" is now {true, false, true}
     rt.array_record_output(3, "array");
     rt.result_record_output(R{2}, "foo");  // pushes true
