@@ -44,9 +44,14 @@ class ResultDistribution
     // The JSON object has bit string keys and count values.
     std::string to_json() const;
 
-    // Provide const iterators to iterate over the distribution.
+    //!@{
+    //! Iterate over the nonzero keys
     auto begin() const { return distribution_.begin(); }
     auto end() const { return distribution_.end(); }
+    //!@}
+
+    //! Get the number of nonzero entries
+    auto size() const throw() { return distribution_.size(); }
 
   private:
     // Sparse map of {bit string -> count}

@@ -27,7 +27,7 @@ class QsimQuantum final : virtual public QuantumNotImpl
 {
   public:
     // Construct with number of shots
-    QsimQuantum(std::ostream& os, unsigned long int shots);
+    QsimQuantum(std::ostream& os, unsigned long int seed);
     ~QsimQuantum();
 
     QIREE_DELETE_COPY_MOVE(QsimQuantum);  // Delete copy and move constructors
