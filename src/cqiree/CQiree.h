@@ -18,36 +18,40 @@ extern "C" {
 typedef struct CQiree_s CQiree;
 
 /* Return codes */
-enum QireeReturnCode
+typedef enum
 {
     QIREE_SUCCESS = 0,
-    QIREE_FAIL_LOAD = 1,
-    /* Add other return codes as needed */
-};
+    QIREE_NOT_READY,
+    QIREE_INVALID_INPUT,
+    QIREE_FAIL_LOAD,
+    QIREE_FAIL_EXECUTE
+} QireeReturnCode;
 
 /* Create and destroy QireeManager instance */
 CQiree* qiree_create();
 void qiree_destroy(CQiree* manager);
 
 /* Module loading functions */
-int qiree_load_module_from_memory(CQiree* manager,
-                                  char const* data_contents,
-                                  size_t length);
-int qiree_load_module_from_file(CQiree* manager, char const* filename);
+QireeReturnCode qiree_load_module_from_memory(CQiree* manager,
+                                              char const* data_contents,
+                                              size_t length);
+QireeReturnCode
+qiree_load_module_from_file(CQiree* manager, char const* filename);
 
 /* Register query functions */
-int qiree_num_quantum_reg(CQiree* manager, int* result);
-int qiree_num_classical_reg(CQiree* manager, int* result);
+QireeReturnCode qiree_num_quantum_reg(CQiree* manager, int* result);
+QireeReturnCode qiree_num_classical_reg(CQiree* manager, int* result);
 
 /* Amount of memory needed to store result (bytes) */
-int qiree_sizeof_result(CQiree* manager, int num_shots, int* result);
+QireeReturnCode
+qiree_sizeof_result(CQiree* manager, int num_shots, int* result);
 
-/* Executor setup and execution */
-int qiree_setup_executor(CQiree* manager,
-                         char const* backend,
-                         char const* config_json);
+/* Executor setup and execution: config_json may be null */
+QireeReturnCode qiree_setup_executor(CQiree* manager,
+                                     char const* backend,
+                                     char const* config_json);
 
-int qiree_execute(CQiree* manager, int num_shots);
+QireeReturnCode qiree_execute(CQiree* manager, int num_shots);
 
 /*
  * Encoded result:
@@ -63,7 +67,8 @@ int qiree_execute(CQiree* manager, int num_shots);
  * - 15: 00001111 bitstring
  * - 10: number of samples
  */
-int qiree_save_result(CQiree* manager, size_t max, uint64_t* encoded);
+QireeReturnCode
+qiree_save_result(CQiree* manager, size_t max, uint64_t* encoded);
 
 #ifdef __cplusplus
 }

@@ -26,22 +26,30 @@ class QireeManager
   public:
     enum class ReturnCode
     {
+        //! The call succeeded
         success = 0,
+        //! The function is not ready to be called
+        not_ready,
+        //! Invalid input
+        invalid_input,
+        //! Loading a module failed
         fail_load,
-        // ...
+        //! Execution failed
+        fail_execute,
     };
 
   public:
-    ReturnCode load_module(std::string_view data_contents);
-    ReturnCode load_module(std::string filename);
-    ReturnCode num_quantum_reg(int& result) const;
-    ReturnCode num_classical_reg(int& result) const;
+    ReturnCode load_module(std::string_view data_contents) throw();
+    ReturnCode load_module(std::string filename) throw();
+    ReturnCode num_quantum_reg(int& result) const throw();
+    ReturnCode num_classical_reg(int& result) const throw();
     ReturnCode setup_executor(std::string_view backend,
-                              std::string_view config_json = {});
+                              std::string_view config_json = {}) throw();
 
-    ReturnCode execute(int num_shots);
-    ReturnCode num_results(int& count) const;
-    ReturnCode get_result(int index, std::string_view key, int* count) const;
+    ReturnCode execute(int num_shots) throw();
+    ReturnCode num_results(int& count) const throw();
+    ReturnCode get_result(int index, std::string_view key, int* count) const
+        throw();
 
   private:
     std::unique_ptr<Module> module_;

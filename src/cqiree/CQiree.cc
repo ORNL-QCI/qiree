@@ -13,98 +13,119 @@
 
 #include "QireeManager.hh"
 
+using QM = qiree::QireeManager;
+
 extern "C" {
 
 CQiree* qiree_create()
 {
-    return reinterpret_cast<CQiree*>(new qiree::QireeManager());
+    return reinterpret_cast<CQiree*>(new QM());
 }
 
 void qiree_destroy(CQiree* manager)
 {
-    delete reinterpret_cast<qiree::QireeManager*>(manager);
+    delete reinterpret_cast<QM*>(manager);
 }
 
-int qiree_load_module_from_memory(CQiree* manager,
-                                  char const* data_contents,
-                                  size_t length)
+QireeReturnCode qiree_load_module_from_memory(CQiree* manager,
+                                              char const* data_contents,
+                                              size_t length)
 {
-    if (!manager || !data_contents)
-        return static_cast<int>(qiree::QireeManager::ReturnCode::fail_load);
+    if (!manager)
+        return QIREE_NOT_READY;
+    if (!data_contents)
+        return QIREE_INVALID_INPUT;
 
-    auto* cpp_manager = reinterpret_cast<qiree::QireeManager*>(manager);
-    return static_cast<int>(
+    auto* cpp_manager = reinterpret_cast<QM*>(manager);
+    return static_cast<QireeReturnCode>(
         cpp_manager->load_module(std::string_view(data_contents, length)));
 }
 
-int qiree_load_module_from_file(CQiree* manager, char const* filename)
+QireeReturnCode
+qiree_load_module_from_file(CQiree* manager, char const* filename)
 {
-    if (!manager || !filename)
-        return static_cast<int>(qiree::QireeManager::ReturnCode::fail_load);
+    if (!manager)
+        return QIREE_NOT_READY;
+    if (!filename)
+        return QIREE_INVALID_INPUT;
 
-    auto* cpp_manager = reinterpret_cast<qiree::QireeManager*>(manager);
-    return static_cast<int>(cpp_manager->load_module(std::string(filename)));
+    auto* cpp_manager = reinterpret_cast<QM*>(manager);
+    return static_cast<QireeReturnCode>(
+        cpp_manager->load_module(std::string(filename)));
 }
 
-int qiree_num_quantum_reg(CQiree* manager, int* result)
+QireeReturnCode qiree_num_quantum_reg(CQiree* manager, int* result)
 {
-    if (!manager || !result)
-        return static_cast<int>(qiree::QireeManager::ReturnCode::fail_load);
+    if (!manager)
+        return QIREE_NOT_READY;
+    if (!result)
+        return QIREE_INVALID_INPUT;
 
-    auto* cpp_manager = reinterpret_cast<qiree::QireeManager*>(manager);
-    return static_cast<int>(cpp_manager->num_quantum_reg(*result));
+    auto* cpp_manager = reinterpret_cast<QM*>(manager);
+    return static_cast<QireeReturnCode>(cpp_manager->num_quantum_reg(*result));
 }
 
-int qiree_num_classical_reg(CQiree* manager, int* result)
+QireeReturnCode qiree_num_classical_reg(CQiree* manager, int* result)
 {
-    if (!manager || !result)
-        return static_cast<int>(qiree::QireeManager::ReturnCode::fail_load);
+    if (!manager)
+        return QIREE_NOT_READY;
+    if (!result)
+        return QIREE_INVALID_INPUT;
 
-    auto* cpp_manager = reinterpret_cast<qiree::QireeManager*>(manager);
-    return static_cast<int>(cpp_manager->num_classical_reg(*result));
+    auto* cpp_manager = reinterpret_cast<QM*>(manager);
+    return static_cast<QireeReturnCode>(
+        cpp_manager->num_classical_reg(*result));
 }
 
-int qiree_setup_executor(CQiree* manager,
-                         char const* backend,
-                         char const* config_json)
+QireeReturnCode qiree_setup_executor(CQiree* manager,
+                                     char const* backend,
+                                     char const* config_json)
 {
-    if (!manager || !backend)
-        return static_cast<int>(qiree::QireeManager::ReturnCode::fail_load);
+    if (!manager)
+        return QIREE_NOT_READY;
+    if (!backend)
+        return QIREE_INVALID_INPUT;
 
-    auto* cpp_manager = reinterpret_cast<qiree::QireeManager*>(manager);
+    auto* cpp_manager = reinterpret_cast<QM*>(manager);
 
     std::string_view backend_sv(backend);
     std::string_view config_sv = config_json ? std::string_view(config_json)
                                              : std::string_view();
 
-    return static_cast<int>(cpp_manager->setup_executor(backend_sv, config_sv));
+    return static_cast<QireeReturnCode>(
+        cpp_manager->setup_executor(backend_sv, config_sv));
 }
 
-int qiree_execute(CQiree* manager, int num_shots)
+QireeReturnCode qiree_execute(CQiree* manager, int num_shots)
 {
     if (!manager)
-        return static_cast<int>(qiree::QireeManager::ReturnCode::fail_load);
+        return QIREE_NOT_READY;
 
-    auto* cpp_manager = reinterpret_cast<qiree::QireeManager*>(manager);
-    return static_cast<int>(cpp_manager->execute(num_shots));
+    auto* cpp_manager = reinterpret_cast<QM*>(manager);
+    return static_cast<QireeReturnCode>(cpp_manager->execute(num_shots));
 }
 
-int qiree_num_results(CQiree* manager, int* count)
+QireeReturnCode qiree_num_results(CQiree* manager, int* count)
 {
-    if (!manager || !count)
-        return static_cast<int>(qiree::QireeManager::ReturnCode::fail_load);
+    if (!manager)
+        return QIREE_NOT_READY;
+    if (!count)
+        return QIREE_INVALID_INPUT;
 
-    auto* cpp_manager = reinterpret_cast<qiree::QireeManager*>(manager);
-    return static_cast<int>(cpp_manager->num_results(*count));
+    auto* cpp_manager = reinterpret_cast<QM*>(manager);
+    return static_cast<QireeReturnCode>(cpp_manager->num_results(*count));
 }
 
-int qiree_get_result(CQiree* manager, int index, char const* key, int* count)
+QireeReturnCode
+qiree_get_result(CQiree* manager, int index, char const* key, int* count)
 {
-    if (!manager || !key || !count)
-        return static_cast<int>(qiree::QireeManager::ReturnCode::fail_load);
+    if (!manager)
+        return QIREE_NOT_READY;
+    if (!key || !count)
+        return QIREE_NOT_READY;
 
-    auto* cpp_manager = reinterpret_cast<qiree::QireeManager*>(manager);
-    return static_cast<int>(
+    auto* cpp_manager = reinterpret_cast<QM*>(manager);
+    return static_cast<QireeReturnCode>(
         cpp_manager->get_result(index, std::string_view(key), count));
 }
 
