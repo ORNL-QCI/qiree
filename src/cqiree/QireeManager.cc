@@ -11,8 +11,30 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "qiree_config.h"
+
+#include "qiree/Assert.hh"
+#include "qiree/Executor.hh"
+#include "qiree/Module.hh"
+#include "qiree/QuantumInterface.hh"
+#include "qiree/ResultDistribution.hh"
+#include "qiree/SingleResultRuntime.hh"
+#include "qirqsim/QsimQuantum.hh"
+#include "qirqsim/QsimRuntime.hh"
+
+#define CQIREE_FAIL(CODE, MESSAGE)                         \
+    do                                                     \
+    {                                                      \
+        std::cerr << "qiree failure: " << MESSAGE << '\n'; \
+        return ReturnCode::CODE;                           \
+    } while (0)
+
 namespace qiree
 {
+//---------------------------------------------------------------------------//
+QireeManager::QireeManager() = default;
+QireeManager::~QireeManager() = default;
+
 //---------------------------------------------------------------------------//
 QireeManager::ReturnCode
 QireeManager::load_module(std::string_view data_contents) throw()
@@ -22,175 +44,202 @@ QireeManager::load_module(std::string_view data_contents) throw()
         // Convert string_view to string for Module constructor
         std::string content{data_contents};
         module_ = std::make_unique<Module>(content);
-        return ReturnCode::success;
     }
     catch (std::exception const& e)
     {
-        std::cerr << "qiree failure: " << e.what() << '\n';
-        return ReturnCode::fail_load;
+        CQIREE_FAIL(fail_load, e.what());
     }
+    return ReturnCode::success;
 }
 
 //---------------------------------------------------------------------------//
-QireeManager::ReturnCode QireeManager::load_module(std::string filename)
+QireeManager::ReturnCode QireeManager::load_module(std::string filename) throw()
 {
     try
     {
         module_ = std::make_unique<Module>(filename);
-
-        if (!*module_)
-        {
-            return ReturnCode::fail_load;
-        }
-        return ReturnCode::success;
+        QIREE_ENSURE(*module_);
     }
     catch (std::exception const& e)
     {
         std::cerr << "qiree failure: " << e.what() << '\n';
-        return ReturnCode::fail_load;
+        CQIREE_FAIL(fail_load, e.what());
     }
+
+    return ReturnCode::success;
 }
 
 //---------------------------------------------------------------------------//
 QireeManager::ReturnCode QireeManager::num_quantum_reg(int& result) const
+    throw()
 {
     if (!module_)
     {
-        result = 0;
-        return ReturnCode::fail_load;
+        CQIREE_FAIL(not_ready, "cannot query module before module load");
+    }
+    if (execute_)
+    {
+        CQIREE_FAIL(not_ready, "cannot query module after creating executor");
     }
 
     auto attrs = module_->load_entry_point_attrs();
-    result = attrs.required_qubits;
+    result = attrs.required_num_qubits;
     return ReturnCode::success;
 }
 
 //---------------------------------------------------------------------------//
 QireeManager::ReturnCode QireeManager::num_classical_reg(int& result) const
+    throw()
 {
     if (!module_)
     {
-        result = 0;
-        return ReturnCode::fail_load;
+        CQIREE_FAIL(not_ready, "cannot query module before module load");
+    }
+    if (execute_)
+    {
+        CQIREE_FAIL(not_ready, "cannot query module after creating executor");
     }
 
     auto attrs = module_->load_entry_point_attrs();
-    result = attrs.required_results;
+    result = attrs.required_num_results;
     return ReturnCode::success;
 }
 
 //---------------------------------------------------------------------------//
 QireeManager::ReturnCode
 QireeManager::setup_executor(std::string_view backend,
-                             std::string_view config_json)
+                             std::string_view config_json) throw()
 {
     if (!module_)
     {
-        return ReturnCode::fail_load;
+        CQIREE_FAIL(not_ready, "cannot create executor before module load");
+    }
+    if (execute_)
+    {
+        CQIREE_FAIL(not_ready, "cannot create executor again");
     }
 
     try
     {
-        // Create the quantum backend based on the backend name
-        quantum_
-            = create_backend(std::string{backend}, std::string{config_json});
-        if (!quantum_)
+        if (!config_json.empty())
         {
-            return ReturnCode::fail_load;
+            QIREE_NOT_IMPLEMENTED("CQiree JSON configuration input");
         }
 
-        // Create runtime interface
-        runtime_ = std::make_shared<RuntimeInterface>();
+        if (backend == "qsim")
+        {
+#if QIREE_USE_QSIM
+            // Create runtime interface: give runtime a pointer to quantum
+            // (lifetime of the reference is guaranteed by our shared pointer
+            // copy)
+            constexpr unsigned long int seed = 0;
+            auto quantum = std::make_shared<QsimQuantum>(std::cout, seed);
+            runtime_ = std::make_shared<QsimRuntime>(std::cout, *quantum);
+            quantum_ = std::move(quantum);
+#else
+            QIREE_NOT_CONFIGURED("QSim");
+#endif
+        }
+        else if (backend == "xacc")
+        {
+#if QIREE_USE_XACC
+            QIREE_NOT_IMPLEMENTED("XACC backend for CQiree");
+#else
+            QIREE_NOT_CONFIGURED("XACC");
+#endif
+        }
+        else
+        {
+            QIREE_VALIDATE(false,
+                           << "unknown backend name '" << backend << "'");
+        }
+    }
+    catch (std::exception const& e)
+    {
+        CQIREE_FAIL(fail_load,
+                    "error while creating quantum runtimes: " << e.what());
+    }
 
+    try
+    {
         // Create executor with the module, quantum and runtime interfaces
-        executor_ = std::make_unique<Executor>(
-            std::move(*module_), quantum_, runtime_);
-        return ReturnCode::success;
+        QIREE_ASSERT(module_ && *module_);
+        execute_ = std::make_unique<Executor>(std::move(*module_));
     }
     catch (std::exception const& e)
     {
-        std::cerr << "qiree failure: " << e.what() << '\n';
-        return ReturnCode::fail_load;
+        CQIREE_FAIL(fail_load, "error while creating executor: " << e.what());
     }
+
+    return ReturnCode::success;
 }
 
 //---------------------------------------------------------------------------//
-QireeManager::ReturnCode QireeManager::execute(int num_shots)
+QireeManager::ReturnCode QireeManager::execute(int num_shots) throw()
 {
-    if (!executor_)
+    if (execute_)
     {
-        return ReturnCode::fail_load;
+        CQIREE_FAIL(not_ready, "cannot create executor again");
+    }
+
+    if (num_shots <= 0)
+    {
+        CQIREE_FAIL(invalid_input, "num_shots was nonpositive");
     }
 
     try
     {
-        executor_->run(static_cast<size_t>(num_shots));
-        return ReturnCode::success;
+        QIREE_ASSERT(runtime_ && quantum_);
+        result_ = std::make_unique<ResultDistribution>();
+
+        for (auto i = 0; i < num_shots; ++i)
+        {
+            (*execute_)(*quantum_, *runtime_);
+            result_->accumulate(runtime_->result());
+        }
     }
     catch (std::exception const& e)
     {
-        std::cerr << "qiree failure: " << e.what() << '\n';
-        return ReturnCode::fail_load;
+        CQIREE_FAIL(fail_execute, e.what());
     }
+    return ReturnCode::success;
 }
 
 //---------------------------------------------------------------------------//
-QireeManager::ReturnCode QireeManager::num_results(int& count) const
+QireeManager::ReturnCode QireeManager::num_results(int& count) const throw()
 {
-    if (!quantum_)
+    if (!result_)
     {
-        count = 0;
-        return ReturnCode::fail_load;
+        CQIREE_FAIL(not_ready, "execute has not been called");
     }
 
-    try
-    {
-        // Get the number of results from the quantum interface
-        count = static_cast<int>(quantum_->results().size());
-        return ReturnCode::success;
-    }
-    catch (std::exception const& e)
-    {
-        std::cerr << "qiree failure: " << e.what() << '\n';
-        count = 0;
-        return ReturnCode::fail_load;
-    }
+    count = static_cast<int>(result_->size());
+
+    return ReturnCode::success;
 }
 
 //---------------------------------------------------------------------------//
 QireeManager::ReturnCode
 QireeManager::get_result(int index, std::string_view key, int* count) const
+    throw()
 {
-    if (!quantum_ || !count)
+    if (!result_)
     {
-        return ReturnCode::fail_load;
+        CQIREE_FAIL(not_ready, "execute has not been called");
     }
 
     try
     {
-        // Get the results from the quantum interface
-        auto results = quantum_->results();
-        if (index < 0 || static_cast<size_t>(index) >= results.size())
-        {
-            return ReturnCode::fail_load;
-        }
-
-        // Get the result count for the specified key
-        std::string key_str{key};
-        auto it = results[index].find(key_str);
-        if (it == results[index].end())
-        {
-            *count = 0;
-            return ReturnCode::success;
-        }
-
-        *count = static_cast<int>(it->second);
+        (void)sizeof(key);
+        (void)sizeof(count);
+        QIREE_NOT_IMPLEMENTED("getting results");
     }
     catch (std::exception const& e)
     {
-        std::cerr << "qiree failure: " << e.what() << '\n';
-        return ReturnCode::fail_load;
+        CQIREE_FAIL(fail_execute,
+                    "could not retrieve index " << index << ": " << e.what());
     }
+    return ReturnCode::success;
 }
 //---------------------------------------------------------------------------//
 }  // namespace qiree

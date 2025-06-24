@@ -10,13 +10,14 @@
 #include <memory>
 #include <string_view>
 
-#include "qiree/Executor.hh"
-#include "qiree/Module.hh"
-#include "qiree/QuantumInterface.hh"
-#include "qiree/RuntimeInterface.hh"
-
 namespace qiree
 {
+class Executor;
+class Module;
+class QuantumInterface;
+class SingleResultRuntime;
+class ResultDistribution;
+
 //---------------------------------------------------------------------------//
 /*!
  * Manage C execution sequence.
@@ -39,6 +40,9 @@ class QireeManager
     };
 
   public:
+    QireeManager();
+    ~QireeManager();
+
     ReturnCode load_module(std::string_view data_contents) throw();
     ReturnCode load_module(std::string filename) throw();
     ReturnCode num_quantum_reg(int& result) const throw();
@@ -53,9 +57,10 @@ class QireeManager
 
   private:
     std::unique_ptr<Module> module_;
-    std::unique_ptr<Executor> executor_;
+    std::unique_ptr<Executor> execute_;
     std::shared_ptr<QuantumInterface> quantum_;
-    std::shared_ptr<RuntimeInterface> runtime_;
+    std::shared_ptr<SingleResultRuntime> runtime_;
+    std::unique_ptr<ResultDistribution> result_;
 };
 
 }  // namespace qiree
