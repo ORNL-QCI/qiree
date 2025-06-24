@@ -29,6 +29,20 @@ if(QIREE_USE_QSIM)
 endif()
 
 #-----------------------------------------------------------------------------#
+# LIGHTNING FRONT END
+#-----------------------------------------------------------------------------#
+
+if(QIREE_USE_LIGHTNING)
+  qiree_add_executable(qir-lightning
+    qir-lightning.cc
+  )
+  target_link_libraries(qir-lightning
+    PUBLIC QIREE::qiree QIREE::qirlightning
+    PRIVATE CLI11::CLI11
+  )
+endif()
+
+#-----------------------------------------------------------------------------#
 # XACC FRONT END
 #-----------------------------------------------------------------------------#
 
