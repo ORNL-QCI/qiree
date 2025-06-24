@@ -45,8 +45,6 @@ class LightningQuantum final : virtual public QuantumNotImpl
     //! Number of classical result registers
     size_type num_results() const { return results_.size(); }
 
-    // Get the result from a classical register
-    inline QState get_result(Result r) const;
     //!@}
 
     //!@{
@@ -61,7 +59,7 @@ class LightningQuantum final : virtual public QuantumNotImpl
     void mz(Qubit, Result) final;
 
     // Read the value of a result.
-    QState read_result(Result) final;
+    QState read_result(Result) const final;
     //!@}
 
 
@@ -107,16 +105,5 @@ class LightningQuantum final : virtual public QuantumNotImpl
     size_type num_qubits_{};
     std::vector<Qubit> result_to_qubit_;
 };
-
-//---------------------------------------------------------------------------//
-/*!
- * Get the result from a classical register.
- */
-QState LightningQuantum::get_result(Result r) const
-{
-    QIREE_EXPECT(r.value < results_.size());
-    auto result_bool = static_cast<bool>(results_[r.value]);
-    return static_cast<QState>(result_bool);
-}
 
 }  // namespace qiree

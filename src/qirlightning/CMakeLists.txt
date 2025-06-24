@@ -43,7 +43,7 @@ endif()
 # Adding lightning as a library to qiree
 qiree_add_library(qirlightning
 LightningQuantum.cc
-LightningDefaultRuntime.cc
+LightningRuntime.cc
 )
 
 target_compile_definitions(qirlightning PRIVATE

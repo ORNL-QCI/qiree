@@ -11,7 +11,7 @@
 
 #include "qiree/Types.hh"
 #include "qiree_test.hh"
-#include "qirlightning/LightningDefaultRuntime.hh"
+#include "qirlightning/LightningRuntime.hh"
 
 namespace qiree
 {
@@ -43,7 +43,7 @@ TEST_F(LightningQuantumTest, sim_dynamicbv)
 
     // Create a simulator that will write to the string stream
     LightningQuantum lightning_sim{os, 0};
-    LightningDefaultRuntime lightning_rt{os, lightning_sim};
+    LightningRuntime lightning_rt{os, lightning_sim};
     // Call functions in the same sequence that dynamicbv.ll would
     lightning_sim.set_up([] {
         EntryPointAttrs attrs;
@@ -66,9 +66,7 @@ TEST_F(LightningQuantumTest, sim_dynamicbv)
     lightning_rt.array_record_output(2, "");
     lightning_rt.result_record_output(R{0}, "");
     lightning_rt.result_record_output(R{1}, "");
-    //EXPECT_EQ(QState::one, lightning_sim.get_result(R{0}));
-    //EXPECT_EQ(QState::one, lightning_sim.get_result(R{1}));
-
+    EXPECT_EQ(QState::one, lightning_sim.read_result(R{0}));
 
     lightning_sim.tear_down();
 }
@@ -83,7 +81,7 @@ TEST_F(LightningQuantumTest, result_order)
 
     // Create a simulator that will write to the string stream
     LightningQuantum qis{os, 0};
-    LightningDefaultRuntime rt{os, qis};
+    LightningRuntime rt{os, qis};
 
     // Call functions in the same sequence that dynamicbv.ll would
     qis.set_up([] {
@@ -96,9 +94,9 @@ TEST_F(LightningQuantumTest, result_order)
     qis.mz(Q{1}, R{1});
     qis.mz(Q{2}, R{0});
     std::vector<bool> expected;
-    expected.push_back(static_cast<bool>(qis.get_result(R{2})));
-    expected.push_back(static_cast<bool>(qis.get_result(R{0})));
-    expected.push_back(static_cast<bool>(qis.get_result(R{1})));
+    expected.push_back(static_cast<bool>(qis.read_result(R{2})));
+    expected.push_back(static_cast<bool>(qis.read_result(R{0})));
+    expected.push_back(static_cast<bool>(qis.read_result(R{1})));
     // So the internal result "buffer" is now {true, false, true}
     rt.array_record_output(3, "array");
     rt.result_record_output(R{2}, "foo");  // pushes true

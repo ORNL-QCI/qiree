@@ -105,9 +105,11 @@ void LightningQuantum::reset(Qubit q)
 /*!
  * Read the value of a result. 
  */
-QState LightningQuantum::read_result(Result r)
+QState LightningQuantum::read_result(Result r) const
 {
-    return this->get_result(r);
+    QIREE_EXPECT(r.value < results_.size());
+    auto result_bool = static_cast<bool>(results_[r.value]);
+    return static_cast<QState>(result_bool);
 }
 
 //---------------------------------------------------------------------------//

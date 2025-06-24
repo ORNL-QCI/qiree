@@ -13,8 +13,8 @@
 #include "qiree/Executor.hh"
 #include "qiree/Module.hh"
 #include "qiree/ResultDistribution.hh"
-#include "qirlightning/LightningDefaultRuntime.hh"
 #include "qirlightning/LightningQuantum.hh"
+#include "qirlightning/LightningRuntime.hh"
 
 using namespace std::string_view_literals;
 
@@ -30,7 +30,7 @@ void run(std::string const& filename, int num_shots)
 
     // Set up qsim
     LightningQuantum sim(std::cout, 0);
-    LightningDefaultRuntime rt(std::cout, sim);
+    LightningRuntime rt(std::cout, sim);
     ResultDistribution distribution;
 
     // Run several time = shots (default 1)

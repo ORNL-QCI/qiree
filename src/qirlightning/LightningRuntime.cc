@@ -3,22 +3,32 @@
 // See the top-level COPYRIGHT file for details.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //---------------------------------------------------------------------------//
-//! \file qirlightning/LightningDefaultRuntime.cc
+//! \file qirlightning/LightningRuntime.cc
 //---------------------------------------------------------------------------//
-#include "LightningDefaultRuntime.hh"
+#include "LightningRuntime.hh"
 
 #include <iostream>
 
+#include "LightningQuantum.hh"
 #include "qiree/Assert.hh"
 
 namespace qiree
 {
 //---------------------------------------------------------------------------//
 /*!
+ * Construct with quantum reference to access classical registers.
+ */
+LightningRuntime::LightningRuntime(std::ostream& output, LightningQuantum const& sim)
+    : SingleResultRuntime{sim}, output_(output)
+{
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * Initialize the execution environment, resetting qubits.
  */
 
-void LightningDefaultRuntime::initialize(OptionalCString env)
+void LightningRuntime::initialize(OptionalCString env)
 {
     if (env)
     {
