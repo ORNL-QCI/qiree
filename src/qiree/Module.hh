@@ -42,6 +42,8 @@ class Module
     Module(Module const&) = delete;
     Module& operator=(Module const&) = delete;
 
+    static std::unique_ptr<Module> GetModule(std::string const & content, bool is_file);
+
     // Construct from an externally created LLVM module
     explicit Module(UPModule&& module);
 

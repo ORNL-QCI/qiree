@@ -15,6 +15,7 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/SourceMgr.h>
+#include <llvm/Support/MemoryBuffer.h>
 
 #include "Assert.hh"
 
@@ -159,6 +160,35 @@ Module::Module() = default;
 Module::~Module() = default;
 Module::Module(Module&&) = default;
 Module& Module::operator=(Module&&) = default;
+
+std::unique_ptr<Module> Module::GetModule(std::string const & content, bool is_file) {
+	if (is_file) {
+		return std::make_unique<Module>(content);	
+	}
+	else {
+		llvm::SMDiagnostic err;
+		//llvm::outs() << "Content:"<<content<<"\n";
+		std::unique_ptr<llvm::MemoryBuffer> buffer = llvm::MemoryBuffer::getMemBuffer(content, "<in-memory>", false);
+		auto module = llvm::parseIR(buffer->getMemBufferRef(), err, context());
+		if (!module)
+		{
+		    err.print("qiree", llvm::errs());
+		    QIREE_VALIDATE(module,
+				   << "failed to read QIR from the content '" << content << "'");
+		}
+#if 0
+		llvm::outs() <<"Inside functions:\n";
+		for (auto& func : module->functions()) {
+			llvm::outs() << "Function: "<<func.getName()<<"\n";
+			    if (func.hasFnAttribute("entry_point")) {
+				            llvm::outs() << "Found entry point: " << func.getName() << "\n";
+					        }
+		}
+#endif
+		return std::make_unique<Module>(std::move(module));	
+	}
+}
+
 
 //---------------------------------------------------------------------------//
 /*!
