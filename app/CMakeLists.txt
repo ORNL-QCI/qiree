@@ -9,7 +9,7 @@ FetchContent_Declare(
   cli11_proj
   QUIET
   GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
-  GIT_TAG f4d0731cebb123ff0ace712c099dffbcd2c58e5a # v2.4.1
+  GIT_TAG 6c7b07a878ad834957b98d0f9ce1dbe0cb204fc9 # v2.4.2
 )
 
 FetchContent_MakeAvailable(cli11_proj)

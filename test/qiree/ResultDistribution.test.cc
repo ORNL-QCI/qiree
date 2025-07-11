@@ -105,6 +105,49 @@ TEST(ResultDistributionTest, CountOnEmptyDistribution)
     EXPECT_THROW(dist.count("0"), RuntimeError);
 }
 
+// Test encode_bit_string for basic functionality
+TEST(EncodeBitString, encoding)
+{
+    auto encode = [](std::string bits) -> std::uint64_t {
+        std::uint64_t result = 0;
+        encode_bit_string(bits, result);
+        return result;
+    };
+    
+    
+    // Test single bits
+    EXPECT_EQ(encode("0"), 0u);
+    EXPECT_EQ(encode("1"), 1u);
+    
+    // Test multi-bit (little-endian) patterns
+    EXPECT_EQ(encode("10"), 1u);
+    EXPECT_EQ(encode("01"), 2u);
+    EXPECT_EQ(encode("1010"), 5u);
+    EXPECT_EQ(encode("11010"), 11u);
+    
+    // Test maximum length (64 bits)
+    std::string max_bits(64, '1');
+    EXPECT_EQ(encode(max_bits), UINT64_MAX);
+}
+
+// Test encode_bit_string with invalid inputs
+TEST(ResultDistributionTest, EncodeBitStringInvalidInputs)
+{
+    std::uint64_t result = 0;
+
+    // Test empty string (should be 0)
+    EXPECT_THROW(encode_bit_string("", result), RuntimeError);
+    
+    // Test with invalid characters
+    EXPECT_THROW(encode_bit_string("102", result), RuntimeError);
+    EXPECT_THROW(encode_bit_string("1a1", result), RuntimeError);
+    EXPECT_THROW(encode_bit_string("1 1", result), RuntimeError);
+    
+    // Test with too many bits
+    std::string too_many_bits(65, '1');
+    EXPECT_THROW(encode_bit_string(too_many_bits, result), RuntimeError);
+}
+
 //---------------------------------------------------------------------------//
 }  // namespace test
 }  // namespace qiree

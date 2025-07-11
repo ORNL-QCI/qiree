@@ -44,9 +44,14 @@ class ResultDistribution
     // The JSON object has bit string keys and count values.
     std::string to_json() const;
 
-    // Provide const iterators to iterate over the distribution.
+    //!@{
+    //! Iterate over the nonzero keys
     auto begin() const { return distribution_.begin(); }
     auto end() const { return distribution_.end(); }
+    //!@}
+
+    //! Get the number of nonzero entries
+    auto size() const throw() { return distribution_.size(); }
 
   private:
     // Sparse map of {bit string -> count}
@@ -56,6 +61,10 @@ class ResultDistribution
     // All subsequent RecordedResult instances must have the same bit length.
     std::size_t key_length_ = 0;
 };
+
+// Encode a bitstring as "little endian" with shifting:
+// register N is  `(value >> N) & 1` for N in [0, 64)
+void encode_bit_string(std::string const& key, std::uint64_t& result);
 
 //---------------------------------------------------------------------------//
 }  // namespace qiree
