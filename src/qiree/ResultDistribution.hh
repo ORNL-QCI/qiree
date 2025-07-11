@@ -62,5 +62,9 @@ class ResultDistribution
     std::size_t key_length_ = 0;
 };
 
+// Encode a bitstring as "little endian" with shifting:
+// register N is  `(value >> N) & 1` for N in [0, 64)
+void encode_bit_string(std::string const& key, std::uint64_t& result);
+
 //---------------------------------------------------------------------------//
 }  // namespace qiree

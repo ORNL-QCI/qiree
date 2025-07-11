@@ -96,4 +96,33 @@ std::string ResultDistribution::to_json() const
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * Encode a bitstring as "little endian" with shifting:
+ * register N is  `(value >> N) & 1` for N in [0, 64).
+ */
+void encode_bit_string(std::string const& key, std::uint64_t& result)
+{
+    QIREE_VALIDATE(!key.empty() && key.size() <= 64,
+                   << "invalid key size: must be between 1 and 64 bits: got "
+                   << key.size() << " bits");
+
+    result = 0;
+
+    // Process from least significant bit to most significant
+    for (size_t i = 0; i < key.size(); ++i)
+    {
+        // Validate the character
+        QIREE_VALIDATE(key[i] == '0' || key[i] == '1',
+                       << "Invalid bit character '" << key[i]
+                       << "' at position " << i);
+
+        // Set the bit if it's '1'
+        if (key[i] == '1')
+        {
+            result |= (1ULL << i);
+        }
+    }
+}
+
+//---------------------------------------------------------------------------//
 }  // namespace qiree
