@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 #pragma once
 
+#include <cstdint>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,6 +28,13 @@ typedef enum
     QIREE_FAIL_EXECUTE
 } QireeReturnCode;
 
+/* Return items */
+typedef struct
+{
+    uint64_t key;
+    uint64_t count;
+} CQireeResultRecord;
+
 /* Create and destroy QireeManager instance */
 CQiree* qiree_create();
 void qiree_destroy(CQiree* manager);
@@ -44,7 +52,7 @@ QireeReturnCode qiree_num_classical_reg(CQiree* manager, int* result);
 
 /* Amount of memory needed to store result (bytes) */
 QireeReturnCode
-qiree_sizeof_result(CQiree* manager, int num_shots, int* result);
+qiree_max_result_items(CQiree* manager, int num_shots, size_t* result);
 
 /* Executor setup and execution: config_json may be null */
 QireeReturnCode qiree_setup_executor(CQiree* manager,
@@ -54,21 +62,23 @@ QireeReturnCode qiree_setup_executor(CQiree* manager,
 QireeReturnCode qiree_execute(CQiree* manager, int num_shots);
 
 /*
- * Encoded result:
- * - first entry is number of pairs
+ * Encoded result (N + 1 capacity for N items):
+ * - first pair is the number of following pairs
  * - every following integer is a (bitstring, count) pair
  * - the bitstring is "little endian" with shifting: qubit N is
  *  `(value >> N) & 1` for N in [0, 64)
  *
- * Example: [123, 0, 3, 15, 10, ...]
+ * Example: [xxx, 123, 0, 3, 15, 10, ...]
+ * - xxx: ignored
  * - 123: number of following entries
  * - 0: 000000000 bitstring
  * - 3: number of samples of "0000000"
  * - 15: 00001111 bitstring
  * - 10: number of samples
  */
-QireeReturnCode
-qiree_save_result(CQiree* manager, size_t max, uint64_t* encoded);
+QireeReturnCode qiree_save_result_items(CQiree* manager,
+                                        size_t max_items,
+                                        CQireeResultRecord* encoded);
 
 #ifdef __cplusplus
 }

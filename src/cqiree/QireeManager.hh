@@ -21,6 +21,8 @@ class ResultDistribution;
 //---------------------------------------------------------------------------//
 /*!
  * Manage C execution sequence.
+ *
+ * The result size is min(2^classical registers, num_shots).
  */
 class QireeManager
 {
@@ -33,11 +35,12 @@ class QireeManager
         not_ready,
         //! Invalid input
         invalid_input,
-        //! Loading a module failed
+        //! Loading a module/result failed
         fail_load,
         //! Execution failed
         fail_execute,
     };
+    using ResultRecord = std::array<std::uint64_t, 2>;
 
   public:
     QireeManager();
@@ -50,10 +53,13 @@ class QireeManager
     ReturnCode setup_executor(std::string_view backend,
                               std::string_view config_json = {}) throw();
 
-    ReturnCode execute(int num_shots) throw();
-    ReturnCode num_results(int& count) const throw();
-    ReturnCode get_result(int index, std::string_view key, int* count) const
+    ReturnCode max_result_items(int num_shots, std::size_t& result) const
         throw();
+
+    ReturnCode execute(int num_shots) throw();
+
+    ReturnCode
+    save_result_items(std::size_t num_items, ResultRecord* encoded) throw();
 
   private:
     std::unique_ptr<Module> module_;

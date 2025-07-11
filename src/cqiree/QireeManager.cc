@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 #include "QireeManager.hh"
 
+#include <cstdint>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -102,6 +103,30 @@ QireeManager::ReturnCode QireeManager::num_classical_reg(int& result) const
 
     auto attrs = module_->load_entry_point_attrs();
     result = attrs.required_num_results;
+    return ReturnCode::success;
+}
+
+//---------------------------------------------------------------------------//
+QireeManager::ReturnCode
+QireeManager::max_result_items(int num_shots, std::size_t& result) const
+    throw()
+{
+    if (!module_)
+    {
+        CQIREE_FAIL(not_ready,
+                    "cannot determine result size before module load");
+    }
+
+    if (num_shots <= 0)
+    {
+        CQIREE_FAIL(invalid_input, "num_shots was nonpositive");
+    }
+
+    // Maximum result
+    auto attrs = module_->load_entry_point_attrs();
+    auto num_registers = attrs.required_num_results;
+    result = std::min<std::size_t>(1 << num_registers, num_shots);
+
     return ReturnCode::success;
 }
 
@@ -204,40 +229,35 @@ QireeManager::ReturnCode QireeManager::execute(int num_shots) throw()
     }
     return ReturnCode::success;
 }
-
 //---------------------------------------------------------------------------//
-QireeManager::ReturnCode QireeManager::num_results(int& count) const throw()
+QireeManager::ReturnCode
+QireeManager::save_result_items(std::size_t num_items,
+                                ResultRecord* encoded) throw()
 {
     if (!result_)
     {
         CQIREE_FAIL(not_ready, "execute has not been called");
     }
 
-    count = static_cast<int>(result_->size());
-
-    return ReturnCode::success;
-}
-
-//---------------------------------------------------------------------------//
-QireeManager::ReturnCode
-QireeManager::get_result(int index, std::string_view key, int* count) const
-    throw()
-{
-    if (!result_)
+    if (num_items < result_->size())
     {
-        CQIREE_FAIL(not_ready, "execute has not been called");
+        CQIREE_FAIL(fail_load, "insufficient capacity for result items");
     }
 
     try
     {
-        (void)sizeof(key);
-        (void)sizeof(count);
-        QIREE_NOT_IMPLEMENTED("getting results");
+        // Save number of records
+        *encoded++ = {0, result_->size()};
+        for (auto&& [bitstring, count] : *result_)
+        {
+            std::uint64_t bitint{0};
+            encode_bit_string(bitstring, bitint);
+            *encoded++ = {bitint, count};
+        }
     }
     catch (std::exception const& e)
     {
-        CQIREE_FAIL(fail_execute,
-                    "could not retrieve index " << index << ": " << e.what());
+        CQIREE_FAIL(fail_execute, e.what());
     }
     return ReturnCode::success;
 }

@@ -8,6 +8,7 @@
 
 #include "CQiree.h"
 
+#include <array>
 #include <string>
 #include <string_view>
 
@@ -77,6 +78,17 @@ QireeReturnCode qiree_num_classical_reg(CQiree* manager, int* result)
         cpp_manager->num_classical_reg(*result));
 }
 
+QireeReturnCode
+qiree_max_result_items(CQiree* manager, int num_shots, size_t* result)
+{
+    if (!manager)
+        return QIREE_NOT_READY;
+
+    auto* cpp_manager = reinterpret_cast<QM*>(manager);
+    return static_cast<QireeReturnCode>(
+        cpp_manager->max_result_items(num_shots, *result));
+}
+
 QireeReturnCode qiree_setup_executor(CQiree* manager,
                                      char const* backend,
                                      char const* config_json)
@@ -96,37 +108,21 @@ QireeReturnCode qiree_setup_executor(CQiree* manager,
         cpp_manager->setup_executor(backend_sv, config_sv));
 }
 
-QireeReturnCode qiree_execute(CQiree* manager, int num_shots)
+QireeReturnCode qiree_save_result_items(CQiree* manager,
+                                        size_t max_items,
+                                        CQireeResultRecord* encoded)
 {
     if (!manager)
         return QIREE_NOT_READY;
-
-    auto* cpp_manager = reinterpret_cast<QM*>(manager);
-    return static_cast<QireeReturnCode>(cpp_manager->execute(num_shots));
-}
-
-QireeReturnCode qiree_num_results(CQiree* manager, int* count)
-{
-    if (!manager)
-        return QIREE_NOT_READY;
-    if (!count)
+    if (max_items == 0)
+        return QIREE_INVALID_INPUT;
+    if (encoded == nullptr)
         return QIREE_INVALID_INPUT;
 
     auto* cpp_manager = reinterpret_cast<QM*>(manager);
-    return static_cast<QireeReturnCode>(cpp_manager->num_results(*count));
-}
-
-QireeReturnCode
-qiree_get_result(CQiree* manager, int index, char const* key, int* count)
-{
-    if (!manager)
-        return QIREE_NOT_READY;
-    if (!key || !count)
-        return QIREE_NOT_READY;
-
-    auto* cpp_manager = reinterpret_cast<QM*>(manager);
+    auto* encoded_tuples = reinterpret_cast<QM::ResultRecord*>(encoded);
     return static_cast<QireeReturnCode>(
-        cpp_manager->get_result(index, std::string_view(key), count));
+        cpp_manager->save_result_items(max_items, encoded_tuples));
 }
 
 }  // extern "C"
