@@ -8,7 +8,6 @@
 
 #include "CQiree.h"
 
-#include <array>
 #include <string>
 #include <string_view>
 

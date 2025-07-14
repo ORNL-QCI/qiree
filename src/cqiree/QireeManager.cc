@@ -9,7 +9,6 @@
 
 #include <cstdint>
 #include <iostream>
-#include <sstream>
 #include <stdexcept>
 
 #include "qiree_config.h"
