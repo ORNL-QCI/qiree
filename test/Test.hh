@@ -10,6 +10,11 @@
 #include <string>
 #include <gtest/gtest.h>
 
+#include <fstream>
+#include <sstream>
+#include <string_view>
+#include <stdexcept>
+
 namespace qiree
 {
 namespace test

@@ -110,5 +110,27 @@ TEST_F(ModuleTest, several_gates)
 }
 
 //---------------------------------------------------------------------------//
+TEST(ModuleTest, parse_ir_from_file) {
+
+    // Helper function to read a file and return its contents as a string to be fed into from_bytes
+    auto read_ll_file = [](const std::string& path) -> std::string {
+        std::ifstream file(path);
+        if (!file) throw std::runtime_error("Cannot open file: " + path);
+        std::ostringstream buf;
+        buf << file.rdbuf();
+        return buf.str();
+    };
+
+    // Read the LLVM IR from a file and parse it
+    std::string ir = read_ll_file("bell.ll");
+    std::string_view ir_view(ir);
+
+    // Expect no exceptions during parsing
+    EXPECT_NO_THROW({
+        Module m = Module::UPModule::from_bytes(ir_view);
+    });
+}
+
+//---------------------------------------------------------------------------//
 }  // namespace test
 }  // namespace qiree
