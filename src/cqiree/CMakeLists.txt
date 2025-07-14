@@ -3,7 +3,6 @@
 # See the top-level COPYRIGHT file for details.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #-----------------------------------------------------------------------------#
-
     
 set(_CQIREE_LIBS)
 if(QIREE_USE_XACC)

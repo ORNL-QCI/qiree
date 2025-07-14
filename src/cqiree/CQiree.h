@@ -35,9 +35,8 @@ typedef struct
     uint64_t count;
 } CQireeResultRecord;
 
-/* Create and destroy QireeManager instance */
+/* Create a QireeManager instance */
 CQiree* qiree_create();
-void qiree_destroy(CQiree* manager);
 
 /* Module loading functions */
 QireeReturnCode qiree_load_module_from_memory(CQiree* manager,
@@ -79,6 +78,9 @@ QireeReturnCode qiree_execute(CQiree* manager, int num_shots);
 QireeReturnCode qiree_save_result_items(CQiree* manager,
                                         size_t max_items,
                                         CQireeResultRecord* encoded);
+
+/* Cleanly destroy a QireeManager instance */
+void qiree_destroy(CQiree* manager);
 
 #ifdef __cplusplus
 }

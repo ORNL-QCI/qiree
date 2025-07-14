@@ -23,11 +23,6 @@ CQiree* qiree_create()
     return reinterpret_cast<CQiree*>(new QM());
 }
 
-void qiree_destroy(CQiree* manager)
-{
-    delete reinterpret_cast<QM*>(manager);
-}
-
 QireeReturnCode qiree_load_module_from_memory(CQiree* manager,
                                               char const* data_contents,
                                               size_t length)
@@ -132,6 +127,11 @@ QireeReturnCode qiree_save_result_items(CQiree* manager,
     auto* encoded_tuples = reinterpret_cast<QM::ResultRecord*>(encoded);
     return static_cast<QireeReturnCode>(
         cpp_manager->save_result_items(max_items, encoded_tuples));
+}
+
+void qiree_destroy(CQiree* manager)
+{
+    delete reinterpret_cast<QM*>(manager);
 }
 
 }  // extern "C"
