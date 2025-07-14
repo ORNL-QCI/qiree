@@ -223,12 +223,12 @@ TEST_F(CQireeTest, Run)
     // For ease of processing, reinterpret the results as C++ data structures
     using ArrayUint2 = std::array<std::uint64_t, 2>;
     std::vector<ArrayUint2> arr_results(
-        reinterpret_cast<ArrayUint2*>(results.data()),
-        reinterpret_cast<ArrayUint2*>(results.data() + results[0].count));
+        reinterpret_cast<ArrayUint2*>(results.data() + 1),
+        reinterpret_cast<ArrayUint2*>(results.data() + 1 + results[0].count));
     // For reproducibility, since the results are not in any specific order,
     // sort by key
     std::sort(arr_results.begin() + 1, arr_results.end());
-    EXPECT_EQ((std::vector<ArrayUint2>{{0, 4}, {0, 21}, {1, 32}, {3, 22}}),
+    EXPECT_EQ((std::vector<ArrayUint2>{{0, 21}, {1, 32}, {2, 25}, {3, 22}}),
               arr_results);
 
     // Test invalid inputs
