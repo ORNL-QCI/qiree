@@ -9,6 +9,7 @@
 
 #include <sstream>
 #include <string_view>
+#include <memory>
 #include <llvm/IR/Attributes.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Function.h>
@@ -156,39 +157,28 @@ Module::Module(std::string const& filename, std::string const& entrypoint)
 }
 
 //---------------------------------------------------------------------------//
-Module::Module() = default;
-Module::~Module() = default;
-Module::Module(Module&&) = default;
-Module& Module::operator=(Module&&) = default;
+/*!
+ * Reading a module by parsing an in-memory LLVM IR string.
+ */
 
-std::unique_ptr<Module> Module::GetModule(std::string const & content, bool is_file) {
-	if (is_file) {
-		return std::make_unique<Module>(content);	
-	}
-	else {
-		llvm::SMDiagnostic err;
-		//llvm::outs() << "Content:"<<content<<"\n";
-		std::unique_ptr<llvm::MemoryBuffer> buffer = llvm::MemoryBuffer::getMemBuffer(content, "<in-memory>", false);
-		auto module = llvm::parseIR(buffer->getMemBufferRef(), err, context());
-		if (!module)
-		{
-		    err.print("qiree", llvm::errs());
-		    QIREE_VALIDATE(module,
-				   << "failed to read QIR from the content '" << content << "'");
-		}
-#if 0
-		llvm::outs() <<"Inside functions:\n";
-		for (auto& func : module->functions()) {
-			llvm::outs() << "Function: "<<func.getName()<<"\n";
-			    if (func.hasFnAttribute("entry_point")) {
-				            llvm::outs() << "Found entry point: " << func.getName() << "\n";
-					        }
-		}
-#endif
-		return std::make_unique<Module>(std::move(module));	
-	}
+Module::UPModule from_bytes(std::string_view content) {
+    llvm::SMDiagnostic err;
+
+    // Create memory buffer from the in-memory IR content
+    auto buffer = llvm::MemoryBuffer::getMemBuffer(content, "<in-memory>", false);
+
+    // Parse the IR using LLVM context
+    auto llvm_module = llvm::parseIR(buffer->getMemBufferRef(), err, context());
+
+    if (!llvm_module) {
+        err.print("qiree", llvm::errs());
+        QIREE_VALIDATE(llvm_module,
+            << "failed to parse QIR from in-memory content.");
+    }
+
+    // Construct and return Module from parsed llvm::Module
+    return Module::UPModule(std::move(llvm_module));
 }
-
 
 //---------------------------------------------------------------------------//
 /*!

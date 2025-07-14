@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <string_view>
 
 #include "Types.hh"
 
@@ -42,7 +43,8 @@ class Module
     Module(Module const&) = delete;
     Module& operator=(Module const&) = delete;
 
-    static std::unique_ptr<Module> GetModule(std::string const & content, bool is_file);
+    // Reading a module by parsing an in-memory LLVM IR string.
+    static UPModule from_bytes(std::string_view content);
 
     // Construct from an externally created LLVM module
     explicit Module(UPModule&& module);
