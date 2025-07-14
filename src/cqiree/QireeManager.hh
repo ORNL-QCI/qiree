@@ -43,8 +43,8 @@ class QireeManager
     using ResultRecord = std::array<std::uint64_t, 2>;
 
   public:
-    QireeManager();
-    ~QireeManager();
+    QireeManager() throw();
+    ~QireeManager() throw();
 
     ReturnCode load_module(std::string_view data_contents) throw();
     ReturnCode load_module(std::string filename) throw();
@@ -59,7 +59,7 @@ class QireeManager
     ReturnCode execute(int num_shots) throw();
 
     ReturnCode
-    save_result_items(std::size_t num_items, ResultRecord* encoded) throw();
+    save_result_items(ResultRecord* encoded, std::size_t size) throw();
 
   private:
     std::unique_ptr<Module> module_;

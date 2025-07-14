@@ -33,8 +33,8 @@
 namespace qiree
 {
 //---------------------------------------------------------------------------//
-QireeManager::QireeManager() = default;
-QireeManager::~QireeManager() = default;
+QireeManager::QireeManager() throw() = default;
+QireeManager::~QireeManager() throw() = default;
 
 //---------------------------------------------------------------------------//
 QireeManager::ReturnCode
@@ -127,6 +127,9 @@ QireeManager::max_result_items(int num_shots, std::size_t& result) const
     auto num_registers = attrs.required_num_results;
     result = std::min<std::size_t>(1 << num_registers, num_shots);
 
+    // Add one for the "count" record at the beginning
+    result++;
+
     return ReturnCode::success;
 }
 
@@ -202,9 +205,9 @@ QireeManager::setup_executor(std::string_view backend,
 //---------------------------------------------------------------------------//
 QireeManager::ReturnCode QireeManager::execute(int num_shots) throw()
 {
-    if (execute_)
+    if (!execute_)
     {
-        CQIREE_FAIL(not_ready, "cannot create executor again");
+        CQIREE_FAIL(not_ready, "setup_executor was not created");
     }
 
     if (num_shots <= 0)
@@ -231,17 +234,20 @@ QireeManager::ReturnCode QireeManager::execute(int num_shots) throw()
 }
 //---------------------------------------------------------------------------//
 QireeManager::ReturnCode
-QireeManager::save_result_items(std::size_t num_items,
-                                ResultRecord* encoded) throw()
+QireeManager::save_result_items(ResultRecord* encoded,
+                                std::size_t max_count) throw()
 {
     if (!result_)
     {
         CQIREE_FAIL(not_ready, "execute has not been called");
     }
 
-    if (num_items < result_->size())
+    if (max_count < result_->size() + 1)
     {
-        CQIREE_FAIL(fail_load, "insufficient capacity for result items");
+        CQIREE_FAIL(fail_load,
+                    "insufficient capacity " << max_count
+                                             << " for result items: need "
+                                             << result_->size() + 1);
     }
 
     try

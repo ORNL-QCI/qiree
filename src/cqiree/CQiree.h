@@ -49,7 +49,7 @@ qiree_load_module_from_file(CQiree* manager, char const* filename);
 QireeReturnCode qiree_num_quantum_reg(CQiree* manager, int* result);
 QireeReturnCode qiree_num_classical_reg(CQiree* manager, int* result);
 
-/* Amount of memory needed to store result (bytes) */
+/* Number of records needed to store result, including capacity */
 QireeReturnCode
 qiree_max_result_items(CQiree* manager, int num_shots, size_t* result);
 
@@ -76,8 +76,8 @@ QireeReturnCode qiree_execute(CQiree* manager, int num_shots);
  * - 10: number of samples
  */
 QireeReturnCode qiree_save_result_items(CQiree* manager,
-                                        size_t max_items,
-                                        CQireeResultRecord* encoded);
+                                        CQireeResultRecord* encoded,
+                                        size_t encoded_size);
 
 /* Cleanly destroy a QireeManager instance */
 void qiree_destroy(CQiree* manager);

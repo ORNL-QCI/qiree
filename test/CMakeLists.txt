@@ -4,8 +4,22 @@
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #----------------------------------------------------------------------------#
 
+# Generate a file with configure-time paths
 file(TO_CMAKE_PATH "${PROJECT_SOURCE_DIR}" QIREE_SOURCE_DIR)
 configure_file(qiree_test_config.h.in qiree_test_config.h @ONLY)
+
+# Generate a file with generate-time paths
+file(
+  GENERATE 
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qiree_targets.h"
+  CONTENT [[
+#ifndef qiree_targets_h
+#define qiree_targets_h
+
+static char const cqiree_library_path[] = "$<TARGET_FILE:cqiree>";
+
+#endif /* qiree_targets_h */
+]])
 
 #---------------------------------------------------------------------------##
 # LIBRARY
@@ -31,11 +45,14 @@ function(qiree_add_test ns name)
   add_executable(${_target}
     ${ns}/${name}.test.cc
   )
-  target_link_libraries(${_target}
-    QIREE::${ns}
+  set(_libs
     qiree_test_lib
     GTest::gtest_main
   )
+  if(NOT ns STREQUAL "cqiree")
+    list(APPEND _libs QIREE::${ns})
+  endif()
+  target_link_libraries(${_target} ${_libs})
   add_test(NAME test/${ns}/${name} COMMAND "$<TARGET_FILE:${_target}>")
 endfunction()
 
@@ -48,14 +65,19 @@ qiree_add_test(qiree Module)
 qiree_add_test(qiree ResultDistribution)
 
 #---------------------------------------------------------------------------##
+# CQIREE TESTS
+#---------------------------------------------------------------------------##
+
+qiree_add_test(cqiree cqiree)
+add_dependencies(cqiree_cqireeTest cqiree)
+
+#---------------------------------------------------------------------------##
 # QIRXACC TESTS
 #---------------------------------------------------------------------------##
 
 if(QIREE_USE_XACC)
   qiree_add_test(qirxacc XaccQuantum)
 endif()
-
-#---------------------------------------------------------------------------##
 
 #---------------------------------------------------------------------------##
 # QIRQSIM TESTS
