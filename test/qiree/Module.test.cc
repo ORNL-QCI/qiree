@@ -110,7 +110,7 @@ TEST_F(ModuleTest, several_gates)
 }
 
 //---------------------------------------------------------------------------//
-TEST(ModuleTest, parse_ir_from_file) {
+TEST_F(ModuleTest, parse_ir_from_file) {
 
     // Helper function to read a file and return its contents as a string to be fed into from_bytes
     auto read_ll_file = [](const std::string& path) -> std::string {
@@ -122,12 +122,11 @@ TEST(ModuleTest, parse_ir_from_file) {
     };
 
     // Read the LLVM IR from a file and parse it
-    std::string ir = read_ll_file("bell.ll");
-    // std::string_view ir_view(ir);
+    std::string ir = read_ll_file(this->test_data_path("bell.ll"));
 
     // Expect no exceptions during parsing
     EXPECT_NO_THROW({
-        std::unique_ptr<Module> m = Module::from_bytes(ir, false);
+        std::unique_ptr<Module> m = Module::from_bytes(ir);
     });
 }
 
