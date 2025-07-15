@@ -172,20 +172,11 @@ if(QIREE_BUILD_DOCS)
 endif()
 
 if(QIREE_BUILD_TESTS AND NOT GTest_FOUND)
-  find_package(GTest)
+  find_package(GTest REQUIRED)
   if(NOT GTest_FOUND)
-    message(STATUS "GTest not found, downloading latest version using FetchContent")
-    include(FetchContent)
-    # This declares version 1.17.0 of GTest, which is the latest stable (as of April 30, 2025)
-    FetchContent_Declare(
-      googletest
-      URL https://github.com/google/googletest/archive/04ee1b4f2aefdffb0135d7cf2a2c519fe50dabe4.zip
+    message(SEND_ERROR
+      "Googletest (GTest) is required for testing but was not found. Please install from source. Optional: In the user environment, you can run `cmake -DCMAKE_INSTALL_PREFIX=../install -DBUILD_SHARED_LIBS=ON ..` in the googletest/build folder, which allows you to build without sudo. Then you can set `export CMAKE_PREFIX_PATH=$HOME/googletest/install so that QIR-EE can find the installation."
     )
-    # For Windows: Prevent overriding the parent project's compiler/linker settings
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
-    # Add GTest to the project
-    add_library(GTest::GTest ALIAS gtest)
   endif()
 endif()
 
