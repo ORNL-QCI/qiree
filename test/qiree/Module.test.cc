@@ -123,11 +123,11 @@ TEST(ModuleTest, parse_ir_from_file) {
 
     // Read the LLVM IR from a file and parse it
     std::string ir = read_ll_file("bell.ll");
-    std::string_view ir_view(ir);
+    // std::string_view ir_view(ir);
 
     // Expect no exceptions during parsing
     EXPECT_NO_THROW({
-        Module m = Module::UPModule::from_bytes(ir_view);
+        std::unique_ptr<Module> m = Module::from_bytes(ir, false);
     });
 }
 

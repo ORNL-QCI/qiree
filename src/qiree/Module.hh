@@ -44,7 +44,7 @@ class Module
     Module& operator=(Module const&) = delete;
 
     // Reading a module by parsing an in-memory LLVM IR string.
-    static UPModule from_bytes(std::string_view content);
+    static std::unique_ptr<Module> from_bytes(std::string const & content, bool is_file);
 
     // Construct from an externally created LLVM module
     explicit Module(UPModule&& module);

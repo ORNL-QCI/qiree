@@ -161,24 +161,54 @@ Module::Module(std::string const& filename, std::string const& entrypoint)
  * Reading a module by parsing an in-memory LLVM IR string.
  */
 
-Module::UPModule from_bytes(std::string_view content) {
-    llvm::SMDiagnostic err;
+Module::Module() = default;
+Module::~Module() = default;
+Module::Module(Module&&) = default;
+Module& Module::operator=(Module&&) = default;
 
-    // Create memory buffer from the in-memory IR content
-    auto buffer = llvm::MemoryBuffer::getMemBuffer(content, "<in-memory>", false);
+std::unique_ptr<Module> Module::from_bytes(std::string const & content, bool is_file) {
+	if (is_file) {
+		return std::make_unique<Module>(content);	
+	}
+	else {
+		llvm::SMDiagnostic err;
+		
+        // Create memory buffer from the in-memory IR content
+		std::unique_ptr<llvm::MemoryBuffer> buffer = llvm::MemoryBuffer::getMemBuffer(content, "<in-memory>", false);
 
-    // Parse the IR using LLVM context
-    auto llvm_module = llvm::parseIR(buffer->getMemBufferRef(), err, context());
+        // Parse the IR using LLVM context
+		auto llvm_module = llvm::parseIR(buffer->getMemBufferRef(), err, context());
 
-    if (!llvm_module) {
-        err.print("qiree", llvm::errs());
-        QIREE_VALIDATE(llvm_module,
-            << "failed to parse QIR from in-memory content.");
-    }
+		if (!llvm_module)
+		{
+		    err.print("qiree", llvm::errs());
+		    QIREE_VALIDATE(llvm_module,
+				   << "Failed to parse QIR from in-memory content '" << content << "'");
+		}
 
-    // Construct and return Module from parsed llvm::Module
-    return Module::UPModule(std::move(llvm_module));
+        // Construct and return Module from parsed llvm::Module
+		return std::make_unique<Module>(std::move(llvm_module));	
+	}
 }
+
+ // Module::UPModule from_bytes(std::string_view content) {
+//     llvm::SMDiagnostic err;
+
+//     // Create memory buffer from the in-memory IR content
+//     auto buffer = llvm::MemoryBuffer::getMemBuffer(content, "<in-memory>", false);
+
+//     // Parse the IR using LLVM context
+//     auto llvm_module = llvm::parseIR(buffer->getMemBufferRef(), err, context());
+
+//     if (!llvm_module) {
+//         err.print("qiree", llvm::errs());
+//         QIREE_VALIDATE(llvm_module,
+//             << "failed to parse QIR from in-memory content.");
+//     }
+
+//     // Construct and return Module from parsed llvm::Module
+//     return Module::UPModule(std::move(llvm_module));
+// }
 
 //---------------------------------------------------------------------------//
 /*!

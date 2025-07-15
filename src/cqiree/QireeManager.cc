@@ -42,7 +42,9 @@ QireeManager::load_module(std::string_view data_contents) throw()
     try
     {
         // Load module from memory contents
-        module_ = Module::UPModule::from_bytes(data_contents);
+        std::string content{data_contents};
+        // Convert string_view to string for Module constructor
+        module_ = Module::from_bytes(content, false);
     }
     catch (std::exception const& e)
     {
