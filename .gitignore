@@ -50,6 +50,3 @@ cmake_install.cmake
 /CMakeFiles
 .venv/
 *.sif
-examples/others/qcut_circuit*
-examples/others/pyqir_wamta_example.py
-scripts/apptainers/qiree.sif
