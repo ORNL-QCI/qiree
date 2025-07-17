@@ -10,8 +10,6 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include <fstream>
-
 namespace qiree
 {
 namespace test

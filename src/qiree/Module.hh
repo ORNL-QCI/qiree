@@ -8,7 +8,7 @@
 #pragma once
 
 #include <memory>
-#include <string_view>
+#include <string>
 
 #include "Types.hh"
 
