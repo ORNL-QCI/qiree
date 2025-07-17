@@ -40,9 +40,7 @@ main ``ornl-qci`` repository as an "upstream" so that you can apply
 changes from the main codebase as you work.
 
 To meet the :ref:`formatting` requirements described in the development guide,
-make sure that `clang-format`_ is installed on your development machine.
-Run ``scripts/dev/install-commit-hooks.sh`` to install a git post-commit hook
-that will amend each commit with clang-format updates if necessary.
+you **must** install the `pre-commit`_ utility. You can run ``scripts/dev/install-commit-hooks.sh`` to do this.
 
 A mostly consistent set of decorations (separators, Doxygen comment structure,
 etc.) are used throughout the code, so try to make new files look like existing
@@ -51,7 +49,7 @@ generate skeletons for new files, and use existing source code as a guide for
 how to structure the decorations.
 
 .. _fork: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks
-.. _clang-format: https://clang.llvm.org/docs/ClangFormat.html
+.. _pre-commit: https://pre-commit.com
 
 
 Submitting code changes
