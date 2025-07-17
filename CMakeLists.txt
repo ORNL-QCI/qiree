@@ -172,10 +172,10 @@ if(QIREE_BUILD_DOCS)
 endif()
 
 if(QIREE_BUILD_TESTS AND NOT GTest_FOUND)
-  find_package(GTest REQUIRED)
+  find_package(GTest)
   if(NOT GTest_FOUND)
-    message(SEND_ERROR
-      "Googletest (GTest) is required for testing but was not found. Please install from source. Optional: In the user environment, you can run `cmake -DCMAKE_INSTALL_PREFIX=../install -DBUILD_SHARED_LIBS=ON ..` in the googletest/build folder, which allows you to build without sudo. Then you can set `export CMAKE_PREFIX_PATH=$HOME/googletest/install so that QIR-EE can find the installation."
+    message(FATAL_ERROR
+      "Googletest (GTest) is required for testing but was not found. Please install from source. Optional: If you are in a user environment, you can run `cmake -DCMAKE_INSTALL_PREFIX=../install -DBUILD_SHARED_LIBS=ON ..` in the googletest/build folder, which allows you to build without sudo. Then you can set `export CMAKE_PREFIX_PATH=$HOME/googletest/install so that QIR-EE can find the installation."
     )
   endif()
 endif()
