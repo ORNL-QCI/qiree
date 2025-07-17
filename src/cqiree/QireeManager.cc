@@ -43,7 +43,7 @@ QireeManager::load_module(std::string_view data_contents) throw()
     {
         // Convert string_view to string for Module constructor
         std::string content{data_contents};
-        module_ = std::make_unique<Module>(content);
+        module_ = Module::from_bytes(content);
     }
     catch (std::exception const& e)
     {

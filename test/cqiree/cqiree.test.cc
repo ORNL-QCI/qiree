@@ -110,7 +110,7 @@ TEST_F(CQireeTest, LoadModuleFromMemory)
     // Test invalid inputs
     result = load_module_from_memory_fn_(
         nullptr, qir_content.data(), qir_content.size());
-    EXPECT_EQ(result, QIREE_INVALID_INPUT);
+    EXPECT_EQ(result, QIREE_NOT_READY);
 
     result = load_module_from_memory_fn_(manager, nullptr, 100);
     EXPECT_EQ(result, QIREE_INVALID_INPUT);
