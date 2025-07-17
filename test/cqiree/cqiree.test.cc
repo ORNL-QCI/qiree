@@ -202,6 +202,11 @@ TEST_F(CQireeTest, Run)
     result = max_result_items_fn_(manager, 1000, nullptr);
     EXPECT_EQ(result, QIREE_INVALID_INPUT);
 
+    if (!QIREE_USE_QSIM)
+    {
+        GTEST_SKIP() << "Cannot test cqiree execution: QSim is disabled";
+    }
+
     // Setup executor and run
     result = setup_executor_fn_(manager, "qsim", nullptr);
     ASSERT_EQ(result, QIREE_SUCCESS);
