@@ -9,6 +9,10 @@
 
 #include "qiree_test.hh"
 
+#include <sstream>
+#include <string_view>
+#include <stdexcept>
+
 namespace qiree
 {
 namespace test
