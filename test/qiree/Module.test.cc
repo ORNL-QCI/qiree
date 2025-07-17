@@ -132,6 +132,10 @@ TEST_F(ModuleTest, parse_ir_from_file) {
     // Expect no exceptions during parsing
     EXPECT_NO_THROW(m = Module::from_bytes(ir));
     ASSERT_TRUE(m);
+
+    // Check flags
+    ASSERT_NE(ir.find("!llvm.module.flags"), std::string::npos)
+      << "QIR should contain a !llvm.module.flags metadata node";
 }
 
 //---------------------------------------------------------------------------//
