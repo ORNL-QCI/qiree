@@ -33,16 +33,6 @@ class Module
     //!@}
 
   public:
-    // Default empty constructor
-    Module();
-    // Externally defined defaults
-    ~Module();
-    Module(Module&&);
-    Module& operator=(Module&&);
-    // Prevent copying
-    Module(Module const&) = delete;
-    Module& operator=(Module const&) = delete;
-
     // Reading a module by parsing an in-memory LLVM IR string.
     static std::unique_ptr<Module> from_bytes(std::string const & content);
 
@@ -57,6 +47,20 @@ class Module
 
     // Construct with an LLVM IR file (bitcode or disassembled) and entry point
     Module(std::string const& filename, std::string const& entrypoint);
+
+    // Construct in an empty state
+    Module();
+
+    // Externally defined defaults
+    ~Module();
+    Module(Module&&);
+    Module& operator=(Module&&);
+
+    // Prevent copying
+    Module(Module const&) = delete;
+    Module& operator=(Module const&) = delete;
+
+    //// ACCESSORS ////
 
     // Process entry point attributes
     EntryPointAttrs load_entry_point_attrs() const;

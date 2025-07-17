@@ -118,6 +118,7 @@ Module::Module(UPModule&& module) : module_{std::move(module)}
 //---------------------------------------------------------------------------//
 /*!
  * Construct with an LLVM module and an entry point.
+ *
  * Useful when there are multiple entry points.
  */
 Module::Module(UPModule&& module, std::string const& entrypoint)
@@ -158,14 +159,8 @@ Module::Module(std::string const& filename, std::string const& entrypoint)
 
 //---------------------------------------------------------------------------//
 /*!
- * Reading a module by parsing an in-memory LLVM IR string.
+ * Read a module by parsing an in-memory LLVM IR string.
  */
-
-Module::Module() = default;
-Module::~Module() = default;
-Module::Module(Module&&) = default;
-Module& Module::operator=(Module&&) = default;
-
 std::unique_ptr<Module> Module::from_bytes(std::string const& content)
 {
     llvm::SMDiagnostic err;
@@ -188,6 +183,14 @@ std::unique_ptr<Module> Module::from_bytes(std::string const& content)
     // Construct and return Module from parsed llvm::Module
     return std::make_unique<Module>(std::move(llvm_module));
 }
+
+//! Construct in an empty state
+Module::Module() = default;
+
+// Default destructor and move
+Module::~Module() = default;
+Module::Module(Module&&) = default;
+Module& Module::operator=(Module&&) = default;
 
 //---------------------------------------------------------------------------//
 /*!
