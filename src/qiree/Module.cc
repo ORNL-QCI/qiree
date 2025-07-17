@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 #include "Module.hh"
 
+#include <memory>
 #include <sstream>
 #include <string_view>
 #include <llvm/IR/Attributes.h>
@@ -14,6 +15,7 @@
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IRReader/IRReader.h>
+#include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/SourceMgr.h>
 
 #include "Assert.hh"
@@ -116,6 +118,7 @@ Module::Module(UPModule&& module) : module_{std::move(module)}
 //---------------------------------------------------------------------------//
 /*!
  * Construct with an LLVM module and an entry point.
+ *
  * Useful when there are multiple entry points.
  */
 Module::Module(UPModule&& module, std::string const& entrypoint)
@@ -155,7 +158,36 @@ Module::Module(std::string const& filename, std::string const& entrypoint)
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * Read a module by parsing an in-memory LLVM IR string.
+ */
+std::unique_ptr<Module> Module::from_bytes(std::string const& content)
+{
+    llvm::SMDiagnostic err;
+
+    // Create memory buffer from the in-memory IR content
+    std::unique_ptr<llvm::MemoryBuffer> buffer
+        = llvm::MemoryBuffer::getMemBuffer(content, "<in-memory>", false);
+
+    // Parse the IR using LLVM context
+    auto llvm_module = llvm::parseIR(buffer->getMemBufferRef(), err, context());
+
+    if (!llvm_module)
+    {
+        err.print("qiree", llvm::errs());
+        QIREE_VALIDATE(llvm_module,
+                       << "Failed to parse QIR from in-memory content '"
+                       << content << "'");
+    }
+
+    // Construct and return Module from parsed llvm::Module
+    return std::make_unique<Module>(std::move(llvm_module));
+}
+
+//! Construct in an empty state
 Module::Module() = default;
+
+// Default destructor and move
 Module::~Module() = default;
 Module::Module(Module&&) = default;
 Module& Module::operator=(Module&&) = default;

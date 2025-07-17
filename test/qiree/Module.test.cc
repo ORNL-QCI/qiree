@@ -7,6 +7,11 @@
 //---------------------------------------------------------------------------//
 #include "qiree/Module.hh"
 
+#include <fstream>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+
 #include "qiree_test.hh"
 
 namespace qiree
@@ -107,6 +112,31 @@ TEST_F(ModuleTest, several_gates)
     EXPECT_EQ(0, flags.qir_minor_version);
     EXPECT_FALSE(flags.dynamic_qubit_management);
     EXPECT_FALSE(flags.dynamic_result_management);
+}
+
+//---------------------------------------------------------------------------//
+TEST_F(ModuleTest, parse_ir_from_file) {
+
+    // Helper function to read a file and return its contents as a string to be fed into from_bytes
+    auto read_ll_file = [](const std::string& path) -> std::string {
+        std::ifstream file(path);
+        if (!file) throw std::runtime_error("Cannot open file: " + path);
+        std::ostringstream buf;
+        buf << file.rdbuf();
+        return buf.str();
+    };
+
+    // Read the LLVM IR from a file and parse it
+    std::string ir = read_ll_file(this->test_data_path("bell.ll"));
+
+    std::unique_ptr<Module> m;
+    // Expect no exceptions during parsing
+    EXPECT_NO_THROW(m = Module::from_bytes(ir));
+    ASSERT_TRUE(m);
+
+    // Check flags
+    ASSERT_NE(ir.find("!llvm.module.flags"), std::string::npos)
+      << "QIR should contain a !llvm.module.flags metadata node";
 }
 
 //---------------------------------------------------------------------------//
