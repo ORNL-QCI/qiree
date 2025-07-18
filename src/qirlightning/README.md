@@ -55,7 +55,7 @@ To compile:
 ```
 cd qiree/
 mkdir build; cd build
-cmake ..
+cmake -DQIREE_USE_LIGHTNING=ON ..
 make
 
 ```
