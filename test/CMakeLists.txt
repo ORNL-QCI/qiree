@@ -10,7 +10,7 @@ configure_file(qiree_test_config.h.in qiree_test_config.h @ONLY)
 
 # Generate a file with generate-time paths
 file(
-  GENERATE 
+  GENERATE
   OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qiree_targets.h"
   CONTENT [[
 #ifndef qiree_targets_h
@@ -68,8 +68,8 @@ qiree_add_test(qiree ResultDistribution)
 # CQIREE TESTS
 #---------------------------------------------------------------------------##
 
-qiree_add_test(cqiree cqiree)
-add_dependencies(cqiree_cqireeTest cqiree)
+qiree_add_test(CQiree cqiree)
+add_dependencies(cqiree_CQireeTest CQiree)
 
 #---------------------------------------------------------------------------##
 # QIRXACC TESTS

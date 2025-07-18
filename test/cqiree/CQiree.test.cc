@@ -3,7 +3,7 @@
 // See the top-level COPYRIGHT file for details.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //---------------------------------------------------------------------------//
-//! \file cqiree/cqiree.test.cc
+//! \file cqiree/CQiree.test.cc
 //---------------------------------------------------------------------------//
 #include "cqiree/CQiree.h"
 
@@ -19,7 +19,9 @@
 #include "qiree/Assert.hh"
 #include "qiree_test.hh"
 
+//---------------------------------------------------------------------------//
 // Declare function pointer types, e.g. qiree_create_t
+// Note that using decltype requires the CQiree.h header file.
 #define DECLARE_FUNCPTR(FUNC) \
     using qiree_##FUNC##_t = std::add_pointer_t<decltype(qiree_##FUNC)>;
 
@@ -35,6 +37,7 @@ DECLARE_FUNCPTR(save_result_items);
 DECLARE_FUNCPTR(destroy);
 #undef DECLARE_FUNCPTR
 
+//---------------------------------------------------------------------------//
 class CQireeTest : public ::qiree::test::Test
 {
   protected:
@@ -71,7 +74,11 @@ class CQireeTest : public ::qiree::test::Test
         }
     }
 
+  protected:
+    //// DATA ////
+
     void* lib_handle_ = nullptr;
+
     qiree_create_t create_fn_ = nullptr;
     qiree_load_module_from_memory_t load_module_from_memory_fn_ = nullptr;
     qiree_load_module_from_file_t load_module_from_file_fn_ = nullptr;
@@ -84,6 +91,7 @@ class CQireeTest : public ::qiree::test::Test
     qiree_destroy_t destroy_fn_ = nullptr;
 };
 
+//---------------------------------------------------------------------------//
 TEST_F(CQireeTest, CreateAndDestroy)
 {
     CQiree* manager = create_fn_();
