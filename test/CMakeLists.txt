@@ -68,8 +68,8 @@ qiree_add_test(qiree ResultDistribution)
 # CQIREE TESTS
 #---------------------------------------------------------------------------##
 
-qiree_add_test(CQiree cqiree)
-add_dependencies(cqiree_CQireeTest CQiree)
+qiree_add_test(cqiree CQiree)
+add_dependencies(cqiree_CQireeTest cqiree)
 
 #---------------------------------------------------------------------------##
 # QIRXACC TESTS
