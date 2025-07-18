@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 #include "cqiree/CQiree.h"
 
+#include <array>
 #include <cstdint>
 #include <fstream>
 #include <string>
@@ -232,7 +233,7 @@ TEST_F(CQireeTest, Run)
         reinterpret_cast<ArrayUint2*>(results.data() + 1 + results[0].count));
     // For reproducibility, since the results are not in any specific order,
     // sort by key
-    std::sort(arr_results.begin() + 1, arr_results.end());
+    std::sort(arr_results.begin(), arr_results.end());
     EXPECT_EQ((std::vector<ArrayUint2>{{0, 21}, {1, 32}, {2, 25}, {3, 22}}),
               arr_results);
 
