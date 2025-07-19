@@ -30,7 +30,7 @@ class LightningQuantum final : virtual public QuantumNotImpl
 {
   public:
     // Construct with number of shots
-    LightningQuantum(std::ostream& os, unsigned long int shots);
+    LightningQuantum(std::ostream& os, unsigned long int seed);
     ~LightningQuantum();
 
     QIREE_DELETE_COPY_MOVE(LightningQuantum);  // Delete copy and move constructors
