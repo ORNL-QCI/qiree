@@ -17,11 +17,14 @@ concurrency:
 jobs:
   build-fast:
     uses: ./.github/workflows/build-fast.yml
+  build-lightning:
+    uses: ./.github/workflows/build-lightning.yml
   # Specifying a dependent job allows us to select a single "requires" check in the project GitHub settings
   all:
     if: ${{ always() }}
     needs:
     - build-fast
+    - build-lightning
     runs-on: ubuntu-latest
     steps:
     - name: Decide whether the needed jobs succeeded or failed

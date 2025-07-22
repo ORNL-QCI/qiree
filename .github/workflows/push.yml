@@ -12,9 +12,12 @@ concurrency:
 jobs:
   build-fast:
     uses: ./.github/workflows/build-fast.yml
+  build-lightning:
+    uses: ./.github/workflows/build-lightning.yml
   all:
     needs:
       - build-fast
+      - build-lightning
     runs-on: ubuntu-latest
     steps:
     - name: Success
