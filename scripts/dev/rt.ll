@@ -103,4 +103,3 @@ void @__quantum__rt__string_update_reference_count(%String*, i32)
 void @__quantum__rt__tuple_record_output(i64, i8*)
 void @__quantum__rt__tuple_update_alias_count(%Tuple*, i32)
 void @__quantum__rt__tuple_update_reference_count(%Tuple*, i32)
-

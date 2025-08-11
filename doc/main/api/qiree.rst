@@ -50,4 +50,3 @@ Execution
 .. doxygenclass:: qiree::Module
 
 .. doxygenclass:: qiree::Executor
-

@@ -32,9 +32,9 @@ The Quantum Intermediate Representation (QIR) provides an abstraction of program
     <li> To execute QIR: <code>[</code>a.<code>]</code> <code>[</code>b.<code>]</code> <code>[</code>c.<code>]</code> <code>[</code>d.<code>]</code> written without the brackets, where:
       <ol>
       <li> <code>./QuantumExecutionEngine</code> or an equivalent path to your executable </li>
-      <li> <code>../examples/[name of *.ll file]</code> </li> 
+      <li> <code>../examples/[name of *.ll file]</code> </li>
       <li> <code>number of shots</code> (if left blank, then default is 1024) </li>
-      <li> <code>sim choice</code> can be one of <code>aer, qpp, qsim, honeywell:H1-1SC, honeywell:H1-1E, ionq</code> (if left blank, then default is <code>aer</code>) </li> 
+      <li> <code>sim choice</code> can be one of <code>aer, qpp, qsim, honeywell:H1-1SC, honeywell:H1-1E, ionq</code> (if left blank, then default is <code>aer</code>) </li>
       </ol>
     </li>
     </ol>
@@ -43,7 +43,7 @@ The Quantum Intermediate Representation (QIR) provides an abstraction of program
 
 <strong>${\color{lightgreen}What}$ ${\color{lightgreen}is}$ ${\color{lightgreen}Here}$ </strong>
 
-The <code>src/QuantumExecutionEngine.cpp</code> integrates the XACC quantum computing framework with LLVM's Execution Engine to provide a seamless environment for executing both classical and quantum code. The Execution Engine runs the quantum code by calling mapped C++ functions, which in turn use XACC's quantum accelerators to execute the quantum circuit. These functions serve as the bridge between the LLVM Execution Engine and XACC's quantum execution environment. 
+The <code>src/QuantumExecutionEngine.cpp</code> integrates the XACC quantum computing framework with LLVM's Execution Engine to provide a seamless environment for executing both classical and quantum code. The Execution Engine runs the quantum code by calling mapped C++ functions, which in turn use XACC's quantum accelerators to execute the quantum circuit. These functions serve as the bridge between the LLVM Execution Engine and XACC's quantum execution environment.
 
 <strong>${\color{lightgreen}Data}$ ${\color{lightgreen}Transfer}$ ${\color{lightgreen}from}$ ${\color{lightgreen}the}$ ${\color{lightgreen}Execution}$ ${\color{lightgreen}Engine}$ </strong>
 

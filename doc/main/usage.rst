@@ -59,7 +59,7 @@ Example
 
     qir-xacc $HOME/qiree/examples/bell.ll --accelerator qpp
 
-This command will execute the quantum Bell circuit described in bell.ll the (default) 
+This command will execute the quantum Bell circuit described in bell.ll the (default)
 1024 times using the ``qpp`` accelerator.
 
 The resulting output looks like:

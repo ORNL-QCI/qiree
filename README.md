@@ -41,8 +41,8 @@ doc` (user) or `make doxygen` (developer).
 There are two dependencies for QIR-EE to work properly. Please make sure to
 download and install the most current versions of:
 1. [LLVM](https://releases.llvm.org/) (we have tested versions 14 through 18)
-2. [XACC](https://github.com/ORNL-QCI/xacc) (repo that is actively 
-   maintained -- not the eclipse one; currently required for execution in 
+2. [XACC](https://github.com/ORNL-QCI/xacc) (repo that is actively
+   maintained -- not the eclipse one; currently required for execution in
    this version of qir-ee; we recommend setting option `-DQIREE_MINIMAL_BUILD=ON`
    during cmake for a faster build)
 
@@ -63,7 +63,7 @@ QIR-EE Setup in Command Line
 3. `cmake ..`
 4. `make`
 
-The resulting path to executable files can be exported 
+The resulting path to executable files can be exported
 
 `export PATH=${YOUR-QIREE-INSTALL-DIR}/bin:$PATH`
 
@@ -95,7 +95,7 @@ qir-xacc llvm-file-path --flag-name flag-value
    simulator) that you wish to use (required).
 4. `-s` or `--shots` is the number of shots (optional with default at 1024).
 
-   With XACC we have tested: `aer`, `qpp`, `qsim`, `quantinuum:H1-1SC`, `quantinuum:H1-1E`, 
+   With XACC we have tested: `aer`, `qpp`, `qsim`, `quantinuum:H1-1SC`, `quantinuum:H1-1E`,
    `quantinuum:H1-1`, `ionq`, `ionq:sim.harmony`, `ionq:sim.aria-1`, `ionq:qpu.harmony`.
 
    Note that the minimal build only includes `aer` and `qpp` for local simulators.

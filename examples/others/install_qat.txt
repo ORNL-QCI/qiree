@@ -14,15 +14,15 @@ Question:
 
 How to install QAT?
 
-Answer: 
+Answer:
 
 Step 1. Install LLVM-14 and Clang-14 (Sharmin used Clang-18 and C++ Version 9.4.0). Follow the LLVM official website to install LLVM and Clang: https://llvm.org/
 
 Step 2. Follow https://www.qir-alliance.org/qat/QuickStart/building-with-cmake/ Section “Building QAT using CMake” instructions to install QAT. Key steps:
-- mkdir build 
-- cd build 
-- cmake .. 
-- make qat 
+- mkdir build
+- cd build
+- cmake ..
+- make qat
 
 Troubleshooting Tips:
 

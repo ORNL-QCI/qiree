@@ -41,6 +41,7 @@ fewer available components.
    CMake_, Development, "Build system"
    Git_, Development, "Repository management"
    GoogleTest_, Development, "Test harness"
+   pre-commit_, Development, "Git hook management"
 
 .. _CMake: https://cmake.org
 .. _XACC: https://github.com/ORNL-QCI/xacc
@@ -51,7 +52,7 @@ fewer available components.
 .. _breathe: https://github.com/michaeljones/breathe#readme
 .. _clang-format: https://clang.llvm.org/docs/ClangFormat.html
 .. _sphinxbib: https://pypi.org/project/sphinxcontrib-bibtex/
-
+.. _pre-commit: https://pre-commit.com
 
 Ideally you will build QIR-EE with all dependencies to gain the full
 functionality of the code, but there are circumstances in which you may not
@@ -80,7 +81,7 @@ or downloading and extracting it from the GitHub-generated `zip file`_. Then:
    $ cd qiree
    $ mkdir build && cd build
    $ cmake ..
-   $ make 
+   $ make
 
 Confirm that your cmake prefixes for XACC are correct. If not, then add them:
 

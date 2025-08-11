@@ -115,12 +115,14 @@ TEST_F(ModuleTest, several_gates)
 }
 
 //---------------------------------------------------------------------------//
-TEST_F(ModuleTest, parse_ir_from_file) {
-
-    // Helper function to read a file and return its contents as a string to be fed into from_bytes
-    auto read_ll_file = [](const std::string& path) -> std::string {
+TEST_F(ModuleTest, parse_ir_from_file)
+{
+    // Helper function to read a file and return its contents as a string to be
+    // fed into from_bytes
+    auto read_ll_file = [](std::string const& path) -> std::string {
         std::ifstream file(path);
-        if (!file) throw std::runtime_error("Cannot open file: " + path);
+        if (!file)
+            throw std::runtime_error("Cannot open file: " + path);
         std::ostringstream buf;
         buf << file.rdbuf();
         return buf.str();
@@ -136,7 +138,7 @@ TEST_F(ModuleTest, parse_ir_from_file) {
 
     // Check flags
     ASSERT_NE(ir.find("!llvm.module.flags"), std::string::npos)
-      << "QIR should contain a !llvm.module.flags metadata node";
+        << "QIR should contain a !llvm.module.flags metadata node";
 }
 
 //---------------------------------------------------------------------------//
