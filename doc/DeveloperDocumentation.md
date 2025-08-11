@@ -32,7 +32,7 @@ Built with modularity and extensibility in mind, this tool consists of several k
 
 ### 1&nbsp;&#8209;&nbsp;QIREE&nbsp;Class
 
-Located in `QIREE.hpp`, this class puts into effect the LLVM execution engine and consists of the main components responsible for initializing the environment, parsing and binding quantum instruction set functions, and executing the QIR program. 
+Located in `QIREE.hpp`, this class puts into effect the LLVM execution engine and consists of the main components responsible for initializing the environment, parsing and binding quantum instruction set functions, and executing the QIR program.
 
 ### 2&nbsp;&#8209;&nbsp;QuantumExecutionEngine
 

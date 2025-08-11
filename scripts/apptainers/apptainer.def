@@ -61,9 +61,8 @@ Stage: build
     mkdir -p /software && cd /software && \
     git clone https://github.com/ORNL-QCI/qiree.git && \
     mkdir -p /software/qiree/build && cd /software/qiree/build && \
-    cmake -GNinja /software/qiree -DCMAKE_PREFIX_PATH=$HOME/.xacc 
+    cmake -GNinja /software/qiree -DCMAKE_PREFIX_PATH=$HOME/.xacc
     cmake --build .
 
 %runscript
     echo "Container initialized. Customize the runscript section to add your commands."
-

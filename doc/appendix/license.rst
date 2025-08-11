@@ -25,4 +25,3 @@ Documentation
 =============
 
 .. include:: ../COPYRIGHT
-

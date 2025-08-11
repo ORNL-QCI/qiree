@@ -54,4 +54,3 @@ declare void @__quantum__rt__array_record_output(i64, i8*)
 declare void @__quantum__rt__result_record_output(%Result*, i8*)
 
 attributes #0 = { "entry_point" "num_required_qubits"="2" "num_required_results"="2"}
-

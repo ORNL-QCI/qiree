@@ -13,24 +13,24 @@ entry:
   call void @__quantum__qis__h__body(%Qubit* null) ; apply Hadamard to query qubit
   call void @__quantum__qis__x__body(%Qubit* inttoptr (i64 1 to %Qubit*)) ; set ancillary qubit
   call void @__quantum__qis__h__body(%Qubit* inttoptr (i64 1 to %Qubit*)) ;
-  
+
 
   ; Apply CNOT for bit '1'
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*)) ; kickback phase on q0
   call void @__quantum__qis__h__body(%Qubit* null) ; correcting eigenvalue
-  
-  ; Mid-circuit measurement 
+
+  ; Mid-circuit measurement
   call void @__quantum__qis__mz__body(%Qubit* null, %Result* null) ; from this we get the first bit
   call i1 @__quantum__qis__read_result__body(%Result* null)
   call void @__quantum__qis__mz__body(%Qubit* inttoptr (i64 1 to %Qubit*), %Result* inttoptr (i64 1 to %Result*)) ; just to reset ancillary qubit
-  call i1 @__quantum__qis__read_result__body(%Result* inttoptr (i64 1 to %Result*))  
-  
+  call i1 @__quantum__qis__read_result__body(%Result* inttoptr (i64 1 to %Result*))
+
   ; Output the results
   call void @__quantum__rt__array_record_output(i64 2, i8* null)
   call void @__quantum__rt__result_record_output(%Result* null, i8* null)
   call void @__quantum__rt__result_record_output(%Result* inttoptr (i64 1 to %Result*), i8* null)
 
-  ; Initialize qubits 
+  ; Initialize qubits
   call void @__quantum__qis__x__body(%Qubit* inttoptr (i64 1 to %Qubit*)) ; set ancillary qubit
   call void @__quantum__qis__h__body(%Qubit* inttoptr (i64 1 to %Qubit*)) ;
   call void @__quantum__qis__h__body(%Qubit* null) ; apply Hadamard to query qubit
@@ -38,12 +38,12 @@ entry:
   ; Apply Identiry for bit '0'
   ; Nothing
 
-  ; Mid-circuit measurement 
+  ; Mid-circuit measurement
   call void @__quantum__qis__mz__body(%Qubit* null, %Result* null) ; from this we get the first bit
   call i1 @__quantum__qis__read_result__body(%Result* null)
   call void @__quantum__qis__mz__body(%Qubit* inttoptr (i64 1 to %Qubit*), %Result* inttoptr (i64 1 to %Result*)) ; just to reset ancillary qubit
-  call i1 @__quantum__qis__read_result__body(%Result* inttoptr (i64 1 to %Result*))  
-  
+  call i1 @__quantum__qis__read_result__body(%Result* inttoptr (i64 1 to %Result*))
+
   ; Output the results
   call void @__quantum__rt__array_record_output(i64 2, i8* null)
   call void @__quantum__rt__result_record_output(%Result* null, i8* null)
@@ -57,13 +57,13 @@ entry:
   ; Apply CNOT for bit '1'
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*)) ; kickback phase on q0
   call void @__quantum__qis__h__body(%Qubit* null) ; correcting eigenvalue
-  
-  ; Mid-circuit measurement 
+
+  ; Mid-circuit measurement
   call void @__quantum__qis__mz__body(%Qubit* null, %Result* null) ; from this we get the first bit
   call i1 @__quantum__qis__read_result__body(%Result* null)
   call void @__quantum__qis__mz__body(%Qubit* inttoptr (i64 1 to %Qubit*), %Result* inttoptr (i64 1 to %Result*)) ; just to reset ancillary qubit
-  call i1 @__quantum__qis__read_result__body(%Result* inttoptr (i64 1 to %Result*))  
-  
+  call i1 @__quantum__qis__read_result__body(%Result* inttoptr (i64 1 to %Result*))
+
   ; Output the results
   call void @__quantum__rt__array_record_output(i64 2, i8* null)
   call void @__quantum__rt__result_record_output(%Result* null, i8* null)
@@ -98,4 +98,3 @@ attributes #1 = { "irreversible" }
 !1 = !{i32 7, !"qir_minor_version", i32 0}
 !2 = !{i32 1, !"dynamic_qubit_management", i1 false}
 !3 = !{i32 1, !"dynamic_result_management", i1 false}
-

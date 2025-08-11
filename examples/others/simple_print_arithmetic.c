@@ -11,6 +11,5 @@ int main() {
 
     get_output();
     return 0;
-    
-}
 
+}

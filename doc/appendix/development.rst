@@ -310,4 +310,3 @@ where ``typename`` *doesn't* mean a class: namely,
 Use ``this->`` when calling member functions inside a class to convey that the
 ``this`` pointer is implicitly being passed to the function and to make it
 easier to differentiate from a free function in the current scope.
-

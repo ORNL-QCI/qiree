@@ -17,7 +17,7 @@ def main():
     # Extract only the part inside "define" function
     define_index = qir.find('define')   # find where the define keyword located
     qir = qir[define_index:]  # ignore what is before "define" keyword
-    bracket_start_index = qir.find('{')  
+    bracket_start_index = qir.find('{')
     bracket_end_index = qir.find('}')
 
     qir = qir[bracket_start_index+1:bracket_end_index].strip()
@@ -26,7 +26,7 @@ def main():
 
 
     # quantum functions
-    qir_func_dic = {'@__quantum__qis__h__body':'H', 
+    qir_func_dic = {'@__quantum__qis__h__body':'H',
                     '@__quantum__qis__cnot__body':'CNOT',
                     '@__quantum__qis__mz__body': 'Measure'
                     }
@@ -38,7 +38,7 @@ def main():
 
     print("Output XACC IR is:")
     print_bar()
-    # read qir line by line 
+    # read qir line by line
     for line in qir.splitlines():
         fn_start_idx = line.find('@')
         fn_end_idx = line.find('(')
@@ -56,8 +56,8 @@ def main():
             for args in arguments:
                 if not args.startswith('%Qubit*'):
                     arguments.remove(args)
-        
-        
+
+
             for iteration in range(len(arguments)):
                 arg = arguments[iteration]
                 arg_value = arg[7:]
@@ -67,7 +67,7 @@ def main():
                     print(dict_qubits[arg_value])
                 else:
                     print(dict_qubits[arg_value], end=',')
-                    
+
     print_bar()
 
 if __name__ == "__main__":
@@ -78,17 +78,17 @@ if __name__ == "__main__":
 
 
 
-        
-
-                
-
-        
-         
-        
 
 
 
 
 
 
-    
+
+
+
+
+
+
+
+
