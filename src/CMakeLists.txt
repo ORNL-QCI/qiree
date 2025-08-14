@@ -22,4 +22,8 @@ if(QIREE_USE_QSIM)
   add_subdirectory(qirqsim)
 endif()
 
+if(QIREE_USE_LIGHTNING)
+  add_subdirectory(qirlightning)
+endif()
+
 #---------------------------------------------------------------------------##
