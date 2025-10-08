@@ -135,5 +135,8 @@ StatementMacros:
   - QT_REQUIRE_VERSION
 TabWidth:        8
 UseTab:          Never
+---
+Language: Json
+DisableFormat: true
 ...
 # vim: set ft=yaml ts=2 sw=2 :

@@ -9,6 +9,8 @@ repos:
     - id: check-shebang-scripts-are-executable
     - id: check-json
     - id: check-yaml
+      # .clang-format contains multiple documents for different languages
+      args: ['--allow-multiple-documents']
     - id: end-of-file-fixer
       exclude: '\.(diff|patch)$'
     - id: trailing-whitespace

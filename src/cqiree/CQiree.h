@@ -7,13 +7,12 @@
 //---------------------------------------------------------------------------//
 #pragma once
 
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stddef.h>
-#include <stdint.h>
 
 /* Opaque pointer to QireeManager */
 typedef struct CQiree_s CQiree;

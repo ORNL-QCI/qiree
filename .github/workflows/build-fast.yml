@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   linux:
-    name: ${{matrix.runner}}-${{matrix.compiler}}-${{matrix.version}}-llvm${{matrix.llvm}}
+    name: ${{matrix.runner}}-${{matrix.compiler}}-${{matrix.version}}-${{ matrix.shared && 'shared' || 'static' }}-llvm${{matrix.llvm}}
     strategy:
       matrix:
         include:
@@ -18,10 +18,17 @@ jobs:
             compiler: gcc
             version: 12
             llvm: 14
+            shared: true
+          - runner: jammy
+            compiler: gcc
+            version: 12
+            llvm: 14
+            shared: false
           - runner: jammy
             compiler: clang
             version: 15
             llvm: 15
+            shared: true
     runs-on: >-
       ${{  matrix.runner == 'focal' && 'ubuntu-20.04'
         || matrix.runner == 'jammy' && 'ubuntu-22.04'
@@ -67,6 +74,7 @@ jobs:
             -DQIREE_BUILD_TESTS:BOOL=ON \
             -DQIREE_DEBUG:BOOL=ON \
             -DQIREE_USE_XACC:BOOL=OFF \
+            -DQIREE_SHARED_LIBS:BOOL=${{ matrix.shared }} \
             -DCMAKE_BUILD_TYPE="Release" \
             -DCMAKE_INSTALL_PREFIX="${{github.workspace}}/install" \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \

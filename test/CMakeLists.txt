@@ -69,7 +69,13 @@ qiree_add_test(qiree ResultDistribution)
 #---------------------------------------------------------------------------##
 
 qiree_add_test(cqiree CQiree)
-add_dependencies(cqiree_CQireeTest cqiree)
+if(BUILD_SHARED_LIBS)
+  # Tester uses dlopen()
+  add_dependencies(cqiree_CQireeTest cqiree)
+else()
+  # Statically link tester with cqiree
+  target_link_libraries(cqiree_CQireeTest cqiree)
+endif()
 
 #---------------------------------------------------------------------------##
 # QIRXACC TESTS

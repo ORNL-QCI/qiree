@@ -12,7 +12,15 @@ if(QIREE_USE_QSIM)
   list(APPEND _CQIREE_LIBS QIREE::qirqsim)
 endif()
 
-qiree_add_library(cqiree MODULE
+if(BUILD_SHARED_LIBS)
+  # When building with shared libs, this should be a shared library that can
+  # be dlopen()'d.
+  set(_LIB_TYPE MODULE)
+else()
+  set(_LIB_TYPE)
+endif()
+
+qiree_add_library(cqiree ${_LIB_TYPE}
   CQiree.cc
   QireeManager.cc
 )
@@ -28,10 +36,10 @@ target_link_libraries(cqiree
 #----------------------------------------------------------------------------#
 
 # C/C++ source headers
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/cqiree"
-  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/cqiree"
   COMPONENT development
-  FILES_MATCHING REGEX ".*\\.hh$"
+  FILES_MATCHING REGEX ".*\\.h$"
 )
 
 #-----------------------------------------------------------------------------#

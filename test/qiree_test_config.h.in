@@ -9,6 +9,8 @@
 #ifndef qiree_test_config_h
 #define qiree_test_config_h
 
+#cmakedefine01 BUILD_SHARED_LIBS
+
 static char const qiree_source_dir[] = "@QIREE_SOURCE_DIR@";
 
 #endif /* qiree_test_config_h */

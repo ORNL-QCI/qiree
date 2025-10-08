@@ -40,7 +40,7 @@ doc` (user) or `make doxygen` (developer).
 
 There are two dependencies for QIR-EE to work properly. Please make sure to
 download and install the most current versions of:
-1. [LLVM](https://releases.llvm.org/) (we have tested versions 14 through 18)
+1. [LLVM](https://releases.llvm.org/) (we have tested versions 14 through 21)
 2. [XACC](https://github.com/ORNL-QCI/xacc) (repo that is actively
    maintained -- not the eclipse one; currently required for execution in
    this version of qir-ee; we recommend setting option `-DQIREE_MINIMAL_BUILD=ON`
